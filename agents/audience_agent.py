@@ -1,18 +1,35 @@
+from typing import List
+from pydantic import BaseModel, Field
 from dotenv import load_dotenv
-from langchain_openai import ChatOpenAI
+from langchain.chat_models import init_chat_model
 from langchain_core.prompts import ChatPromptTemplate
+from rag.positioning_retriever import retrieve_positioning_knowledge
 
 load_dotenv()
 
-llm = ChatOpenAI(
-    model="gpt-4o-mini",
-    temperature=0.7
+
+class AudienceAnalysis(BaseModel):
+    audience_profile: str = Field(description="Detailed description of the target audience")
+    pains: List[str] = Field(description="Main pains and frustrations of the audience")
+    desires: List[str] = Field(description="Main goals and desires of the audience")
+    objections: List[str] = Field(description="Reasons why the audience may hesitate to buy or engage")
+    content_angles: List[str] = Field(description="Strategic content angles for this audience")
+    tone: str = Field(description="Recommended tone of voice")
+    positioning: str = Field(description="Clear expert positioning statement")
+    known_for: str = Field(description="What the creator should become known for")
+
+
+model = init_chat_model(
+    model="openai:gpt-4o-mini",
+    temperature=0.7,
 )
+
+structured_model = model.with_structured_output(AudienceAnalysis)
 
 prompt = ChatPromptTemplate.from_template("""
 You are a marketing strategist.
 
-Analyze the creator profile and return ONLY valid JSON.
+Analyze the creator profile using the relevant positioning knowledge.
 
 Profile:
 - Niche: {niche}
@@ -22,34 +39,20 @@ Profile:
 - Tone: {tone}
 - Goal: {goal}
 
-Return JSON with this exact structure:
-
-{{
-  "audience_profile": "...",
-  "pains": ["...", "..."],
-  "desires": ["...", "..."],
-  "objections": ["...", "..."],
-  "content_angles": ["...", "..."],
-  "tone": "...",
-  "positioning": "...",
-  "known_for": "..."
-}}
-
-Rules:
-- No explanations
-- No markdown
-- Only valid JSON
+Relevant positioning knowledge from RAG:
+{positioning_knowledge}
 """)
 
+
 def run_audience_agent(profile: dict) -> dict:
-    chain = prompt | llm
-    response = chain.invoke(profile).content
+    positioning_knowledge = retrieve_positioning_knowledge(profile)
 
-    import json
+    chain_input = {
+        **profile,
+        "positioning_knowledge": positioning_knowledge
+    }
 
-    try:
-        return json.loads(response)
-    except json.JSONDecodeError:
-        print("⚠️ JSON parsing failed. Raw output:")
-        print(response)
-        raise
+    chain = prompt | structured_model
+    result = chain.invoke(chain_input)
+
+    return result.model_dump()
