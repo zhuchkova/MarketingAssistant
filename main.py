@@ -43,3 +43,14 @@ def create_profile(profile: dict):
     handle_new_profile(conn, profile)
 
     return {"status": "created + audience analyzed"}
+
+# {
+#   "id": "22222222-2222-2222-2222-222222222444",
+#   "user_id": "11111111-1111-1111-1111-111111111111",
+#   "niche": "AI automation for founders",
+#   "offer": "AI marketing workflows and systems",
+#   "target_audience": "early-stage founders struggling with marketing",
+#   "expertise": "ML engineer building AI agents",
+#   "tone": "bold, practical",
+#   "goal": "generate leads"
+# }
