@@ -6,13 +6,45 @@ from fastapi import FastAPI
 import psycopg
 from agents.audience_agent import run_audience_agent
 from db.audience_repository import save_audience_analysis
+from agents.idea_agent import run_idea_agent
+from db.idea_repository import (get_profile_with_audience_analysis, save_content_ideas)
+
+# def handle_new_profile(conn, profile):
+#     # 1. run agent
+#     result = run_audience_agent(profile)
+#
+#     # 2. save to DB
+#     save_audience_analysis(conn, profile["id"], result)
+#
+#     conn.commit()
 
 def handle_new_profile(conn, profile):
-    # 1. run agent
-    result = run_audience_agent(profile)
+    # 1. run audience agent
+    audience_result = run_audience_agent(profile)
 
-    # 2. save to DB
-    save_audience_analysis(conn, profile["id"], result)
+    # 2. save audience analysis
+    save_audience_analysis(conn, profile["id"], audience_result)
+
+    # 3. get saved profile + audience analysis
+    saved_profile, saved_audience_analysis = get_profile_with_audience_analysis(
+        conn,
+        profile["id"]
+    )
+
+    # 4. run idea agent
+    ideas = run_idea_agent(
+        saved_profile,
+        saved_audience_analysis,
+        number_of_ideas=10
+    )
+
+    # 5. save ideas
+    save_content_ideas(
+        conn,
+        user_profile_id=profile["id"],
+        audience_analysis_id=saved_audience_analysis["id"],
+        ideas=ideas
+    )
 
     conn.commit()
 
@@ -42,7 +74,7 @@ def create_profile(profile: dict):
     # trigger agent automatically
     handle_new_profile(conn, profile)
 
-    return {"status": "created + audience analyzed"}
+    return {"status": "profile created + audience analyzed + ideas created"}
 
 # {
 #   "id": "22222222-2222-2222-2222-222222222444",
