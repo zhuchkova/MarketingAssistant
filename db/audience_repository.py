@@ -19,7 +19,7 @@ def save_audience_analysis(conn, profile_id, data):
                         str(uuid.uuid4()),
                         profile_id,
                         data["audience_profile"],
-                        Json(data["pains"]),  # ✅ important
+                        Json(data["pains"]),
                         Json(data["desires"]),
                         Json(data["objections"]),
                         Json(data["content_angles"]),
