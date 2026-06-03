@@ -41,4 +41,4 @@ collection.add(
     ids=ids,
 )
 
-print("✅ idea_knowledge collection seeded")
+print("Idea_knowledge collection seeded")
