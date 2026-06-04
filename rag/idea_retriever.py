@@ -12,7 +12,6 @@ def retrieve_idea_knowledge(profile: dict, audience_analysis: dict, n_results: i
     Offer: {profile.get("offer")}
     Target audience: {profile.get("target_audience")}
     Goal: {profile.get("goal")}
-
     Audience profile: {audience_analysis.get("audience_profile")}
     Pains: {audience_analysis.get("pains")}
     Desires: {audience_analysis.get("desires")}

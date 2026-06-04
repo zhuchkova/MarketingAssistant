@@ -15,27 +15,6 @@ from db.content_repository import (
     get_lookup_id,
     save_post)
 
-# User creates profile
-# → Audience Agent runs
-# → Idea Agent creates ideas
-
-# → User selects idea
-# → Content Agent creates one post
-# → Post is saved in posts table
-
-
-# RAG:
-# Audience Agent
-#     ↓
-# positioning_knowledge
-#
-# Idea Agent
-#     ↓
-# idea_knowledge
-#
-# Content Agent
-#     ↓
-# content_frameworks
 
 def handle_new_profile(conn, profile):
     # 1. run audience agent
@@ -136,7 +115,7 @@ def generate_post(request: dict):
         "post_id": post_id,
         "post": generated_post,
     }
-
+#
 # {
 #   "id": "22222222-2222-2222-2222-222222222444",
 #   "user_id": "11111111-1111-1111-1111-111111111111",
@@ -150,7 +129,7 @@ def generate_post(request: dict):
 
 
 # {
-#   "content_idea_id": "YOUR_CONTENT_IDEA_UUID",
+#   "content_idea_id": "CONTENT_IDEA_UUID",
 #   "platform": "linkedin",
 #   "post_format": "contrarian",
 #   "post_goal": "comment"
