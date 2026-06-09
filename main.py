@@ -3,6 +3,9 @@ import os
 from dotenv import load_dotenv
 load_dotenv()
 from fastapi import FastAPI, HTTPException
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
+from fastapi.middleware.cors import CORSMiddleware
 import psycopg
 from schemas.user_profile import CreateUserProfileRequest, UpdateUserProfileRequest
 from schemas.post_generation import GeneratePostRequest
@@ -75,6 +78,17 @@ def regenerate_profile_outputs(conn, profile):
     )
 
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+@app.get("/")
+def serve_ui():
+    return FileResponse(os.path.join(os.path.dirname(__file__), "static", "index.html"))
 
 @app.post("/user-profiles")
 def create_profile(profile: CreateUserProfileRequest):
@@ -485,4 +499,7 @@ def get_conversion_flow(post_id: str):
         "qualification_question": row[3],
         "follow_up": row[4],
     }
+
+
+app.mount("/static", StaticFiles(directory=os.path.join(os.path.dirname(__file__), "static")), name="static")
 
