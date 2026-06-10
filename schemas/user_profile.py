@@ -3,21 +3,19 @@ from pydantic import BaseModel, ConfigDict
 
 class CreateUserProfileRequest(BaseModel):
     id: str
-    user_id: str
+    profile_name: str
     niche: str
     offer: str
     target_audience: str
     expertise: str
     tone: str
     goal: str
-    profile_name: str
 
     model_config = ConfigDict(
         json_schema_extra={
             "example": {
                 "id": "22222222-2222-2222-2222-222222222444",
-                "user_id": "11111111-1111-1111-1111-111111111111",
-                "profile_name": "AI Founder LinkedIn Profile",
+                "profile_name": "AI automation 1",
                 "niche": "AI automation for founders",
                 "offer": "AI marketing workflows and systems",
                 "target_audience": "early-stage founders struggling with marketing",
@@ -30,6 +28,7 @@ class CreateUserProfileRequest(BaseModel):
 
 
 class UpdateUserProfileRequest(BaseModel):
+    profile_name: str
     niche: str
     offer: str
     target_audience: str
@@ -40,6 +39,7 @@ class UpdateUserProfileRequest(BaseModel):
     model_config = ConfigDict(
         json_schema_extra={
             "example": {
+                "profile_name": "AI automation 1",
                 "niche": "AI automation for founders",
                 "offer": "AI marketing workflows and systems",
                 "target_audience": "early-stage founders struggling with marketing",
