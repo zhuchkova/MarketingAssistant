@@ -164,6 +164,26 @@ def create_profile(
     return {"status": "profile created + audience analyzed + ideas created"}
 
 
+@app.get("/users/me/profiles")
+def get_my_profiles(current_user: dict = Depends(get_current_user)):
+    conn = psycopg.connect(os.getenv("DATABASE_URL"))
+    try:
+        with conn.cursor() as cur:
+            cur.execute("""
+                SELECT id, profile_name, niche, goal
+                FROM user_profiles
+                WHERE user_id = %s
+                ORDER BY profile_name
+            """, (current_user["user_id"],))
+            rows = cur.fetchall()
+        return [
+            {"id": row[0], "profile_name": row[1], "niche": row[2], "goal": row[3]}
+            for row in rows
+        ]
+    finally:
+        conn.close()
+
+
 @app.get("/user-profiles/{profile_id}")
 def get_user_profile(
     profile_id: str,
