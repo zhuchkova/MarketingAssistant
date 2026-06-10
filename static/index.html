@@ -115,6 +115,54 @@
         .profile-pill:hover { border-color: var(--primary); color: var(--text-2); }
         .profile-pill-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--success); flex-shrink: 0; }
         .profile-pill-text { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .profile-pill-chevron { font-size: 10px; color: var(--text-4); margin-left: 2px; transition: transform 0.15s; flex-shrink: 0; }
+        .profile-pill.open .profile-pill-chevron { transform: rotate(180deg); }
+
+        /* ── PROFILE SWITCHER DROPDOWN ── */
+        .profile-switcher { position: relative; }
+        .profile-dropdown {
+            position: absolute;
+            top: calc(100% + 8px);
+            right: 0;
+            min-width: 240px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--r);
+            box-shadow: var(--shadow);
+            z-index: 300;
+            overflow: hidden;
+            display: none;
+        }
+        .profile-dropdown.open { display: block; animation: modal-pop 0.15s ease; }
+        .profile-dropdown-list { max-height: 280px; overflow-y: auto; }
+        .profile-dropdown-item {
+            display: flex; align-items: center; gap: 10px;
+            padding: 10px 14px; cursor: pointer;
+            transition: background 0.12s; border: none; width: 100%;
+            background: transparent; color: var(--text-2);
+            font-family: inherit; font-size: 13px; text-align: left;
+        }
+        .profile-dropdown-item:hover { background: var(--surface-2); }
+        .profile-dropdown-item.active-profile { color: var(--primary-light); background: var(--primary-glow); }
+        .profile-dropdown-item-info { flex: 1; min-width: 0; }
+        .profile-dropdown-item-name { font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .profile-dropdown-item-sub { font-size: 11px; color: var(--text-4); margin-top: 1px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .profile-dropdown-check { font-size: 12px; color: var(--primary-light); flex-shrink: 0; }
+        .profile-dropdown-footer { border-top: 1px solid var(--border); padding: 8px; }
+
+        /* ── LOAD PROFILE CARDS ── */
+        .load-card {
+            display: flex; align-items: center; justify-content: space-between; gap: 14px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--r-sm);
+            padding: 14px 16px;
+            margin-bottom: 10px;
+            transition: border-color 0.15s;
+        }
+        .load-card:hover { border-color: var(--primary); }
+        .load-card-name { font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 3px; }
+        .load-card-sub { font-size: 12px; color: var(--text-4); }
 
         .user-chip {
             display: flex; align-items: center; gap: 8px;
@@ -685,9 +733,18 @@
             <div class="user-avatar" id="hdr-user-avatar"></div>
             <span class="user-chip-email" id="hdr-user-email"></span>
         </div>
-        <div class="profile-pill" id="hdr-pill" style="display:none" onclick="copyProfileId()" title="Click to copy Profile ID">
-            <span class="profile-pill-dot"></span>
-            <span class="profile-pill-text" id="hdr-pill-text">Active Profile</span>
+        <div class="profile-switcher" id="profile-switcher" style="display:none">
+            <button class="profile-pill" id="hdr-pill" onclick="toggleProfileDropdown()" title="Switch profile">
+                <span class="profile-pill-dot"></span>
+                <span class="profile-pill-text" id="hdr-pill-text">Active Profile</span>
+                <span class="profile-pill-chevron">▾</span>
+            </button>
+            <div class="profile-dropdown" id="profile-dropdown">
+                <div class="profile-dropdown-list" id="profile-dropdown-list"></div>
+                <div class="profile-dropdown-footer">
+                    <button class="btn btn-ghost btn-sm btn-full" onclick="newProfile()">+ New Profile</button>
+                </div>
+            </div>
         </div>
         <button class="btn btn-ghost btn-sm" id="btn-logout" style="display:none" onclick="logout()">Sign Out</button>
     </div>
@@ -843,20 +900,15 @@
             <!-- LOAD FORM -->
             <div class="form-panel" id="panel-load">
                 <div class="form-section-head">
-                    <h2>Load your profile</h2>
-                    <p>Enter your Profile ID to continue where you left off.</p>
+                    <h2>Your Profiles</h2>
+                    <p>Select a profile to continue where you left off.</p>
                 </div>
 
-                <div class="form-group">
-                    <label>Profile ID</label>
-                    <input type="text" id="f-pid" placeholder="e.g. 22222222-2222-2222-2222-222222222222" />
-                </div>
-
-                <button class="btn btn-primary btn-lg btn-full" onclick="loadProfile()">Load Profile</button>
+                <div id="load-profiles-list"></div>
 
                 <p style="text-align:center; margin-top:16px; font-size:13px; color:var(--text-4)">
-                    No profile yet?
-                    <a href="#" onclick="switchSetupTab('new'); return false;" style="color:var(--primary-light)">Create one</a>
+                    Want a new one?
+                    <a href="#" onclick="switchSetupTab('new'); return false;" style="color:var(--primary-light)">Create profile</a>
                 </p>
             </div>
         </div>
@@ -1113,6 +1165,10 @@
             <div class="warn-banner">
                 ⚠️ Saving changes will regenerate your audience analysis and content ideas. Your existing posts will be deleted.
             </div>
+            <div class="form-group">
+                <label>Profile Name</label>
+                <input type="text" id="e-profile-name" />
+            </div>
             <div class="grid-2">
                 <div class="form-group">
                     <label>Niche</label>
@@ -1164,6 +1220,7 @@ const S = {
     audience:  null,
     ideas:     [],
     posts:     [],
+    profiles:  [],
     userEmail: null,
     genOpts:   { platform: 'linkedin', format: 'contrarian', goal: 'comment' },
     genIdeaIdx: null,
@@ -1187,6 +1244,8 @@ function clearToken()    { localStorage.removeItem(TOKEN_KEY); }
         S.userEmail = jwt.name || jwt.email || null;
     } catch { /* malformed token — will 401 on first API call */ }
     setUserChip(true);
+
+    await fetchUserProfiles();
 
     if (S.profileId) {
         showLoading('Loading your profile…', loadSteps('load'));
@@ -1279,6 +1338,7 @@ async function doRegister() {
 }
 
 async function afterAuth() {
+    await fetchUserProfiles();
     if (S.profileId) {
         showLoading('Loading your profile…', loadSteps('load'));
         try {
@@ -1303,6 +1363,7 @@ function logout() {
     S.profileId = null;
     S.profile   = null;
     S.userEmail = null;
+    S.profiles  = [];
     setUserChip(false);
     setHeaderNav(false);
     showSection('auth');
@@ -1338,12 +1399,13 @@ function setNavActive(id) {
 }
 
 function setHeaderNav(show) {
-    document.getElementById('hdr-divider').style.display  = show ? '' : 'none';
-    document.getElementById('hdr-nav').style.display      = show ? '' : 'none';
-    document.getElementById('hdr-pill').style.display     = show ? '' : 'none';
+    document.getElementById('hdr-divider').style.display       = show ? '' : 'none';
+    document.getElementById('hdr-nav').style.display           = show ? '' : 'none';
+    document.getElementById('profile-switcher').style.display  = show ? '' : 'none';
     if (show && S.profile) {
         document.getElementById('hdr-pill-text').textContent = S.profile.profile_name || S.profile.niche || 'Active Profile';
     }
+    if (!show) closeProfileDropdown();
 }
 
 function switchTab(paneId, btn) {
@@ -1361,6 +1423,7 @@ function switchSetupTab(tab) {
     document.getElementById('stab-load').classList.toggle('active', tab === 'load');
     document.getElementById('panel-new').classList.toggle('active', tab === 'new');
     document.getElementById('panel-load').classList.toggle('active', tab === 'load');
+    if (tab === 'load') renderLoadPanel();
 }
 
 async function createProfile() {
@@ -1393,7 +1456,7 @@ async function createProfile() {
         S.profileId = profileId;
         localStorage.setItem('ma_pid', profileId);
 
-        await fetchAllData(profileId);
+        await Promise.all([fetchAllData(profileId), fetchUserProfiles()]);
         renderDash();
         showSection('dash');
         setHeaderNav(true);
@@ -1405,18 +1468,40 @@ async function createProfile() {
     }
 }
 
-async function loadProfile() {
-    const id = val('f-pid');
-    if (!id) { toast('Please enter a Profile ID', 'error'); return; }
+function renderLoadPanel() {
+    const cont = document.getElementById('load-profiles-list');
+    if (!cont) return;
+    if (!S.profiles.length) {
+        cont.innerHTML = `
+            <div class="empty" style="padding:32px 16px">
+                <div class="empty-icon">📂</div>
+                <div class="empty-title">No profiles yet</div>
+                <div class="empty-desc">Create your first profile to get started</div>
+            </div>`;
+        return;
+    }
+    cont.innerHTML = S.profiles.map(p => `
+        <div class="load-card">
+            <div>
+                <div class="load-card-name">${esc(p.profile_name || p.niche)}</div>
+                <div class="load-card-sub">${esc(p.niche || '')}${p.goal ? ' · ' + esc(p.goal) : ''}</div>
+            </div>
+            <button class="btn btn-primary btn-sm" onclick="loadProfile('${p.id}')">Load →</button>
+        </div>`).join('');
+}
+
+async function loadProfile(profileId) {
+    if (!profileId) { toast('No profile selected', 'error'); return; }
 
     showLoading('Loading profile…', loadSteps('load'));
     try {
-        await fetchAllData(id);
-        S.profileId = id;
-        localStorage.setItem('ma_pid', id);
+        await fetchAllData(profileId);
+        S.profileId = profileId;
+        localStorage.setItem('ma_pid', profileId);
         renderDash();
         showSection('dash');
         setHeaderNav(true);
+        renderProfileDropdown();
         hideLoading();
         toast('Profile loaded ✓', 'success');
     } catch (e) {
@@ -1701,12 +1786,13 @@ function copyFlow() {
 function openEditModalFill() {
     const p = S.profile;
     if (!p) return;
-    document.getElementById('e-niche').value    = p.niche            || '';
-    document.getElementById('e-offer').value    = p.offer            || '';
-    document.getElementById('e-target').value   = p.target_audience  || '';
-    document.getElementById('e-expertise').value = p.expertise       || '';
-    document.getElementById('e-tone').value     = p.tone             || '';
-    document.getElementById('e-goal').value     = p.goal             || '';
+    document.getElementById('e-profile-name').value = p.profile_name    || '';
+    document.getElementById('e-niche').value         = p.niche           || '';
+    document.getElementById('e-offer').value         = p.offer           || '';
+    document.getElementById('e-target').value        = p.target_audience || '';
+    document.getElementById('e-expertise').value     = p.expertise       || '';
+    document.getElementById('e-tone').value          = p.tone            || '';
+    document.getElementById('e-goal').value          = p.goal            || '';
 }
 
 document.getElementById('modal-edit').addEventListener('transitionend', () => {});
@@ -1718,6 +1804,7 @@ new MutationObserver(() => {
 
 async function updateProfile() {
     const body = {
+        profile_name:    val('e-profile-name'),
         niche:           val('e-niche'),
         offer:           val('e-offer'),
         target_audience: val('e-target'),
@@ -1752,6 +1839,74 @@ async function deletePost(postId) {
     toast('Post deleted', 'success');
 }
 
+// ─── PROFILE SWITCHER ─────────────────────────────
+async function fetchUserProfiles() {
+    try {
+        const profiles = await api('GET', '/users/me/profiles');
+        S.profiles = Array.isArray(profiles) ? profiles : [];
+        renderProfileDropdown();
+        renderLoadPanel();
+    } catch {
+        S.profiles = [];
+    }
+}
+
+function renderProfileDropdown() {
+    const list = document.getElementById('profile-dropdown-list');
+    if (!list) return;
+    if (!S.profiles.length) {
+        list.innerHTML = '<div style="padding:12px 14px; font-size:13px; color:var(--text-4)">No profiles yet</div>';
+        return;
+    }
+    list.innerHTML = S.profiles.map(p => `
+        <button class="profile-dropdown-item ${p.id === S.profileId ? 'active-profile' : ''}" onclick="switchProfile('${p.id}')">
+            <div class="profile-dropdown-item-info">
+                <div class="profile-dropdown-item-name">${esc(p.profile_name || p.niche)}</div>
+                <div class="profile-dropdown-item-sub">${esc(p.niche || '')}${p.goal ? ' · ' + esc(p.goal) : ''}</div>
+            </div>
+            ${p.id === S.profileId ? '<span class="profile-dropdown-check">✓</span>' : ''}
+        </button>`).join('');
+}
+
+function toggleProfileDropdown() {
+    const dropdown = document.getElementById('profile-dropdown');
+    const pill = document.getElementById('hdr-pill');
+    const isOpen = dropdown.classList.contains('open');
+    dropdown.classList.toggle('open', !isOpen);
+    pill.classList.toggle('open', !isOpen);
+}
+
+function closeProfileDropdown() {
+    document.getElementById('profile-dropdown')?.classList.remove('open');
+    document.getElementById('hdr-pill')?.classList.remove('open');
+}
+
+async function switchProfile(profileId) {
+    if (profileId === S.profileId) { closeProfileDropdown(); return; }
+    closeProfileDropdown();
+    showLoading('Switching profile…', loadSteps('load'));
+    try {
+        await fetchAllData(profileId);
+        S.profileId = profileId;
+        localStorage.setItem('ma_pid', profileId);
+        renderDash();
+        showSection('dash');
+        setHeaderNav(true);
+        renderProfileDropdown();
+        hideLoading();
+        toast('Switched profile ✓', 'success');
+    } catch {
+        hideLoading();
+        toast('Failed to load profile', 'error');
+    }
+}
+
+function newProfile() {
+    closeProfileDropdown();
+    showSection('setup');
+    setHeaderNav(false);
+}
+
 // ─── COPY PROFILE ID ──────────────────────────────
 function copyProfileId() {
     if (S.profileId) copyTxt(S.profileId);
@@ -1775,8 +1930,14 @@ document.querySelectorAll('.backdrop').forEach(b => {
 
 document.addEventListener('keydown', e => {
     if (e.key === 'Escape') {
+        closeProfileDropdown();
         document.querySelectorAll('.backdrop.open').forEach(b => closeModal(b.id));
     }
+});
+
+document.addEventListener('click', e => {
+    const switcher = document.getElementById('profile-switcher');
+    if (switcher && !switcher.contains(e.target)) closeProfileDropdown();
 });
 
 // ─── LOADING OVERLAY ───────────────────────────────
