@@ -19,35 +19,40 @@ The system combines **LLMs, RAG (Retrieval-Augmented Generation), LangChain, Chr
 
 The goal is to provide highly relevant, engaging, and conversion-oriented content rather than generic AI-generated posts.
 
+Each user can manage multiple marketing profiles (for example: LinkedIn Personal Brand, AI Consulting Business, Fitness Coaching Brand), each with its own audience analysis, content ideas, posts, and conversion funnels.
+
 ---
 
 ## Architecture
 
 ```text
-User Profile
-      │
-      ▼
+User
+  │
+  ▼
+Marketing Profile
+  │
+  ▼
 Audience Agent
-      │
-      ▼
+  │
+  ▼
 Audience Analysis
-      │
-      ▼
+  │
+  ▼
 Idea Agent
-      │
-      ▼
+  │
+  ▼
 Content Ideas
-      │
-      ▼
+  │
+  ▼
 Content Agent
-      │
-      ▼
+  │
+  ▼
 Generated Posts
-      │
-      ▼
+  │
+  ▼
 Conversion Agent
-      │
-      ▼
+  │
+  ▼
 ManyChat Funnel
 ```
 
@@ -70,6 +75,7 @@ Analyzes a creator profile and generates:
 
 #### Input
 
+* Profile Name
 * Niche
 * Offer
 * Target Audience
@@ -209,6 +215,14 @@ Stores application data.
 ```text
 users
 user_profiles
+  ├── profile_name
+  ├── niche
+  ├── offer
+  ├── target_audience
+  ├── expertise
+  ├── tone
+  └── goal
+
 audience_analyses
 content_ideas
 posts
@@ -222,6 +236,24 @@ Stores marketing knowledge used by RAG agents.
 ---
 
 ## API Endpoints
+
+### Users
+
+#### Get All Users
+
+```http
+GET /users
+```
+
+#### Get User Profiles
+
+```http
+GET /users/{user_id}/profiles
+```
+
+Returns all marketing profiles belonging to a user.
+
+---
 
 ### Profiles
 
@@ -337,6 +369,7 @@ GET /posts/{post_id}/conversion
 {
   "id": "22222222-2222-2222-2222-222222222444",
   "user_id": "11111111-1111-1111-1111-111111111111",
+  "profile_name": "AI Founder LinkedIn Profile",
   "niche": "AI automation for founders",
   "offer": "AI marketing workflows and systems",
   "target_audience": "early-stage founders struggling with marketing",
@@ -385,6 +418,16 @@ GET /posts/{post_id}/conversion
 ## Current MVP Flow
 
 ```text
+GET /users
+        │
+        ▼
+Select User
+
+GET /users/{user_id}/profiles
+        │
+        ▼
+Select Marketing Profile
+
 POST /user-profiles
         │
         ▼
@@ -423,12 +466,16 @@ ManyChat Flow
 
 ## Future Improvements
 
+* User authentication and authorization
 * Real-time trend analysis
 * Multi-platform optimization
 * ManyChat API integration
 * Automated publishing
 * Agent orchestration with LangGraph
-* User authentication and permissions
 * Analytics and post performance tracking
 * A/B testing of hooks and CTAs
 * Content calendar generation
+* Scheduled content creation and publishing
+
+```
+```
