@@ -99,9 +99,9 @@ def create_profile(profile: CreateUserProfileRequest):
     with conn.cursor() as cur:
         cur.execute("""
             INSERT INTO user_profiles (
-                id, user_id, niche, offer, target_audience, expertise, tone, goal
+                id, user_id, niche, offer, target_audience, expertise, tone, goal, profile_name
             )
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
         """, (
             profile["id"],
             profile["user_id"],
@@ -110,7 +110,8 @@ def create_profile(profile: CreateUserProfileRequest):
             profile["target_audience"],
             profile["expertise"],
             profile["tone"],
-            profile["goal"]
+            profile["goal"],
+            profile["profile_name"]
         ))
 
     # trigger agent automatically
@@ -499,6 +500,63 @@ def get_conversion_flow(post_id: str):
         "qualification_question": row[3],
         "follow_up": row[4],
     }
+
+
+@app.get("/users")
+def get_users():
+    conn = psycopg.connect(os.getenv("DATABASE_URL"))
+
+    with conn.cursor() as cur:
+        cur.execute("""
+            SELECT id, name, email
+            FROM users
+            ORDER BY name
+        """)
+        rows = cur.fetchall()
+
+    conn.close()
+
+    return [
+        {
+            "id": row[0],
+            "name": row[1],
+            "email": row[2],
+        }
+        for row in rows
+    ]
+
+
+@app.get("/users/{user_id}/profiles")
+def get_profiles_for_user(user_id: str):
+    conn = psycopg.connect(os.getenv("DATABASE_URL"))
+
+    with conn.cursor() as cur:
+        cur.execute("""
+            SELECT
+                id,
+                profile_name,
+                niche,
+                target_audience,
+                goal
+            FROM user_profiles
+            WHERE user_id = %s
+            ORDER BY profile_name
+        """, (user_id,))
+
+        rows = cur.fetchall()
+
+    conn.close()
+
+    return [
+        {
+            "id": row[0],
+            "profile_name": row[1],
+            "niche": row[2],
+            "target_audience": row[3],
+            "goal": row[4],
+        }
+        for row in rows
+    ]
 
 
 app.mount("/static", StaticFiles(directory=os.path.join(os.path.dirname(__file__), "static")), name="static")
