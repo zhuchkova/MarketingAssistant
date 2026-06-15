@@ -19,7 +19,7 @@ The system combines **LLMs, RAG (Retrieval-Augmented Generation), LangChain, Chr
 
 The goal is to provide highly relevant, engaging, and conversion-oriented content rather than generic AI-generated posts.
 
-Each user can manage multiple marketing profiles (for example: LinkedIn Personal Brand, AI Consulting Business, Fitness Coaching Brand), each with its own audience analysis, content ideas, posts, and conversion funnels.
+Each signed-in user can manage multiple marketing profiles (for example: LinkedIn Personal Brand, AI Consulting Business, Fitness Coaching Brand), each with its own audience analysis, content ideas, posts, and conversion funnels.
 
 ---
 
@@ -27,6 +27,9 @@ Each user can manage multiple marketing profiles (for example: LinkedIn Personal
 
 ```text
 User
+  │
+  ▼
+Sign up / Sign in
   │
   ▼
 Marketing Profile
@@ -214,6 +217,10 @@ Stores application data.
 
 ```text
 users
+  ├── email
+  ├── name
+  └── hashed_password
+
 user_profiles
   ├── profile_name
   ├── niche
@@ -235,23 +242,137 @@ Stores marketing knowledge used by RAG agents.
 
 ---
 
+## Local Setup
+
+### 1. Create and activate a virtual environment
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+```
+
+### 2. Install dependencies
+
+```bash
+pip install -r requirements.txt
+```
+
+### 3. Create `.env`
+
+Create a `.env` file in the project root.
+
+```env
+DATABASE_URL=postgresql://user:password@localhost:5432/marketing_assistant
+JWT_SECRET_KEY=replace-with-a-long-random-secret
+OPENAI_API_KEY=sk-...
+```
+
+`DATABASE_URL` is required by FastAPI endpoints and `scripts/migrate.py`.
+
+`JWT_SECRET_KEY` signs login tokens. Do not use the default development fallback in production.
+
+`OPENAI_API_KEY` is required by the LangChain/OpenAI agents. The agents currently use `openai:gpt-4o-mini` through `init_chat_model`.
+
+### 4. Run database migrations
+
+```bash
+python scripts/migrate.py
+```
+
+This creates and updates the PostgreSQL schema, including user auth fields.
+
+### 5. Seed ChromaDB knowledge
+
+The project includes a checked-in `chroma_db` folder. If you need to rebuild local RAG data, run the seed scripts from the project root:
+
+```bash
+python scripts/seed_chroma_positioning.py
+python scripts/seed_chroma_idea.py
+python scripts/seed_chroma_content_frameworks.py
+python scripts/seed_chroma_cta_conversion.py
+python scripts/seed_chroma_manychat.py
+```
+
+To inspect the current Chroma collections:
+
+```bash
+python scripts/debug_chroma.py
+```
+
+`scripts/reset_chroma.py` currently deletes only the `positioning_knowledge` collection. If you want a full reset, delete `chroma_db` locally and rerun all seed scripts.
+
+### 6. Start the app
+
+```bash
+uvicorn main:app --reload
+```
+
+Then open:
+
+```text
+http://127.0.0.1:8000
+```
+
+---
+
 ## API Endpoints
+
+Most application endpoints require a JWT bearer token returned by `/auth/register` or `/auth/login`.
+
+```http
+Authorization: Bearer <token>
+```
+
+### Authentication
+
+#### Register
+
+```http
+POST /auth/register
+```
+
+Creates a user, stores a bcrypt password hash, and returns a JWT token.
+
+```json
+{
+  "email": "creator@example.com",
+  "password": "secure-password",
+  "name": "Creator Name"
+}
+```
+
+#### Login
+
+```http
+POST /auth/login
+```
+
+Validates the email and password, then returns a JWT token.
+
+```json
+{
+  "email": "creator@example.com",
+  "password": "secure-password"
+}
+```
+
+#### Sign Out
+
+There is no server-side logout endpoint because authentication uses stateless JWTs. The frontend signs the user out by deleting the saved token from browser storage and returning to the auth screen.
+
+Tokens expire after 7 days. To invalidate tokens immediately across devices, add server-side token revocation or shorter token lifetimes.
+
+---
 
 ### Users
 
-#### Get All Users
+#### Get My Profiles
 
 ```http
-GET /users
+GET /users/me/profiles
 ```
 
-#### Get User Profiles
-
-```http
-GET /users/{user_id}/profiles
-```
-
-Returns all marketing profiles belonging to a user.
+Returns all marketing profiles belonging to the signed-in user.
 
 ---
 
@@ -262,6 +383,8 @@ Returns all marketing profiles belonging to a user.
 ```http
 POST /user-profiles
 ```
+
+Creates a marketing profile for the signed-in user. The client no longer sends `user_id`; the backend reads it from the JWT.
 
 Triggers:
 
@@ -363,12 +486,60 @@ GET /posts/{post_id}/conversion
 
 ## Example Requests
 
+Examples below assume the app is running at `http://127.0.0.1:8000`.
+
+### Register Request
+
+```json
+{
+  "email": "creator@example.com",
+  "password": "secure-password",
+  "name": "Creator Name"
+}
+```
+
+### Register Response
+
+```json
+{
+  "token": "JWT_TOKEN",
+  "user_id": "11111111-1111-1111-1111-111111111111",
+  "email": "creator@example.com",
+  "name": "Creator Name"
+}
+```
+
+### Login Request
+
+```json
+{
+  "email": "creator@example.com",
+  "password": "secure-password"
+}
+```
+
+### Login Response
+
+```json
+{
+  "token": "JWT_TOKEN",
+  "user_id": "11111111-1111-1111-1111-111111111111",
+  "email": "creator@example.com",
+  "name": "Creator Name"
+}
+```
+
+### Authenticated Request Header
+
+```http
+Authorization: Bearer JWT_TOKEN
+```
+
 ### Create Profile
 
 ```json
 {
   "id": "22222222-2222-2222-2222-222222222444",
-  "user_id": "11111111-1111-1111-1111-111111111111",
   "profile_name": "AI Founder LinkedIn Profile",
   "niche": "AI automation for founders",
   "offer": "AI marketing workflows and systems",
@@ -377,6 +548,27 @@ GET /posts/{post_id}/conversion
   "tone": "bold, practical",
   "goal": "generate leads"
 }
+```
+
+### Create Profile Response
+
+```json
+{
+  "status": "profile created + audience analyzed + ideas created"
+}
+```
+
+### Get My Profiles Response
+
+```json
+[
+  {
+    "id": "22222222-2222-2222-2222-222222222444",
+    "profile_name": "AI Founder LinkedIn Profile",
+    "niche": "AI automation for founders",
+    "goal": "generate leads"
+  }
+]
 ```
 
 ### Generate Post
@@ -389,6 +581,59 @@ GET /posts/{post_id}/conversion
   "post_goal": "comment"
 }
 ```
+
+### Generate Post Response
+
+```json
+{
+  "status": "post generated",
+  "post_id": "33333333-3333-3333-3333-333333333333",
+  "post": {
+    "hook": "Most founders do not need more content ideas.",
+    "body": "They need a repeatable system for turning expertise into useful posts.",
+    "cta": "Comment SYSTEM and I will send you the workflow.",
+    "final_text": "Most founders do not need more content ideas.\n\nThey need a repeatable system for turning expertise into useful posts.\n\nComment SYSTEM and I will send you the workflow."
+  }
+}
+```
+
+### Generate Conversion Flow Response
+
+```json
+{
+  "status": "conversion flow created",
+  "flow_id": "44444444-4444-4444-4444-444444444444",
+  "post_id": "33333333-3333-3333-3333-333333333333",
+  "flow": {
+    "trigger_keyword": "SYSTEM",
+    "first_message": "Here is the workflow I mentioned.",
+    "qualification_question": "Are you building this for yourself or for clients?",
+    "follow_up": "Start with the simple version first, then automate the repeatable parts."
+  }
+}
+```
+
+---
+
+## Authorization and Security Notes
+
+Authentication uses JWT bearer tokens. `/auth/register` and `/auth/login` return a token, and protected endpoints require that token in the `Authorization` header.
+
+Passwords are hashed with bcrypt before storage. The app never returns password hashes from the API.
+
+Profile ownership is enforced on profile-level endpoints. A signed-in user can only load, update, list posts for, or read generated audience/content data for profiles owned by their user account.
+
+Post ownership is enforced through the post's parent marketing profile. A signed-in user cannot generate a post from another user's content idea, read another user's post, delete another user's post, or create/read conversion flows for another user's post.
+
+Sign out is client-side because JWTs are stateless. The frontend removes the saved token and profile id from browser storage. Tokens expire after 7 days.
+
+Production hardening still needed:
+
+* Replace wildcard CORS with the deployed frontend origin.
+* Use a strong `JWT_SECRET_KEY` from a secrets manager.
+* Consider refresh tokens or server-side token revocation.
+* Return consistent `404` / `403` responses for missing versus unauthorized resources.
+* Add automated tests for cross-user access control.
 
 ---
 
@@ -418,12 +663,21 @@ GET /posts/{post_id}/conversion
 ## Current MVP Flow
 
 ```text
-GET /users
+POST /auth/register
         │
         ▼
-Select User
+Create Account + Receive JWT
+        │
+        ▼
+POST /auth/login
+        │
+        ▼
+Sign In + Receive JWT
+        │
+        ▼
+Authenticated Requests
 
-GET /users/{user_id}/profiles
+GET /users/me/profiles
         │
         ▼
 Select Marketing Profile
@@ -466,7 +720,7 @@ ManyChat Flow
 
 ## Future Improvements
 
-* User authentication and authorization
+* Server-side token revocation or refresh tokens
 * Real-time trend analysis
 * Multi-platform optimization
 * ManyChat API integration
@@ -476,6 +730,3 @@ ManyChat Flow
 * A/B testing of hooks and CTAs
 * Content calendar generation
 * Scheduled content creation and publishing
-
-```
-```
