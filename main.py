@@ -66,6 +66,21 @@ def check_profile_owner(conn, profile_id: str, user_id: str):
         raise HTTPException(status_code=403, detail="Access denied")
 
 
+def check_post_owner(conn, post_id: str, user_id: str):
+    with conn.cursor() as cur:
+        cur.execute("""
+            SELECT up.user_id
+            FROM posts p
+            JOIN user_profiles up ON p.user_profile_id = up.id
+            WHERE p.id = %s
+        """, (post_id,))
+        row = cur.fetchone()
+    if not row:
+        raise HTTPException(status_code=404, detail="Post not found")
+    if str(row[0]) != user_id:
+        raise HTTPException(status_code=403, detail="Access denied")
+
+
 app = FastAPI()
 
 app.add_middleware(
@@ -367,34 +382,36 @@ def generate_post(
     request = request.model_dump()
 
     conn = psycopg.connect(os.getenv("DATABASE_URL"))
+    try:
+        context = get_content_generation_context(conn, request["content_idea_id"])
+        check_profile_owner(conn, context["user_profile_id"], current_user["user_id"])
+        platform_id   = get_lookup_id(conn, "platforms",    request["platform"])
+        post_format_id = get_lookup_id(conn, "post_formats", request["post_format"])
+        post_goal_id   = get_lookup_id(conn, "post_goals",   request["post_goal"])
 
-    context = get_content_generation_context(conn, request["content_idea_id"])
-    platform_id   = get_lookup_id(conn, "platforms",    request["platform"])
-    post_format_id = get_lookup_id(conn, "post_formats", request["post_format"])
-    post_goal_id   = get_lookup_id(conn, "post_goals",   request["post_goal"])
+        agent_input = {
+            **context,
+            "platform":    request["platform"],
+            "post_format": request["post_format"],
+            "post_goal":   request["post_goal"],
+        }
 
-    agent_input = {
-        **context,
-        "platform":    request["platform"],
-        "post_format": request["post_format"],
-        "post_goal":   request["post_goal"],
-    }
+        generated_post = run_content_agent(agent_input)
 
-    generated_post = run_content_agent(agent_input)
+        post_data = {
+            **context,
+            **generated_post,
+            "platform_id":    platform_id,
+            "post_format_id": post_format_id,
+            "post_goal_id":   post_goal_id,
+        }
 
-    post_data = {
-        **context,
-        **generated_post,
-        "platform_id":    platform_id,
-        "post_format_id": post_format_id,
-        "post_goal_id":   post_goal_id,
-    }
+        post_id = save_post(conn, post_data)
+        conn.commit()
 
-    post_id = save_post(conn, post_data)
-    conn.commit()
-    conn.close()
-
-    return {"status": "post generated", "post_id": post_id, "post": generated_post}
+        return {"status": "post generated", "post_id": post_id, "post": generated_post}
+    finally:
+        conn.close()
 
 
 @app.get("/posts/{post_id}")
@@ -403,23 +420,25 @@ def get_post(
     current_user: dict = Depends(get_current_user),
 ):
     conn = psycopg.connect(os.getenv("DATABASE_URL"))
+    try:
+        check_post_owner(conn, post_id, current_user["user_id"])
 
-    with conn.cursor() as cur:
-        cur.execute("""
-            SELECT
-                p.id, p.hook, p.body, p.cta, p.final_text,
-                pl.name AS platform,
-                pf.name AS post_format,
-                pg.name AS post_goal
-            FROM posts p
-            JOIN platforms pl ON p.platform_id = pl.id
-            LEFT JOIN post_formats pf ON p.post_format_id = pf.id
-            LEFT JOIN post_goals pg ON p.post_goal_id = pg.id
-            WHERE p.id = %s
-        """, (post_id,))
-        row = cur.fetchone()
-
-    conn.close()
+        with conn.cursor() as cur:
+            cur.execute("""
+                SELECT
+                    p.id, p.hook, p.body, p.cta, p.final_text,
+                    pl.name AS platform,
+                    pf.name AS post_format,
+                    pg.name AS post_goal
+                FROM posts p
+                JOIN platforms pl ON p.platform_id = pl.id
+                LEFT JOIN post_formats pf ON p.post_format_id = pf.id
+                LEFT JOIN post_goals pg ON p.post_goal_id = pg.id
+                WHERE p.id = %s
+            """, (post_id,))
+            row = cur.fetchone()
+    finally:
+        conn.close()
 
     if not row:
         return {"error": "Post not found"}
@@ -436,12 +455,15 @@ def delete_post(
     current_user: dict = Depends(get_current_user),
 ):
     conn = psycopg.connect(os.getenv("DATABASE_URL"))
+    try:
+        check_post_owner(conn, post_id, current_user["user_id"])
 
-    with conn.cursor() as cur:
-        cur.execute("DELETE FROM posts WHERE id = %s", (post_id,))
+        with conn.cursor() as cur:
+            cur.execute("DELETE FROM posts WHERE id = %s", (post_id,))
 
-    conn.commit()
-    conn.close()
+        conn.commit()
+    finally:
+        conn.close()
 
     return {"status": "deleted", "post_id": post_id}
 
@@ -454,6 +476,7 @@ def create_conversion_flow(
     conn = psycopg.connect(os.getenv("DATABASE_URL"))
 
     try:
+        check_post_owner(conn, post_id, current_user["user_id"])
         context = get_conversion_context(conn, post_id)
         flow = run_conversion_agent(context)
         flow_id = save_manychat_flow(conn, post_id, flow)
@@ -480,16 +503,18 @@ def get_conversion_flow(
     current_user: dict = Depends(get_current_user),
 ):
     conn = psycopg.connect(os.getenv("DATABASE_URL"))
+    try:
+        check_post_owner(conn, post_id, current_user["user_id"])
 
-    with conn.cursor() as cur:
-        cur.execute("""
-            SELECT id, trigger_keyword, first_message, qualification_question, follow_up
-            FROM manychat_flows
-            WHERE post_id = %s
-        """, (post_id,))
-        row = cur.fetchone()
-
-    conn.close()
+        with conn.cursor() as cur:
+            cur.execute("""
+                SELECT id, trigger_keyword, first_message, qualification_question, follow_up
+                FROM manychat_flows
+                WHERE post_id = %s
+            """, (post_id,))
+            row = cur.fetchone()
+    finally:
+        conn.close()
 
     if not row:
         return {"error": "Conversion flow not found"}
