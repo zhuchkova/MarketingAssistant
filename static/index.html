@@ -1455,7 +1455,7 @@ async function createProfile() {
         S.profileId = res.profile_id || profileId;
         localStorage.setItem('ma_pid', S.profileId);
 
-        await Promise.all([fetchAllData(profileId), fetchUserProfiles()]);
+        await Promise.all([fetchAllData(S.profileId), fetchUserProfiles()]);
         renderDash();
         showSection('dash');
         setHeaderNav(true);
