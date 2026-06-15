@@ -1,8 +1,25 @@
-from pydantic import BaseModel, ConfigDict
+from uuid import UUID
+from pydantic import BaseModel, ConfigDict, field_validator
+
+
+def clean_required_text(value: str) -> str:
+    value = value.strip()
+    if not value:
+        raise ValueError("This field is required")
+    return value
+
+
+def validate_uuid(value: str | None) -> str | None:
+    if value is None:
+        return None
+    try:
+        return str(UUID(str(value)))
+    except ValueError:
+        raise ValueError("ID must be a valid UUID")
 
 
 class CreateUserProfileRequest(BaseModel):
-    id: str
+    id: str | None = None
     profile_name: str
     niche: str
     offer: str
@@ -10,6 +27,24 @@ class CreateUserProfileRequest(BaseModel):
     expertise: str
     tone: str
     goal: str
+
+    @field_validator("id")
+    @classmethod
+    def validate_id(cls, value: str | None) -> str | None:
+        return validate_uuid(value)
+
+    @field_validator(
+        "profile_name",
+        "niche",
+        "offer",
+        "target_audience",
+        "expertise",
+        "tone",
+        "goal",
+    )
+    @classmethod
+    def validate_required_text(cls, value: str) -> str:
+        return clean_required_text(value)
 
     model_config = ConfigDict(
         json_schema_extra={
@@ -35,6 +70,19 @@ class UpdateUserProfileRequest(BaseModel):
     expertise: str
     tone: str
     goal: str
+
+    @field_validator(
+        "profile_name",
+        "niche",
+        "offer",
+        "target_audience",
+        "expertise",
+        "tone",
+        "goal",
+    )
+    @classmethod
+    def validate_required_text(cls, value: str) -> str:
+        return clean_required_text(value)
 
     model_config = ConfigDict(
         json_schema_extra={

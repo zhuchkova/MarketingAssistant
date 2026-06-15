@@ -12,6 +12,7 @@ from schemas.user_profile import CreateUserProfileRequest, UpdateUserProfileRequ
 from schemas.post_generation import GeneratePostRequest
 from schemas.auth import RegisterRequest, LoginRequest
 from auth import get_current_user, hash_password, verify_password, create_token
+from authorization import check_profile_owner, check_post_owner
 from agents.audience_agent import run_audience_agent
 from db.audience_repository import save_audience_analysis
 from agents.idea_agent import run_idea_agent
@@ -23,6 +24,14 @@ from db.content_repository import (get_content_generation_context,
 from agents.conversion_agent import run_conversion_agent
 from db.conversion_repository import (get_conversion_context,
     save_manychat_flow)
+
+
+def get_allowed_origins() -> list[str]:
+    origins = os.getenv(
+        "FRONTEND_ORIGINS",
+        "http://127.0.0.1:8000,http://localhost:8000,http://127.0.0.1:3000,http://localhost:3000",
+    )
+    return [origin.strip() for origin in origins.split(",") if origin.strip()]
 
 
 def handle_new_profile(conn, profile):
@@ -56,36 +65,11 @@ def regenerate_profile_outputs(conn, profile):
     )
 
 
-def check_profile_owner(conn, profile_id: str, user_id: str):
-    with conn.cursor() as cur:
-        cur.execute("SELECT user_id FROM user_profiles WHERE id = %s", (profile_id,))
-        row = cur.fetchone()
-    if not row:
-        raise HTTPException(status_code=404, detail="Profile not found")
-    if str(row[0]) != user_id:
-        raise HTTPException(status_code=403, detail="Access denied")
-
-
-def check_post_owner(conn, post_id: str, user_id: str):
-    with conn.cursor() as cur:
-        cur.execute("""
-            SELECT up.user_id
-            FROM posts p
-            JOIN user_profiles up ON p.user_profile_id = up.id
-            WHERE p.id = %s
-        """, (post_id,))
-        row = cur.fetchone()
-    if not row:
-        raise HTTPException(status_code=404, detail="Post not found")
-    if str(row[0]) != user_id:
-        raise HTTPException(status_code=403, detail="Access denied")
-
-
 app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=get_allowed_origins(),
     allow_methods=["*"],
     allow_headers=["*"],
 )
@@ -118,9 +102,12 @@ def register(request: RegisterRequest):
                 "INSERT INTO users (id, email, name, hashed_password) VALUES (%s, %s, %s, %s)",
                 (user_id, request.email, request.name, hashed),
             )
-        conn.commit()
         token = create_token(user_id, request.email, request.name)
+        conn.commit()
         return {"token": token, "user_id": user_id, "email": request.email, "name": request.name}
+    except Exception:
+        conn.rollback()
+        raise
     finally:
         conn.close()
 
@@ -152,31 +139,38 @@ def create_profile(
     current_user: dict = Depends(get_current_user),
 ):
     profile = profile.model_dump()
+    profile["id"] = profile.get("id") or str(uuid.uuid4())
     profile["user_id"] = current_user["user_id"]
 
     conn = psycopg.connect(os.getenv("DATABASE_URL"))
 
-    with conn.cursor() as cur:
-        cur.execute("""
-            INSERT INTO user_profiles (
-                id, user_id, profile_name, niche, offer, target_audience, expertise, tone, goal
-            )
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
-        """, (
-            profile["id"],
-            profile["user_id"],
-            profile["profile_name"],
-            profile["niche"],
-            profile["offer"],
-            profile["target_audience"],
-            profile["expertise"],
-            profile["tone"],
-            profile["goal"]
-        ))
+    try:
+        with conn.cursor() as cur:
+            cur.execute("""
+                INSERT INTO user_profiles (
+                    id, user_id, profile_name, niche, offer, target_audience, expertise, tone, goal
+                )
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+            """, (
+                profile["id"],
+                profile["user_id"],
+                profile["profile_name"],
+                profile["niche"],
+                profile["offer"],
+                profile["target_audience"],
+                profile["expertise"],
+                profile["tone"],
+                profile["goal"]
+            ))
 
-    handle_new_profile(conn, profile)
+        handle_new_profile(conn, profile)
 
-    return {"status": "profile created + audience analyzed + ideas created"}
+        return {"status": "profile created + audience analyzed + ideas created", "profile_id": profile["id"]}
+    except Exception:
+        conn.rollback()
+        raise
+    finally:
+        conn.close()
 
 
 @app.get("/users/me/profiles")
@@ -205,16 +199,16 @@ def get_user_profile(
     current_user: dict = Depends(get_current_user),
 ):
     conn = psycopg.connect(os.getenv("DATABASE_URL"))
-
-    with conn.cursor() as cur:
-        cur.execute("""
-            SELECT id, user_id, profile_name, niche, offer, target_audience, expertise, tone, goal
-            FROM user_profiles
-            WHERE id = %s
-        """, (profile_id,))
-        row = cur.fetchone()
-
-    conn.close()
+    try:
+        with conn.cursor() as cur:
+            cur.execute("""
+                SELECT id, user_id, profile_name, niche, offer, target_audience, expertise, tone, goal
+                FROM user_profiles
+                WHERE id = %s
+            """, (profile_id,))
+            row = cur.fetchone()
+    finally:
+        conn.close()
 
     if not row:
         return {"error": "Profile not found"}
@@ -240,18 +234,19 @@ def get_audience_analysis(
     current_user: dict = Depends(get_current_user),
 ):
     conn = psycopg.connect(os.getenv("DATABASE_URL"))
-    check_profile_owner(conn, profile_id, current_user["user_id"])
+    try:
+        check_profile_owner(conn, profile_id, current_user["user_id"])
 
-    with conn.cursor() as cur:
-        cur.execute("""
-            SELECT id, audience_profile, pains, desires, objections,
-                   content_angles, tone, positioning, known_for
-            FROM audience_analyses
-            WHERE user_profile_id = %s
-        """, (profile_id,))
-        row = cur.fetchone()
-
-    conn.close()
+        with conn.cursor() as cur:
+            cur.execute("""
+                SELECT id, audience_profile, pains, desires, objections,
+                       content_angles, tone, positioning, known_for
+                FROM audience_analyses
+                WHERE user_profile_id = %s
+            """, (profile_id,))
+            row = cur.fetchone()
+    finally:
+        conn.close()
 
     if not row:
         return {"error": "Audience analysis not found"}
@@ -275,17 +270,18 @@ def get_content_ideas(
     current_user: dict = Depends(get_current_user),
 ):
     conn = psycopg.connect(os.getenv("DATABASE_URL"))
-    check_profile_owner(conn, profile_id, current_user["user_id"])
+    try:
+        check_profile_owner(conn, profile_id, current_user["user_id"])
 
-    with conn.cursor() as cur:
-        cur.execute("""
-            SELECT id, title, hook, angle, topic
-            FROM content_ideas
-            WHERE user_profile_id = %s
-        """, (profile_id,))
-        rows = cur.fetchall()
-
-    conn.close()
+        with conn.cursor() as cur:
+            cur.execute("""
+                SELECT id, title, hook, angle, topic
+                FROM content_ideas
+                WHERE user_profile_id = %s
+            """, (profile_id,))
+            rows = cur.fetchall()
+    finally:
+        conn.close()
 
     return [
         {"id": row[0], "title": row[1], "hook": row[2], "angle": row[3], "topic": row[4]}
@@ -299,24 +295,25 @@ def get_posts_for_profile(
     current_user: dict = Depends(get_current_user),
 ):
     conn = psycopg.connect(os.getenv("DATABASE_URL"))
-    check_profile_owner(conn, profile_id, current_user["user_id"])
+    try:
+        check_profile_owner(conn, profile_id, current_user["user_id"])
 
-    with conn.cursor() as cur:
-        cur.execute("""
-            SELECT
-                p.id, p.hook, p.cta, p.final_text,
-                pl.name AS platform,
-                pf.name AS post_format,
-                pg.name AS post_goal
-            FROM posts p
-            JOIN platforms pl ON p.platform_id = pl.id
-            LEFT JOIN post_formats pf ON p.post_format_id = pf.id
-            LEFT JOIN post_goals pg ON p.post_goal_id = pg.id
-            WHERE p.user_profile_id = %s
-        """, (profile_id,))
-        rows = cur.fetchall()
-
-    conn.close()
+        with conn.cursor() as cur:
+            cur.execute("""
+                SELECT
+                    p.id, p.hook, p.cta, p.final_text,
+                    pl.name AS platform,
+                    pf.name AS post_format,
+                    pg.name AS post_goal
+                FROM posts p
+                JOIN platforms pl ON p.platform_id = pl.id
+                LEFT JOIN post_formats pf ON p.post_format_id = pf.id
+                LEFT JOIN post_goals pg ON p.post_goal_id = pg.id
+                WHERE p.user_profile_id = %s
+            """, (profile_id,))
+            rows = cur.fetchall()
+    finally:
+        conn.close()
 
     return [
         {

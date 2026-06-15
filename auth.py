@@ -5,7 +5,7 @@ from datetime import datetime, timedelta, timezone
 from fastapi import Depends, HTTPException
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 
-SECRET_KEY = os.getenv("JWT_SECRET_KEY", "change-this-secret-in-production")
+SECRET_KEY = os.getenv("JWT_SECRET_KEY")
 ALGORITHM = "HS256"
 TOKEN_EXPIRE_HOURS = 24 * 7  # 7 days
 
