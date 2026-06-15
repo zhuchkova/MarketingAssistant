@@ -2,14 +2,23 @@ import os
 import bcrypt
 import jwt
 from datetime import datetime, timedelta, timezone
+from dotenv import load_dotenv
 from fastapi import Depends, HTTPException
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+
+load_dotenv()
 
 SECRET_KEY = os.getenv("JWT_SECRET_KEY")
 ALGORITHM = "HS256"
 TOKEN_EXPIRE_HOURS = 24 * 7  # 7 days
 
 _bearer = HTTPBearer()
+
+
+def get_secret_key() -> str:
+    if not SECRET_KEY:
+        raise RuntimeError("JWT_SECRET_KEY is required")
+    return SECRET_KEY
 
 
 def hash_password(password: str) -> str:
@@ -27,15 +36,21 @@ def create_token(user_id: str, email: str, name: str = "") -> str:
         "name": name,
         "exp": datetime.now(timezone.utc) + timedelta(hours=TOKEN_EXPIRE_HOURS),
     }
-    return jwt.encode(payload, SECRET_KEY, algorithm=ALGORITHM)
+    return jwt.encode(payload, get_secret_key(), algorithm=ALGORITHM)
 
 
 def get_current_user(
     credentials: HTTPAuthorizationCredentials = Depends(_bearer),
 ) -> dict:
     try:
-        payload = jwt.decode(credentials.credentials, SECRET_KEY, algorithms=[ALGORITHM])
-        return {"user_id": payload["sub"], "email": payload["email"], "name": payload.get("name", "")}
+        payload = jwt.decode(credentials.credentials, get_secret_key(), algorithms=[ALGORITHM])
+        return {
+            "user_id": payload["sub"],
+            "email": payload["email"],
+            "name": payload.get("name", ""),
+        }
+    except RuntimeError:
+        raise HTTPException(status_code=500, detail="Authentication is not configured")
     except jwt.ExpiredSignatureError:
         raise HTTPException(status_code=401, detail="Token expired")
     except jwt.InvalidTokenError:
