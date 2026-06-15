@@ -265,13 +265,16 @@ Create a `.env` file in the project root.
 DATABASE_URL=postgresql://user:password@localhost:5432/marketing_assistant
 JWT_SECRET_KEY=replace-with-a-long-random-secret
 OPENAI_API_KEY=sk-...
+FRONTEND_ORIGINS=http://127.0.0.1:8000,http://localhost:8000
 ```
 
 `DATABASE_URL` is required by FastAPI endpoints and `scripts/migrate.py`.
 
-`JWT_SECRET_KEY` signs login tokens. Do not use the default development fallback in production.
+`JWT_SECRET_KEY` signs login tokens and is required. The API will reject token operations if this is missing.
 
 `OPENAI_API_KEY` is required by the LangChain/OpenAI agents. The agents currently use `openai:gpt-4o-mini` through `init_chat_model`.
+
+`FRONTEND_ORIGINS` is a comma-separated CORS allowlist. For production, set it to your deployed frontend URL.
 
 ### 4. Run database migrations
 
@@ -283,7 +286,7 @@ This creates and updates the PostgreSQL schema, including user auth fields.
 
 ### 5. Seed ChromaDB knowledge
 
-The project includes a checked-in `chroma_db` folder. If you need to rebuild local RAG data, run the seed scripts from the project root:
+To rebuild local RAG data, run the seed scripts from the project root:
 
 ```bash
 python scripts/seed_chroma_positioning.py
@@ -313,6 +316,12 @@ Then open:
 http://127.0.0.1:8000
 ```
 
+### 7. Run tests
+
+```bash
+python -m unittest discover -s tests
+```
+
 ---
 
 ## API Endpoints
@@ -332,6 +341,8 @@ POST /auth/register
 ```
 
 Creates a user, stores a bcrypt password hash, and returns a JWT token.
+
+Passwords must be at least 8 characters.
 
 ```json
 {
@@ -385,6 +396,7 @@ POST /user-profiles
 ```
 
 Creates a marketing profile for the signed-in user. The client no longer sends `user_id`; the backend reads it from the JWT.
+The backend can generate the profile ID automatically if the request does not include one.
 
 Triggers:
 
@@ -554,7 +566,8 @@ Authorization: Bearer JWT_TOKEN
 
 ```json
 {
-  "status": "profile created + audience analyzed + ideas created"
+  "status": "profile created + audience analyzed + ideas created",
+  "profile_id": "22222222-2222-2222-2222-222222222444"
 }
 ```
 
@@ -629,11 +642,11 @@ Sign out is client-side because JWTs are stateless. The frontend removes the sav
 
 Production hardening still needed:
 
-* Replace wildcard CORS with the deployed frontend origin.
+* Set `FRONTEND_ORIGINS` to the deployed frontend origin.
 * Use a strong `JWT_SECRET_KEY` from a secrets manager.
 * Consider refresh tokens or server-side token revocation.
 * Return consistent `404` / `403` responses for missing versus unauthorized resources.
-* Add automated tests for cross-user access control.
+* Expand automated tests around complete user flows.
 
 ---
 

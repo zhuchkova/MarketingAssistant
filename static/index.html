@@ -806,7 +806,7 @@
                     </div>
                     <div class="form-group">
                         <label>Password</label>
-                        <input type="password" id="r-pass" placeholder="Choose a password (min 6 chars)" autocomplete="new-password" />
+                        <input type="password" id="r-pass" placeholder="Choose a password (min 8 chars)" autocomplete="new-password" />
                     </div>
                     <div class="form-group">
                         <label>Confirm Password</label>
@@ -1314,8 +1314,7 @@ async function doRegister() {
     const pass2    = val('r-pass2');
     if (!name || !email || !password) { toast('Please fill in all fields', 'error'); return; }
     if (password !== pass2)  { toast('Passwords do not match', 'error'); return; }
-    if (password.length < 6) { toast('Password must be at least 6 characters', 'error'); return; }
-
+    if (password.length < 8) { toast('Password must be at least 8 characters', 'error'); return; }
     try {
         const res = await fetch(API + '/auth/register', {
             method: 'POST',
@@ -1453,8 +1452,8 @@ async function createProfile() {
         });
         if (res.error) throw new Error(res.error);
 
-        S.profileId = profileId;
-        localStorage.setItem('ma_pid', profileId);
+        S.profileId = res.profile_id || profileId;
+        localStorage.setItem('ma_pid', S.profileId);
 
         await Promise.all([fetchAllData(profileId), fetchUserProfiles()]);
         renderDash();
