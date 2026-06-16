@@ -21,6 +21,9 @@ def retrieve_content_frameworks(
     Pains: {audience_analysis.get("pains")}
     Desires: {audience_analysis.get("desires")}
     Objections: {audience_analysis.get("objections")}
+    Trigger moments: {audience_analysis.get("trigger_moments")}
+    Proof points: {audience_analysis.get("proof_points")}
+    Audience language: {audience_analysis.get("audience_language")}
     Content angles: {audience_analysis.get("content_angles")}
     Topic: {content_idea.get("topic")}
     Angle: {content_idea.get("angle")}

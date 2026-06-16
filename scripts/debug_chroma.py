@@ -31,7 +31,7 @@ data = collection.get(include=["metadatas"])
 print('Metadata:', data)
 
 results = collection.query(
-    query_texts=["AI automation for founders"],
+    query_texts=["Bar"],
     n_results=3
 )
 

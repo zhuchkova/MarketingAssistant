@@ -1,0 +1,74 @@
+[
+  {
+    "id": "positioning_formula_specific_transformation",
+    "document": "Positioning card: The strongest creator positioning names a specific audience, a specific painful moment, and a specific transformation. Weak: I help small businesses with marketing. Strong: I help local service owners turn quiet Instagram accounts into weekly inquiry channels without posting every day.",
+    "metadata": {
+      "type": "formula",
+      "agent": "audience_agent",
+      "topic": "specific_transformation"
+    }
+  },
+  {
+    "id": "positioning_known_for_one_problem",
+    "document": "Known-for card: Choose one recurring audience problem the creator can become associated with solving. A creator should be known for a repeatable point of view, not a menu of unrelated services.",
+    "metadata": {
+      "type": "principle",
+      "agent": "audience_agent",
+      "topic": "known_for"
+    }
+  },
+  {
+    "id": "positioning_voice_of_customer",
+    "document": "Audience analysis card: Use voice-of-customer language. Capture the exact words people use when describing pains, desired outcomes, failed alternatives, hidden fears, and moments of urgency. Posts become more relevant when they sound like the audience's inner monologue.",
+    "metadata": {
+      "type": "framework",
+      "agent": "audience_agent",
+      "topic": "voice_of_customer"
+    }
+  },
+  {
+    "id": "positioning_buyer_risk",
+    "document": "B2B buyer psychology card: For professional audiences, objections are often about risk, reputation, and defensibility. Content should reduce fear of making the wrong decision, not only promise a bigger upside.",
+    "metadata": {
+      "type": "principle",
+      "agent": "audience_agent",
+      "topic": "objections"
+    }
+  },
+  {
+    "id": "positioning_safe_to_choose",
+    "document": "Trust card: High-intent audiences need proof that a choice is safe. Useful content shows how the creator thinks, what tradeoffs they consider, what mistakes they prevent, and what results become easier to defend.",
+    "metadata": {
+      "type": "principle",
+      "agent": "audience_agent",
+      "topic": "trust"
+    }
+  },
+  {
+    "id": "positioning_pain_desire_objection_map",
+    "document": "Audience map: For each target audience, identify surface pain, deeper emotional pain, desired outcome, status desire, common objection, current workaround, and trigger event. This map should guide content ideas.",
+    "metadata": {
+      "type": "framework",
+      "agent": "audience_agent",
+      "topic": "audience_analysis"
+    }
+  },
+  {
+    "id": "positioning_category_of_one",
+    "document": "Differentiation card: If the niche is crowded, create a category-of-one by combining audience, method, belief, and constraint. Example: content strategy for introverted founders who want authority without daily personal oversharing.",
+    "metadata": {
+      "type": "principle",
+      "agent": "audience_agent",
+      "topic": "differentiation"
+    }
+  },
+  {
+    "id": "positioning_audience_stage",
+    "document": "Audience stage card: Problem-aware audiences need clarity and naming. Solution-aware audiences need comparison and criteria. Product-aware audiences need proof, risk reversal, and next steps.",
+    "metadata": {
+      "type": "framework",
+      "agent": "audience_agent",
+      "topic": "audience_stage"
+    }
+  }
+]

@@ -21,6 +21,9 @@ def retrieve_conversion_knowledge(context: dict, n_results: int = 4) -> dict:
     Audience pains: {context.get("pains")}
     Audience desires: {context.get("desires")}
     Audience objections: {context.get("objections")}
+    Trigger moments: {context.get("trigger_moments")}
+    Proof points: {context.get("proof_points")}
+    Audience language: {context.get("audience_language")}
 
     Post:
     Hook: {context.get("hook")}

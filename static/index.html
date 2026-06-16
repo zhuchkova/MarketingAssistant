@@ -495,8 +495,10 @@
             background: var(--surface);
             border: 1px solid var(--border);
             border-radius: var(--r);
-            overflow: hidden;
+            overflow: visible;
+            position: relative;
         }
+        .a-card:hover { z-index: 5; }
         .a-card-header {
             display: flex; align-items: center; gap: 10px;
             padding: 13px 16px;
@@ -511,7 +513,35 @@
             display: grid; place-items: center;
             font-size: 15px; flex-shrink: 0;
         }
-        .a-card-title { font-size: 15px; font-weight: 700; flex: 1; }
+        .a-card-title {
+            font-size: 15px; font-weight: 700; flex: 1;
+            position: relative;
+        }
+        .a-card-title[data-desc]::after {
+            content: attr(data-desc);
+            position: absolute;
+            left: 0;
+            top: calc(100% + 8px);
+            width: min(310px, 72vw);
+            padding: 9px 11px;
+            border-radius: var(--r-xs);
+            background: var(--text);
+            color: white;
+            font-size: 12px;
+            font-weight: 600;
+            line-height: 1.45;
+            opacity: 0;
+            pointer-events: none;
+            transform: translateY(-3px);
+            transition: opacity 0.15s, transform 0.15s;
+            z-index: 6;
+            box-shadow: var(--shadow);
+        }
+        .a-card-title[data-desc]:hover::after,
+        .a-card-title[data-desc]:focus::after {
+            opacity: 1;
+            transform: translateY(0);
+        }
         .a-chevron { color: var(--text-4); font-size: 16px; transition: transform 0.2s; }
         .a-card.open .a-chevron { transform: rotate(180deg); }
         .a-card-body {
@@ -912,6 +942,18 @@
     </symbol>
     <symbol id="icon-award" viewBox="0 0 24 24">
         <circle cx="12" cy="8" r="5"></circle><path d="m8.5 12.2-1.2 8 4.7-2.8 4.7 2.8-1.2-8"></path>
+    </symbol>
+    <symbol id="icon-click" viewBox="0 0 24 24">
+        <path d="M9 11V5.5a2 2 0 1 1 4 0V11"></path><path d="M13 10.5h1a2 2 0 0 1 2 2v.5h1a2 2 0 0 1 2 2v1.8a4.2 4.2 0 0 1-1.1 2.9L16 22h-5.4a4 4 0 0 1-3.2-1.6L4 16a1.7 1.7 0 0 1 2.5-2.3L9 16"></path><path d="M4 4l1.5 1.5"></path><path d="M2 9h2.2"></path><path d="M9 2v2"></path>
+    </symbol>
+    <symbol id="icon-handshake" viewBox="0 0 24 24">
+        <path fill="currentColor" stroke="none" d="M3.1 8.4 6 5.5a1.4 1.4 0 0 1 2 0l2.2 2.2-3.7 3.7L3.1 8.4Zm17.8 0-3.4 3-3.7-3.7L16 5.5a1.4 1.4 0 0 1 2 0l2.9 2.9ZM7.4 12.1l4.5-4.5a1.7 1.7 0 0 1 2.4 0l4.8 4.8a2 2 0 0 1 0 2.8l-3.2 3.2a2 2 0 0 1-2.8 0l-.4-.4.9-.9a1 1 0 0 0-1.4-1.4l-1.1 1.1a1.3 1.3 0 0 1-1.8 0l-.4-.4 1.2-1.2A1 1 0 1 0 8.7 14l-1 1a1.3 1.3 0 0 1-1.8 0l-.6-.6a1.6 1.6 0 0 1 0-2.3l.4-.4.9.9a2 2 0 0 0 2.8 0l1.4-1.4a1 1 0 1 0-1.4-1.4L8 11.2a.5.5 0 0 1-.6 0l-.7-.7.7-.7Z"></path>
+    </symbol>
+    <symbol id="icon-check-circle" viewBox="0 0 24 24">
+        <circle cx="12" cy="12" r="8.5"></circle><path d="m8.5 12.2 2.2 2.2 4.8-5"></path>
+    </symbol>
+    <symbol id="icon-talk" viewBox="0 0 24 24">
+        <path fill="currentColor" stroke="none" d="M7.7 11.7a3.6 3.6 0 1 0 0-7.2 3.6 3.6 0 0 0 0 7.2Zm0 1.6c-3.3 0-5.7 2.1-5.7 5v1.2c0 .6.4 1 1 1h9.4c.6 0 1-.4 1-1v-1.2c0-2.9-2.4-5-5.7-5Zm6.2-10.1h4.3a3.8 3.8 0 0 1 0 7.6h-1.3l-3 2.8c-.5.4-1.2.1-1.2-.6v-2.4a3.8 3.8 0 0 1 1.2-7.4Zm1.8 3.8a.8.8 0 1 0 0 1.6.8.8 0 0 0 0-1.6Zm2.6 0a.8.8 0 1 0 0 1.6.8.8 0 0 0 0-1.6Z"></path>
     </symbol>
     <symbol id="icon-briefcase" viewBox="0 0 24 24">
         <path d="M9 6V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v1"></path><rect x="3" y="6" width="18" height="14" rx="3"></rect><path d="M3 12h18"></path>
@@ -1951,21 +1993,24 @@ function renderAudience() {
     }
 
     const cards = [
-        { icon:'icon-user',    label:'Audience Profile', key:'audience_profile', col:'#337a36', bg:'#eef5dc', open:true  },
-        { icon:'icon-alert',   label:'Pain Points',      key:'pains',            col:'#aa6a22', bg:'#fff4df', open:true  },
-        { icon:'icon-heart',   label:'Desires',          key:'desires',          col:'#bf4259', bg:'#fde1eb', open:true  },
-        { icon:'icon-message', label:'Objections',       key:'objections',       col:'#4f7763', bg:'#f8fbf3', open:false },
-        { icon:'icon-target',  label:'Content Angles',   key:'content_angles',   col:'#337a36', bg:'#eef5dc', open:false },
-        { icon:'icon-star',    label:'Recommended Tone', key:'tone',             col:'#337a36', bg:'#eef5dc', open:false },
-        { icon:'icon-flag',    label:'Positioning',      key:'positioning',      col:'#4f7763', bg:'#f8fbf3', open:false },
-        { icon:'icon-award',   label:'Known For',        key:'known_for',        col:'#337a36', bg:'#eef5dc', open:false },
+        { icon:'icon-user',      label:'Audience Profile',  key:'audience_profile',  desc:'Detailed description of the target audience', col:'#337a36', bg:'#eef5dc', open:true  },
+        { icon:'icon-alert',     label:'Pain Points',       key:'pains',             desc:'Main pains and frustrations of the audience', col:'#aa6a22', bg:'#fff4df', open:true  },
+        { icon:'icon-heart',     label:'Desires',           key:'desires',           desc:'Main goals and desires of the audience', col:'#bf4259', bg:'#fde1eb', open:true  },
+        { icon:'icon-message',   label:'Objections',        key:'objections',        desc:'Reasons why the audience may hesitate to buy or engage', col:'#4f7763', bg:'#f8fbf3', open:false },
+        { icon:'icon-click',     label:'Trigger Moments',   key:'trigger_moments',   desc:'Situations or moments when the audience starts actively looking for help', col:'#4f7763', bg:'#f8fbf3', open:false },
+        { icon:'icon-check-circle', label:'Proof Points',  key:'proof_points',      desc:'Types of proof, examples, or evidence that would make the audience trust the creator', col:'#337a36', bg:'#eef5dc', open:false },
+        { icon:'icon-talk',      label:'Audience Language', key:'audience_language', desc:'Plain-language phrases the audience might use to describe their problems or desired outcomes', col:'#337a36', bg:'#eef5dc', open:false },
+        { icon:'icon-target',    label:'Content Angles',    key:'content_angles',    desc:'Strategic content angles for this audience', col:'#337a36', bg:'#eef5dc', open:false },
+        { icon:'icon-star',      label:'Recommended Tone',  key:'tone',              desc:'Recommended tone of voice', col:'#337a36', bg:'#eef5dc', open:false },
+        { icon:'icon-flag',      label:'Positioning',       key:'positioning',       desc:'Clear expert positioning statement', col:'#4f7763', bg:'#f8fbf3', open:false },
+        { icon:'icon-award',     label:'Known For',         key:'known_for',         desc:'What the creator should become known for', col:'#337a36', bg:'#eef5dc', open:false },
     ];
 
     grid.innerHTML = cards.map(c => `
         <div class="a-card ${c.open ? 'open' : ''}" onclick="this.classList.toggle('open')">
             <div class="a-card-header">
                 <div class="a-icon" style="background:${c.bg};color:${c.col}">${iconSvg(c.icon)}</div>
-                <span class="a-card-title">${c.label}</span>
+                <span class="a-card-title" data-desc="${esc(c.desc)}" tabindex="0">${c.label}</span>
                 <span class="a-chevron">▾</span>
             </div>
             <div class="a-card-body">${esc(a[c.key] || '—')}</div>

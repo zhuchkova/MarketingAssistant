@@ -1,0 +1,52 @@
+[
+  {
+    "id": "idea_hook_inner_monologue",
+    "document": "Hook pattern: Start with the audience's private thought. Example: You are not bad at content. You are trying to write for an audience you have not listened to closely enough.",
+    "metadata": {"type": "hook_pattern", "angle": "voice_of_customer", "agent": "idea_agent"}
+  },
+  {
+    "id": "idea_hook_false_problem",
+    "document": "Hook pattern: Name the false problem, then reveal the real one. Example: Your problem is not a lack of ideas. It is that every idea is disconnected from a real audience pain.",
+    "metadata": {"type": "hook_pattern", "angle": "contrarian", "agent": "idea_agent"}
+  },
+  {
+    "id": "idea_hook_cost_of_delay",
+    "document": "Hook pattern: Show the cost of waiting. Example: Every week you delay clarifying your offer, your audience learns to ignore your content.",
+    "metadata": {"type": "hook_pattern", "angle": "urgency", "agent": "idea_agent"}
+  },
+  {
+    "id": "idea_angle_objection_reversal",
+    "document": "Content angle: Turn a common objection into the post topic. If the audience thinks 'I do not have time,' write about the smallest useful version. If they think 'this will not work for my niche,' show niche-specific proof.",
+    "metadata": {"type": "content_angle", "angle": "objection", "agent": "idea_agent"}
+  },
+  {
+    "id": "idea_angle_moment_of_need",
+    "document": "Content angle: Build ideas around moments of need: before a launch, after a failed post, before a sales call, after a quiet week, when comparing tools, or when trying to explain value.",
+    "metadata": {"type": "content_angle", "angle": "situational", "agent": "idea_agent"}
+  },
+  {
+    "id": "idea_angle_specific_before_after",
+    "document": "Content angle: Before-after posts work best when the before state is emotionally recognizable and the after state is concrete. Avoid vague transformation; name what changes in behavior, confidence, speed, or results.",
+    "metadata": {"type": "content_angle", "angle": "before_after", "agent": "idea_agent"}
+  },
+  {
+    "id": "idea_angle_tiny_tutorial",
+    "document": "Content angle: A tiny tutorial should solve one narrow step, not teach the whole subject. Strong posts help the audience do one thing immediately and correctly.",
+    "metadata": {"type": "content_angle", "angle": "how_to", "agent": "idea_agent"}
+  },
+  {
+    "id": "idea_hook_specific_mistake",
+    "document": "Hook pattern: The mistake hook is strongest when it names a specific behavior. Example: The biggest mistake coaches make in their bio is describing their method before naming the result clients want.",
+    "metadata": {"type": "hook_pattern", "angle": "mistake", "agent": "idea_agent"}
+  },
+  {
+    "id": "idea_angle_belief_shift",
+    "document": "Content angle: High-engagement educational posts often create a belief shift: what the audience currently believes, why that belief is incomplete, and what better belief helps them act.",
+    "metadata": {"type": "content_angle", "angle": "belief_shift", "agent": "idea_agent"}
+  },
+  {
+    "id": "idea_hook_specificity_test",
+    "document": "Idea quality test: Replace broad words like marketing, strategy, content, growth, and value with concrete nouns from the audience's daily life. Specificity usually improves relevance and engagement.",
+    "metadata": {"type": "quality_rule", "angle": "specificity", "agent": "idea_agent"}
+  }
+]

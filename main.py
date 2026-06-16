@@ -240,6 +240,7 @@ def get_audience_analysis(
         with conn.cursor() as cur:
             cur.execute("""
                 SELECT id, audience_profile, pains, desires, objections,
+                       trigger_moments, proof_points, audience_language,
                        content_angles, tone, positioning, known_for
                 FROM audience_analyses
                 WHERE user_profile_id = %s
@@ -257,10 +258,13 @@ def get_audience_analysis(
         "pains": row[2],
         "desires": row[3],
         "objections": row[4],
-        "content_angles": row[5],
-        "tone": row[6],
-        "positioning": row[7],
-        "known_for": row[8],
+        "trigger_moments": row[5],
+        "proof_points": row[6],
+        "audience_language": row[7],
+        "content_angles": row[8],
+        "tone": row[9],
+        "positioning": row[10],
+        "known_for": row[11],
     }
 
 

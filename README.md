@@ -286,15 +286,19 @@ This creates and updates the PostgreSQL schema, including user auth fields.
 
 ### 5. Seed ChromaDB knowledge
 
-To rebuild local RAG data, run the seed scripts from the project root:
+RAG seed data lives in `rag_seed_data/` as editable JSON knowledge cards. To rebuild local RAG data, run the combined seed script from the project root:
 
 ```bash
-python scripts/seed_chroma_positioning.py
-python scripts/seed_chroma_idea.py
-python scripts/seed_chroma_content_frameworks.py
-python scripts/seed_chroma_cta_conversion.py
-python scripts/seed_chroma_manychat.py
+python scripts/seed_chroma_all.py
 ```
+
+The seed script uses `upsert`, so rerunning it updates existing cards with the same IDs. Add new cards to the matching file:
+
+* `positioning_knowledge/` for audience research, positioning, pains, desires, objections, and voice-of-customer patterns. This collection is split into smaller JSON files so editors can open them comfortably.
+* `idea_knowledge.json` for hook patterns, content angles, belief shifts, and audience-specific idea triggers.
+* `content_frameworks.json` for LinkedIn and Instagram post structures.
+* `cta_conversion_knowledge.json` for comment, DM, save, follow, and download CTA patterns.
+* `manychat_funnel_templates.json` for keyword flows, first messages, qualifying questions, and follow-ups.
 
 To inspect the current Chroma collections:
 
@@ -302,7 +306,7 @@ To inspect the current Chroma collections:
 python scripts/debug_chroma.py
 ```
 
-`scripts/reset_chroma.py` currently deletes only the `positioning_knowledge` collection. If you want a full reset, delete `chroma_db` locally and rerun all seed scripts.
+`scripts/reset_chroma.py` currently deletes only the `positioning_knowledge` collection. If you want a full reset, delete `chroma_db` locally and rerun `python scripts/seed_chroma_all.py`.
 
 ### 6. Start the app
 

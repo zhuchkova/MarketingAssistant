@@ -45,6 +45,9 @@ Audience analysis:
 - Pains: {pains}
 - Desires: {desires}
 - Objections: {objections}
+- Trigger moments: {trigger_moments}
+- Proof points: {proof_points}
+- Audience language: {audience_language}
 - Content angles: {content_angles}
 - Positioning: {positioning}
 - Known for: {known_for}
@@ -59,6 +62,7 @@ Rules:
 - Avoid generic marketing advice
 - Each idea needs a strong hook
 - Each idea should connect to one clear audience pain, desire, or objection
+- Use trigger moments and audience language to make hooks feel timely and specific
 """)
 
 

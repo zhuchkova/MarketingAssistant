@@ -40,6 +40,9 @@ Audience analysis:
 - Pains: {pains}
 - Desires: {desires}
 - Objections: {objections}
+- Trigger moments: {trigger_moments}
+- Proof points: {proof_points}
+- Audience language: {audience_language}
 - Positioning: {positioning}
 - Known for: {known_for}
 
