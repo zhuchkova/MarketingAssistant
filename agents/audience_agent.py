@@ -13,6 +13,9 @@ class AudienceAnalysis(BaseModel):
     pains: List[str] = Field(description="Main pains and frustrations of the audience")
     desires: List[str] = Field(description="Main goals and desires of the audience")
     objections: List[str] = Field(description="Reasons why the audience may hesitate to buy or engage")
+    trigger_moments: List[str] = Field(description="Situations or moments when the audience starts actively looking for help")
+    proof_points: List[str] = Field(description="Types of proof, examples, or evidence that would make the audience trust the creator")
+    audience_language: List[str] = Field(description="Plain-language phrases the audience might use to describe their problems or desired outcomes")
     content_angles: List[str] = Field(description="Strategic content angles for this audience")
     tone: str = Field(description="Recommended tone of voice")
     positioning: str = Field(description="Clear expert positioning statement")
@@ -41,6 +44,8 @@ Profile:
 
 Relevant positioning knowledge from RAG:
 {positioning_knowledge}
+
+Return trigger moments, proof points, and audience language as concrete, audience-specific lists.
 """)
 
 

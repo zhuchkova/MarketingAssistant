@@ -38,6 +38,9 @@ Audience analysis:
 - Pains: {pains}
 - Desires: {desires}
 - Objections: {objections}
+- Trigger moments: {trigger_moments}
+- Proof points: {proof_points}
+- Audience language: {audience_language}
 - Content angles: {content_angles}
 - Positioning: {positioning}
 - Known for: {known_for}
@@ -61,6 +64,7 @@ Rules:
 - Use the creator's tone
 - Start with a strong hook
 - Connect the post to the audience pain/desire
+- Use audience language and proof points to make the post concrete and credible
 - End with a CTA matching the post goal
 """)
 

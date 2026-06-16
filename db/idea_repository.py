@@ -17,6 +17,9 @@ def get_profile_with_audience_analysis(conn, profile_id: str) -> tuple[dict, dic
                 aa.pains,
                 aa.desires,
                 aa.objections,
+                aa.trigger_moments,
+                aa.proof_points,
+                aa.audience_language,
                 aa.content_angles,
                 aa.positioning,
                 aa.known_for
@@ -48,9 +51,12 @@ def get_profile_with_audience_analysis(conn, profile_id: str) -> tuple[dict, dic
             "pains": row[10],
             "desires": row[11],
             "objections": row[12],
-            "content_angles": row[13],
-            "positioning": row[14],
-            "known_for": row[15],
+            "trigger_moments": row[13],
+            "proof_points": row[14],
+            "audience_language": row[15],
+            "content_angles": row[16],
+            "positioning": row[17],
+            "known_for": row[18],
         }
 
         return profile, audience_analysis

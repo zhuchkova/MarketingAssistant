@@ -16,6 +16,9 @@ def retrieve_idea_knowledge(profile: dict, audience_analysis: dict, n_results: i
     Pains: {audience_analysis.get("pains")}
     Desires: {audience_analysis.get("desires")}
     Objections: {audience_analysis.get("objections")}
+    Trigger moments: {audience_analysis.get("trigger_moments")}
+    Proof points: {audience_analysis.get("proof_points")}
+    Audience language: {audience_analysis.get("audience_language")}
     Content angles: {audience_analysis.get("content_angles")}
     """
 
