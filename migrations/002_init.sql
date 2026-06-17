@@ -79,6 +79,8 @@ CREATE TABLE posts (
         REFERENCES post_formats(id),
     post_goal_id INT
         REFERENCES post_goals(id),
+    instagram_content_type TEXT,
+    post_length TEXT DEFAULT 'medium',
     hook TEXT,
     body TEXT,
     cta TEXT,

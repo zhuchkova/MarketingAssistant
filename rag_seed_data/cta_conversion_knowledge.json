@@ -1,42 +1,162 @@
 [
   {
-    "id": "cta_comment_keyword_resource",
-    "document": "CTA pattern: If the post teaches a process, ask users to comment a short keyword for the template, checklist, swipe file, or worksheet that helps them apply it.",
-    "metadata": {"type": "cta_pattern", "goal": "comment"}
+    "id": "cta_comment_blocker",
+    "document": "Comment CTA example: “Comment BLOCKER and tell me which part feels hardest right now.” Use when the post diagnoses a problem and you want useful replies.",
+    "metadata": {
+      "type": "cta_example",
+      "goal": "comment"
+    }
   },
   {
-    "id": "cta_dm_keyword_private_problem",
-    "document": "CTA pattern: Use DM keyword when the topic is personal, sensitive, or business-specific. Example: DM AUDIT and I will send the 5-question self-check.",
-    "metadata": {"type": "cta_pattern", "goal": "dm_keyword"}
+    "id": "cta_comment_keyword_template",
+    "document": "Comment CTA example: “Comment TEMPLATE and I’ll send you the version you can adapt.” Use after a practical framework or checklist.",
+    "metadata": {
+      "type": "cta_example",
+      "goal": "comment"
+    }
   },
   {
-    "id": "cta_save_later_checklist",
-    "document": "CTA pattern: Save this if the post is a checklist, tutorial, or decision criteria. The CTA should tell the reader when they will need it later.",
-    "metadata": {"type": "cta_pattern", "goal": "save"}
+    "id": "cta_comment_opinion",
+    "document": "Comment CTA example: “Do you agree, or have you seen the opposite? Tell me below.” Use for contrarian or discussion posts.",
+    "metadata": {
+      "type": "cta_example",
+      "goal": "comment"
+    }
   },
   {
-    "id": "cta_comment_challenge",
-    "document": "CTA pattern: For diagnostic posts, ask readers to comment their biggest blocker or current situation. This creates useful replies and gives the creator sales insight.",
-    "metadata": {"type": "cta_pattern", "goal": "comment"}
+    "id": "cta_dm_audit",
+    "document": "DM keyword CTA example: “DM AUDIT and I’ll send the 5-question self-check.” Use when the next step feels private.",
+    "metadata": {
+      "type": "cta_example",
+      "goal": "dm_keyword"
+    }
   },
   {
-    "id": "cta_download_lead_magnet",
-    "document": "CTA pattern: For download goals, the resource must match the post promise exactly. If the post promises better hooks, offer a hook checklist, not a broad marketing guide.",
-    "metadata": {"type": "principle", "goal": "download"}
+    "id": "cta_dm_plan",
+    "document": "DM keyword CTA example: “DM PLAN and I’ll send the simple starter plan.” Use when the post promises a sequence or roadmap.",
+    "metadata": {
+      "type": "cta_example",
+      "goal": "dm_keyword"
+    }
   },
   {
-    "id": "cta_low_friction",
-    "document": "Conversion principle: The CTA should feel like the obvious next small step, not a leap to a sales call. Match ask intensity to audience trust and post depth.",
-    "metadata": {"type": "principle", "goal": "conversion"}
+    "id": "cta_dm_keyword_sensitive",
+    "document": "DM keyword CTA example: “DM START if you want the private checklist.” Use for sensitive goals, money, health, confidence, or business problems.",
+    "metadata": {
+      "type": "cta_example",
+      "goal": "dm_keyword"
+    }
   },
   {
-    "id": "cta_keyword_rules",
-    "document": "Keyword rule: Choose a keyword that is short, easy to spell, emotionally connected to the promise, and unlikely to appear accidentally in normal comments.",
-    "metadata": {"type": "principle", "goal": "manychat"}
+    "id": "cta_save_decision",
+    "document": "Save CTA example: “Save this for the next time you’re comparing options.” Use for buyer criteria and decision posts.",
+    "metadata": {
+      "type": "cta_example",
+      "goal": "save"
+    }
   },
   {
-    "id": "cta_soft_offer",
-    "document": "Soft offer principle: After delivering value, invite the user to describe their situation before mentioning the paid offer. This keeps the flow helpful rather than pushy.",
-    "metadata": {"type": "principle", "goal": "conversion"}
+    "id": "cta_save_checklist",
+    "document": "Save CTA example: “Save this checklist before you try it yourself.” Use for step-by-step posts.",
+    "metadata": {
+      "type": "cta_example",
+      "goal": "save"
+    }
+  },
+  {
+    "id": "cta_save_revisit",
+    "document": "Save CTA example: “Save this and revisit it when you’re planning your next [specific moment].” Use with trigger moments.",
+    "metadata": {
+      "type": "cta_example",
+      "goal": "save"
+    }
+  },
+  {
+    "id": "cta_follow_series",
+    "document": "Follow CTA example: “Follow for one practical [niche] breakdown every week.” Use when the creator has a repeatable content promise.",
+    "metadata": {
+      "type": "cta_example",
+      "goal": "follow"
+    }
+  },
+  {
+    "id": "cta_follow_identity",
+    "document": "Follow CTA example: “Follow if you want [desired identity/outcome] without [painful tradeoff].” Use for positioning-heavy posts.",
+    "metadata": {
+      "type": "cta_example",
+      "goal": "follow"
+    }
+  },
+  {
+    "id": "cta_follow_next_part",
+    "document": "Follow CTA example: “Follow for part 2, where I’ll show the exact example.” Use when the post naturally opens a series.",
+    "metadata": {
+      "type": "cta_example",
+      "goal": "follow"
+    }
+  },
+  {
+    "id": "cta_download_resource",
+    "document": "Download CTA example: “Download the free [resource] if you want the full version.” Use when the resource directly matches the post promise.",
+    "metadata": {
+      "type": "cta_example",
+      "goal": "download"
+    }
+  },
+  {
+    "id": "cta_download_swipe",
+    "document": "Download CTA example: “Grab the swipe file/template so you don’t have to start from a blank page.” Use for templates, scripts, and examples.",
+    "metadata": {
+      "type": "cta_example",
+      "goal": "download"
+    }
+  },
+  {
+    "id": "cta_download_before_buy",
+    "document": "Download CTA example: “Use the guide first; if it helps, you’ll know what to ask for next.” Use for trust-building lead magnets.",
+    "metadata": {
+      "type": "cta_example",
+      "goal": "download"
+    }
+  },
+  {
+    "id": "cta_share_friend",
+    "document": "Share CTA example: “Send this to a friend who keeps saying [audience phrase].” Use when the hook names a common frustration.",
+    "metadata": {
+      "type": "cta_example",
+      "goal": "share"
+    }
+  },
+  {
+    "id": "cta_share_team",
+    "document": "Share CTA example: “Share this with the person who helps you make this decision.” Use for business, family, team, or partner decisions.",
+    "metadata": {
+      "type": "cta_example",
+      "goal": "share"
+    }
+  },
+  {
+    "id": "cta_book_visit_local",
+    "document": "Book/visit CTA example: “If you’re in [market], book a visit this week and we’ll help you choose the right option.” Use for local services.",
+    "metadata": {
+      "type": "cta_example",
+      "goal": "book_visit"
+    }
+  },
+  {
+    "id": "cta_buy_order_specific",
+    "document": "Buy/order CTA example: “Order the [specific offer] if you want [specific result] without [specific friction].” Use for productized offers.",
+    "metadata": {
+      "type": "cta_example",
+      "goal": "buy_order"
+    }
+  },
+  {
+    "id": "cta_goal_match_rule",
+    "document": "CTA matching rule: comment creates conversation, DM keyword starts a private flow, save supports utility, follow supports repeated value, download captures leads, share spreads relatability, book/visit fits local intent, buy/order fits high purchase intent.",
+    "metadata": {
+      "type": "principle",
+      "goal": "conversion"
+    }
   }
 ]

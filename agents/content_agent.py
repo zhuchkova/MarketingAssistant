@@ -63,13 +63,23 @@ Relevant content frameworks from RAG:
 
 Post requirements:
 - Platform: {platform}
+- Instagram content type: {instagram_content_type}
 - Post format: {post_format}
 - Goal / CTA type: {post_goal}
+- Length: {post_length}
 
 Rules:
 - Make it specific, not generic
 - Use the creator's tone
 - Start with a strong hook
+- Respect the requested length:
+  - short = one compact idea, no extra sections
+  - medium = default useful depth, 2-3 main points
+  - long = deeper story/proof/teaching with more nuance
+- If platform is Instagram, follow the requested content type:
+  - carousel = write as slide-by-slide copy
+  - story = write as a sequence of story frames
+  - reel = write a short spoken/overlay script plus caption CTA
 - Connect the post to the audience pain/desire
 - Use audience language and proof points to make the post concrete and credible
 - Use market context for currency, local examples, nearby alternatives, and whether the CTA should feel local or online
@@ -89,6 +99,9 @@ def run_content_agent(data: dict) -> dict:
             "angle": data.get("idea_angle"),
             "hook": data.get("idea_hook"),
             "post_format": data.get("idea_post_format"),
+            "platform": data.get("platform"),
+            "instagram_content_type": data.get("instagram_content_type"),
+            "post_length": data.get("post_length"),
         }
     )
 

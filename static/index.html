@@ -1487,6 +1487,15 @@
                 </div>
             </div>
 
+            <div class="form-group" id="instagram-type-group">
+                <label for="instagram-content-type">Instagram Type</label>
+                <select id="instagram-content-type" onchange="pickInstagramType(this.value)">
+                    <option value="carousel">Carousel</option>
+                    <option value="story">Story</option>
+                    <option value="reel">Reel</option>
+                </select>
+            </div>
+
             <div class="form-group">
                 <label>Post Goal</label>
                 <div class="option-grid">
@@ -1513,6 +1522,21 @@
                     </button>
                     <button class="opt-btn" data-group="goal" data-val="buy_order" onclick="pickOpt(this)">
                         <svg class="opt-icon"><use href="#icon-briefcase"></use></svg>Buy / Order
+                    </button>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Length</label>
+                <div class="option-grid">
+                    <button class="opt-btn" data-group="post_length" data-val="short" onclick="pickOpt(this)">
+                        <svg class="opt-icon"><use href="#icon-bolt"></use></svg>Short
+                    </button>
+                    <button class="opt-btn sel" data-group="post_length" data-val="medium" onclick="pickOpt(this)">
+                        <svg class="opt-icon"><use href="#icon-list"></use></svg>Medium
+                    </button>
+                    <button class="opt-btn" data-group="post_length" data-val="long" onclick="pickOpt(this)">
+                        <svg class="opt-icon"><use href="#icon-book"></use></svg>Long
                     </button>
                 </div>
             </div>
@@ -1790,7 +1814,7 @@ const S = {
     posts:     [],
     profiles:  [],
     userEmail: null,
-    genOpts:   { platform: 'instagram', goal: 'comment' },
+    genOpts:   { platform: 'instagram', instagram_content_type: 'carousel', goal: 'comment', post_length: 'medium' },
     genIdeaIdx: null,
     genPostId:  null,
     genPost:    null,
@@ -2417,6 +2441,8 @@ function renderPosts() {
         <div class="post-row" id="pr-${p.id}">
             <div class="post-row-meta">
                 <span class="tag tag-platform">${esc(p.platform||'')}</span>
+                ${p.instagram_content_type ? `<span class="tag tag-format">${esc(p.instagram_content_type)}</span>` : ''}
+                ${p.post_length ? `<span class="tag tag-format">${esc(p.post_length)}</span>` : ''}
                 <span class="tag tag-format">${esc(p.post_format||'')}</span>
                 <span class="tag tag-goal">${esc(p.post_goal||'')}</span>
             </div>
@@ -2446,14 +2472,18 @@ function openGenModal(idx) {
     document.getElementById('gen-result').style.display = 'none';
 
     // Reset options to defaults
-    S.genOpts = { platform: 'instagram', goal: 'comment' };
+    S.genOpts = { platform: 'instagram', instagram_content_type: 'carousel', goal: 'comment', post_length: 'medium' };
     document.querySelectorAll('#modal-generate .opt-btn').forEach(b => {
         const isDefault = (
             (b.dataset.group === 'platform' && b.dataset.val === 'instagram') ||
-            (b.dataset.group === 'goal'     && b.dataset.val === 'comment')
+            (b.dataset.group === 'goal' && b.dataset.val === 'comment') ||
+            (b.dataset.group === 'post_length' && b.dataset.val === 'medium')
         );
         b.classList.toggle('sel', isDefault);
     });
+    const instagramType = document.getElementById('instagram-content-type');
+    if (instagramType) instagramType.value = 'carousel';
+    updateInstagramTypeVisibility();
 
     const btn = document.getElementById('btn-gen');
     btn.textContent = 'Draft Post';
@@ -2468,6 +2498,21 @@ function pickOpt(el) {
     document.querySelectorAll(`#modal-generate .opt-btn[data-group="${group}"]`).forEach(b => b.classList.remove('sel'));
     el.classList.add('sel');
     S.genOpts[group] = val;
+    if (group === 'platform') updateInstagramTypeVisibility();
+}
+
+function pickInstagramType(value) {
+    S.genOpts.instagram_content_type = value;
+}
+
+function updateInstagramTypeVisibility() {
+    const group = document.getElementById('instagram-type-group');
+    if (!group) return;
+    const isInstagram = S.genOpts.platform === 'instagram';
+    group.style.display = isInstagram ? '' : 'none';
+    if (isInstagram && !S.genOpts.instagram_content_type) {
+        S.genOpts.instagram_content_type = 'carousel';
+    }
 }
 
 async function generatePost() {
@@ -2482,6 +2527,8 @@ async function generatePost() {
             content_idea_id: idea.id,
             platform:    S.genOpts.platform,
             post_goal:   S.genOpts.goal,
+            instagram_content_type: S.genOpts.platform === 'instagram' ? S.genOpts.instagram_content_type : null,
+            post_length: S.genOpts.post_length,
         });
 
         S.genPost   = data.post;
@@ -2522,6 +2569,8 @@ async function openDetailModal(postId) {
 
     document.getElementById('detail-meta').innerHTML = `
         <span class="tag tag-platform">${esc(p.platform||'')}</span>
+        ${p.instagram_content_type ? `<span class="tag tag-format">${esc(p.instagram_content_type)}</span>` : ''}
+        ${p.post_length ? `<span class="tag tag-format">${esc(p.post_length)}</span>` : ''}
         <span class="tag tag-format">${esc(p.post_format||'')}</span>
         <span class="tag tag-goal">${esc(p.post_goal||'')}</span>`;
 

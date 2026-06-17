@@ -1,8 +1,11 @@
 from uuid import UUID
+from typing import Optional
 from pydantic import BaseModel, ConfigDict, field_validator
 
 
 ALLOWED_PLATFORMS = {"instagram", "linkedin"}
+ALLOWED_INSTAGRAM_CONTENT_TYPES = {"carousel", "story", "reel"}
+ALLOWED_POST_LENGTHS = {"short", "medium", "long"}
 ALLOWED_POST_GOALS = {
     "comment",
     "dm_keyword",
@@ -19,6 +22,8 @@ class GeneratePostRequest(BaseModel):
     content_idea_id: str
     platform: str
     post_goal: str
+    instagram_content_type: Optional[str] = None
+    post_length: str = "medium"
 
     @field_validator("content_idea_id")
     @classmethod
@@ -44,12 +49,36 @@ class GeneratePostRequest(BaseModel):
             raise ValueError(f"post_goal must be one of: {', '.join(sorted(ALLOWED_POST_GOALS))}")
         return value
 
+    @field_validator("instagram_content_type")
+    @classmethod
+    def validate_instagram_content_type(cls, value: Optional[str]) -> Optional[str]:
+        if value is None or str(value).strip() == "":
+            return None
+
+        value = value.strip().lower()
+        if value not in ALLOWED_INSTAGRAM_CONTENT_TYPES:
+            raise ValueError(
+                "instagram_content_type must be one of: "
+                f"{', '.join(sorted(ALLOWED_INSTAGRAM_CONTENT_TYPES))}"
+            )
+        return value
+
+    @field_validator("post_length")
+    @classmethod
+    def validate_post_length(cls, value: str) -> str:
+        value = value.strip().lower()
+        if value not in ALLOWED_POST_LENGTHS:
+            raise ValueError(f"post_length must be one of: {', '.join(sorted(ALLOWED_POST_LENGTHS))}")
+        return value
+
     model_config = ConfigDict(
         json_schema_extra={
             "example": {
                 "content_idea_id": "CONTENT_IDEA_UUID",
-                "platform": "linkedin",
-                "post_goal": "comment"
+                "platform": "instagram",
+                "instagram_content_type": "carousel",
+                "post_goal": "comment",
+                "post_length": "medium"
             }
         }
     )
