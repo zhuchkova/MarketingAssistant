@@ -31,6 +31,10 @@ Creator profile:
 - Target audience: {target_audience}
 - Expertise: {expertise}
 - Personal touch: {personal_touch}
+- Market scope: {market_scope}
+- Primary market: {primary_market}
+- Currency: {currency}
+- Locale notes: {locale_notes}
 - Tone: {tone}
 - Goal: {goal}
 
@@ -42,6 +46,7 @@ Audience analysis:
 - Trigger moments: {trigger_moments}
 - Proof points: {proof_points}
 - Audience language: {audience_language}
+- Market context: {market_context}
 - Content angles: {content_angles}
 - Positioning: {positioning}
 - Known for: {known_for}
@@ -49,7 +54,8 @@ Audience analysis:
 Selected content idea:
 - Title: {idea_title}
 - Hook idea: {idea_hook}
-- Angle: {idea_angle}
+- Post format: {idea_post_format}
+- Idea framing: {idea_angle}
 - Topic: {idea_topic}
 
 Relevant content frameworks from RAG:
@@ -57,7 +63,7 @@ Relevant content frameworks from RAG:
 
 Post requirements:
 - Platform: {platform}
-- Format: {post_format}
+- Post format: {post_format}
 - Goal / CTA type: {post_goal}
 
 Rules:
@@ -66,7 +72,9 @@ Rules:
 - Start with a strong hook
 - Connect the post to the audience pain/desire
 - Use audience language and proof points to make the post concrete and credible
+- Use market context for currency, local examples, nearby alternatives, and whether the CTA should feel local or online
 - Weave in the creator's personal touch only when it strengthens trust, relatability, or story
+- Follow the selected idea's post format. Do not change a personal story into a list or a mistakes post into a generic how-to.
 - End with a CTA matching the post goal
 """)
 
@@ -80,6 +88,7 @@ def run_content_agent(data: dict) -> dict:
             "topic": data.get("idea_topic"),
             "angle": data.get("idea_angle"),
             "hook": data.get("idea_hook"),
+            "post_format": data.get("idea_post_format"),
         }
     )
 

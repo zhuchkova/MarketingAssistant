@@ -104,8 +104,15 @@ Generates content ideas based on:
 
 * Title
 * Hook
-* Angle
+* Idea framing
 * Topic
+* Post format, such as personal story, mistakes, day in the life, contrarian, how-to, checklist, myth busting, or client example
+
+#### Idea field definitions
+
+* `post_format` is the structure of the post. It must match one of the approved `post_formats` lookup values.
+* `angle` is stored as the idea framing: the specific point of view or strategic framing for the idea.
+* `topic` is the subject the post is about.
 
 ---
 
@@ -228,11 +235,32 @@ user_profiles
   ├── target_audience
   ├── expertise
   ├── personal_touch
+  ├── market_scope
+  ├── primary_market
+  ├── currency
+  ├── locale_notes
   ├── tone
   └── goal
 
 audience_analyses
+  ├── audience_profile
+  ├── pains
+  ├── desires
+  ├── objections
+  ├── trigger_moments
+  ├── proof_points
+  ├── audience_language
+  ├── market_context
+  ├── content_angles
+  ├── tone
+  ├── positioning
+  └── known_for
 content_ideas
+  ├── title
+  ├── hook
+  ├── angle
+  ├── topic
+  └── post_format
 posts
 manychat_flows
 ```
@@ -563,6 +591,10 @@ Authorization: Bearer JWT_TOKEN
   "target_audience": "early-stage founders struggling with marketing",
   "expertise": "ML engineer building AI agents",
   "personal_touch": "I used to build these workflows manually before automating them.",
+  "market_scope": "global",
+  "primary_market": "English-speaking founders online",
+  "currency": "USD",
+  "locale_notes": "Write in English. Use global SaaS examples and avoid city-specific references unless provided.",
   "tone": "bold, practical",
   "goal": "generate leads"
 }
@@ -592,12 +624,14 @@ Authorization: Bearer JWT_TOKEN
 
 ### Generate Post
 
+Post format is inferred from the selected content idea's `post_format`.
+Allowed `post_goal` values are `comment`, `dm_keyword`, `follow`, `download`, `share`, `save`, `book_visit`, and `buy_order`.
+
 ```json
 {
   "content_idea_id": "CONTENT_IDEA_UUID",
   "platform": "linkedin",
-  "post_format": "contrarian",
-  "post_goal": "comment"
+  "post_goal": "share"
 }
 ```
 

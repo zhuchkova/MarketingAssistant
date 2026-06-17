@@ -1,13 +1,5 @@
 [
   {
-    "id": "idea_post_format_taxonomy",
-    "document": "Idea taxonomy rule: post_format is the structure of the post and must use one approved label: personal_story, mistakes, day_in_life, contrarian, how_to, checklist, myth_busting, client_example, behind_scenes, or objection_handling. angle is the specific point of view or strategic framing. topic is the subject. Do not invent post_format labels such as artisanal focus, community engagement, audience interaction, educational, or brand story.",
-    "metadata": {
-      "type": "taxonomy_rule",
-      "agent": "idea_agent"
-    }
-  },
-  {
     "id": "idea_hook_inner_monologue",
     "document": "Hook pattern: Start with the audience's private thought. Example: You are not bad at content. You are trying to write for an audience you have not listened to closely enough.",
     "metadata": {

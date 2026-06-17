@@ -574,8 +574,11 @@
         /* Content Ideas */
         .ideas-toolbar {
             display: flex; align-items: center; justify-content: space-between;
+            gap: 14px;
             margin-bottom: 20px;
         }
+        .ideas-toolbar-left { min-width: 0; }
+        .ideas-toolbar-right { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
         .ideas-toolbar h3 { font-size: 20px; font-weight: 700; }
         .ideas-toolbar p { font-size: 15px; color: var(--text-3); margin-top: 2px; }
         .count-pill {
@@ -598,6 +601,9 @@
             cursor: pointer;
             transition: all 0.18s;
             position: relative; overflow: hidden;
+            min-height: 252px;
+            display: flex;
+            flex-direction: column;
         }
         .idea-card:hover { border-color: var(--primary); transform: translateY(-2px); box-shadow: var(--shadow); }
         .idea-card.idea-green {
@@ -624,11 +630,38 @@
             padding: 2px 7px; border-radius: 4px; margin-bottom: 9px;
         }
         .idea-title { font-size: 17px; font-weight: 700; line-height: 1.35; margin-bottom: 7px; }
-        .idea-hook { font-size: 15px; color: var(--text-3); line-height: 1.65; margin-bottom: 12px; }
-        .idea-foot { display: flex; align-items: center; justify-content: space-between; }
+        .idea-hook {
+            font-size: 15px; color: var(--text-3); line-height: 1.65;
+            margin-bottom: 12px;
+            flex: 1;
+        }
+        .idea-foot {
+            display: flex; align-items: center; justify-content: space-between;
+            min-height: 22px;
+            margin-top: auto;
+        }
         .idea-angle { font-size: 11px; color: var(--text-4); text-transform: uppercase; letter-spacing: 0.04em; }
         .idea-cta-hint { font-size: 12px; font-weight: 600; color: var(--primary-light); opacity: 0; transition: opacity 0.15s; }
         .idea-card:hover .idea-cta-hint { opacity: 1; }
+        .idea-card-actions {
+            display: flex;
+            gap: 6px;
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid rgba(67,116,61,0.12);
+        }
+        .idea-card-actions .btn { flex: 1; justify-content: center; }
+        .idea-filter-control { display: flex; align-items: center; gap: 8px; }
+        .idea-filter-control label {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--text-3);
+        }
+        .idea-filter-control select {
+            min-width: 180px;
+            padding: 8px 32px 8px 11px;
+            font-size: 14px;
+        }
 
         /* Posts tab */
         .posts-list { display: flex; flex-direction: column; gap: 12px; }
@@ -988,6 +1021,12 @@
     <symbol id="icon-users" viewBox="0 0 24 24">
         <path d="M16 21a6 6 0 0 0-12 0"></path><circle cx="10" cy="8" r="4"></circle><path d="M22 21a5 5 0 0 0-5-5"></path><path d="M17 4a3 3 0 0 1 0 6"></path>
     </symbol>
+    <symbol id="icon-share" viewBox="0 0 24 24">
+        <path d="M21 3 10 14"></path><path d="m21 3-7 18-4-7-7-4z"></path>
+    </symbol>
+    <symbol id="icon-globe" viewBox="0 0 24 24">
+        <circle cx="12" cy="12" r="9"></circle><path d="M3 12h18"></path><path d="M12 3a14 14 0 0 1 0 18"></path><path d="M12 3a14 14 0 0 0 0 18"></path>
+    </symbol>
     <symbol id="icon-download" viewBox="0 0 24 24">
         <path d="M12 3v12"></path><path d="m7 10 5 5 5-5"></path><path d="M5 21h14"></path>
     </symbol>
@@ -1297,6 +1336,28 @@
 
                 <div class="grid-2">
                     <div class="form-group">
+                        <label>Market Scope</label>
+                        <input type="text" id="f-market-scope" placeholder="e.g. local, regional, global, online" />
+                    </div>
+                    <div class="form-group">
+                        <label>Primary Market</label>
+                        <input type="text" id="f-primary-market" placeholder="e.g. Berlin, Germany" />
+                    </div>
+                </div>
+
+                <div class="grid-2">
+                    <div class="form-group">
+                        <label>Currency</label>
+                        <input type="text" id="f-currency" placeholder="e.g. EUR, USD, GBP" />
+                    </div>
+                    <div class="form-group">
+                        <label>Locale Notes</label>
+                        <input type="text" id="f-locale-notes" placeholder="e.g. Use euros and local cafe examples, but write in English" />
+                    </div>
+                </div>
+
+                <div class="grid-2">
+                    <div class="form-group">
                         <label>Tone *</label>
                         <input type="text" id="f-tone" placeholder="e.g. bold, practical" />
                         <span class="form-hint">How do you want to sound? bold, educational, friendly…</span>
@@ -1363,11 +1424,20 @@
         <!-- CONTENT IDEAS -->
         <div class="tab-pane" id="pane-ideas">
             <div class="ideas-toolbar">
-                <div>
+                <div class="ideas-toolbar-left">
                     <h3>Content Ideas</h3>
-                    <p>Pick an idea to draft a post</p>
+                    <p>Pick an idea to draft a post. Format is the structure; idea framing is the point of view.</p>
                 </div>
-                <span class="count-pill" id="ideas-count">0 ideas</span>
+                <div class="ideas-toolbar-right">
+                    <span class="count-pill" id="ideas-count">0 ideas</span>
+                    <div class="idea-filter-control">
+                        <label for="idea-format-filter">Filter</label>
+                        <select id="idea-format-filter" onchange="setIdeaFilter(this.value)"></select>
+                    </div>
+                    <button class="btn btn-secondary btn-sm" onclick="openIdeaModal()">Custom Idea</button>
+                    <button class="btn btn-primary btn-sm" onclick="generateMoreIdeas()">Generate More</button>
+                    <button class="btn btn-ghost btn-sm" onclick="regenerateIdeas()">Regenerate All</button>
+                </div>
             </div>
             <div class="ideas-grid" id="ideas-grid"></div>
         </div>
@@ -1402,6 +1472,7 @@
                 <div class="idea-chip-label">Selected Idea</div>
                 <div class="idea-chip-title" id="gen-title"></div>
                 <div class="idea-chip-hook" id="gen-hook"></div>
+                <div class="idea-angle" id="gen-style" style="margin-top:8px;"></div>
             </div>
 
             <div class="form-group">
@@ -1412,24 +1483,6 @@
                     </button>
                     <button class="opt-btn" data-group="platform" data-val="linkedin" onclick="pickOpt(this)">
                         <svg class="opt-icon"><use href="#icon-briefcase"></use></svg>LinkedIn
-                    </button>
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label>Post Format</label>
-                <div class="option-grid">
-                    <button class="opt-btn sel" data-group="format" data-val="contrarian" onclick="pickOpt(this)">
-                        <svg class="opt-icon"><use href="#icon-bolt"></use></svg>Contrarian
-                    </button>
-                    <button class="opt-btn" data-group="format" data-val="story" onclick="pickOpt(this)">
-                        <svg class="opt-icon"><use href="#icon-book"></use></svg>Story
-                    </button>
-                    <button class="opt-btn" data-group="format" data-val="how_to" onclick="pickOpt(this)">
-                        <svg class="opt-icon"><use href="#icon-gear"></use></svg>How-To
-                    </button>
-                    <button class="opt-btn" data-group="format" data-val="list" onclick="pickOpt(this)">
-                        <svg class="opt-icon"><use href="#icon-list"></use></svg>List
                     </button>
                 </div>
             </div>
@@ -1448,6 +1501,18 @@
                     </button>
                     <button class="opt-btn" data-group="goal" data-val="download" onclick="pickOpt(this)">
                         <svg class="opt-icon"><use href="#icon-download"></use></svg>Download
+                    </button>
+                    <button class="opt-btn" data-group="goal" data-val="share" onclick="pickOpt(this)">
+                        <svg class="opt-icon"><use href="#icon-share"></use></svg>Share With Friend
+                    </button>
+                    <button class="opt-btn" data-group="goal" data-val="save" onclick="pickOpt(this)">
+                        <svg class="opt-icon"><use href="#icon-check-circle"></use></svg>Save Post
+                    </button>
+                    <button class="opt-btn" data-group="goal" data-val="book_visit" onclick="pickOpt(this)">
+                        <svg class="opt-icon"><use href="#icon-book"></use></svg>Book / Visit
+                    </button>
+                    <button class="opt-btn" data-group="goal" data-val="buy_order" onclick="pickOpt(this)">
+                        <svg class="opt-icon"><use href="#icon-briefcase"></use></svg>Buy / Order
                     </button>
                 </div>
             </div>
@@ -1587,6 +1652,49 @@
 </div>
 
 <!-- ═══════════════════════════════════
+     MODAL: CUSTOM / EDIT IDEA
+════════════════════════════════════ -->
+<div class="backdrop" id="modal-idea">
+    <div class="modal">
+        <div class="modal-head">
+            <span class="modal-title" id="idea-modal-title">Custom Idea</span>
+            <button class="modal-close" onclick="closeModal('modal-idea')" aria-label="Close">
+                <svg class="flat-icon"><use href="#icon-x"></use></svg>
+            </button>
+        </div>
+        <div class="modal-body">
+            <div class="form-group">
+                <label>Post Format</label>
+                <select id="idea-format"></select>
+                <span class="form-hint">The structure of the post, such as a personal story, mistakes post, or how-to.</span>
+            </div>
+            <div class="form-group">
+                <label>Title</label>
+                <input type="text" id="idea-title" placeholder="E.g. The mistake that made my content sound generic" />
+            </div>
+            <div class="form-group">
+                <label>Hook</label>
+                <textarea id="idea-hook" placeholder="E.g. I used to write posts that sounded smart but got ignored."></textarea>
+            </div>
+            <div class="form-group">
+                <label>Idea Framing</label>
+                <input type="text" id="idea-angle" placeholder="E.g. A personal lesson about making content more specific" />
+                <span class="form-hint">The specific point of view this post takes. Do not repeat the post format.</span>
+            </div>
+            <div class="form-group">
+                <label>Topic</label>
+                <input type="text" id="idea-topic" placeholder="E.g. Content positioning" />
+                <span class="form-hint">The subject the post is about.</span>
+            </div>
+        </div>
+        <div class="modal-foot">
+            <button class="btn btn-ghost" onclick="closeModal('modal-idea')">Cancel</button>
+            <button class="btn btn-primary" onclick="saveIdea()">Save Idea</button>
+        </div>
+    </div>
+</div>
+
+<!-- ═══════════════════════════════════
      MODAL: EDIT PROFILE
 ════════════════════════════════════ -->
 <div class="backdrop" id="modal-edit">
@@ -1599,7 +1707,7 @@
         </div>
         <div class="modal-body">
             <div class="warn-banner">
-                Saving changes will refresh audience notes and content ideas. Existing posts will be deleted.
+                Saving profile changes will refresh audience notes and content ideas. Existing posts will be deleted.
             </div>
             <div class="form-group">
                 <label>Profile Name</label>
@@ -1626,6 +1734,26 @@
             <div class="form-group">
                 <label>Personal Touch</label>
                 <textarea id="e-personal-touch" placeholder="Optional: story, lived experience, language, or origin detail"></textarea>
+            </div>
+            <div class="grid-2">
+                <div class="form-group">
+                    <label>Market Scope</label>
+                    <input type="text" id="e-market-scope" placeholder="local, regional, global, online" />
+                </div>
+                <div class="form-group">
+                    <label>Primary Market</label>
+                    <input type="text" id="e-primary-market" placeholder="Berlin, Germany" />
+                </div>
+            </div>
+            <div class="grid-2">
+                <div class="form-group">
+                    <label>Currency</label>
+                    <input type="text" id="e-currency" placeholder="EUR" />
+                </div>
+                <div class="form-group">
+                    <label>Locale Notes</label>
+                    <input type="text" id="e-locale-notes" placeholder="Use local examples but write in English" />
+                </div>
             </div>
             <div class="grid-2">
                 <div class="form-group">
@@ -1662,13 +1790,29 @@ const S = {
     posts:     [],
     profiles:  [],
     userEmail: null,
-    genOpts:   { platform: 'instagram', format: 'contrarian', goal: 'comment' },
+    genOpts:   { platform: 'instagram', goal: 'comment' },
     genIdeaIdx: null,
     genPostId:  null,
     genPost:    null,
+    ideaFilter: 'all',
+    ideaEditId: null,
     detailPostId: null,
     flowPostId:   null,
 };
+
+const POST_FORMATS = [
+    ['personal_story', 'Personal Story'],
+    ['mistakes', 'Mistakes'],
+    ['day_in_life', 'Day in Life'],
+    ['contrarian', 'Contrarian'],
+    ['how_to', 'How-To'],
+    ['checklist', 'Checklist'],
+    ['myth_busting', 'Myth Busting'],
+    ['client_example', 'Client Example'],
+    ['behind_scenes', 'Behind the Scenes'],
+    ['objection_handling', 'Objection Handling'],
+];
+const FORMAT_LABELS = Object.fromEntries(POST_FORMATS);
 
 document.addEventListener('click', (event) => {
     const button = event.target.closest('.js-copy-post');
@@ -1882,6 +2026,10 @@ async function createProfile() {
         target_audience: val('f-target'),
         expertise:       val('f-expertise'),
         personal_touch:  val('f-personal-touch'),
+        market_scope:    val('f-market-scope'),
+        primary_market:  val('f-primary-market'),
+        currency:        val('f-currency'),
+        locale_notes:    val('f-locale-notes'),
         tone:            val('f-tone'),
         goal:            val('f-goal'),
     };
@@ -1981,6 +2129,15 @@ async function refreshPosts() {
     renderPosts();
 }
 
+async function refreshIdeas() {
+    S.ideas = await api('GET', `/user-profiles/${S.profileId}/content-ideas`);
+    if (!Array.isArray(S.ideas)) S.ideas = [];
+    if (S.ideaFilter !== 'all' && !S.ideas.some(idea => ideaFormat(idea) === S.ideaFilter)) {
+        S.ideaFilter = 'all';
+    }
+    renderIdeas();
+}
+
 // ─── RENDER ────────────────────────────────────────
 function renderDash() {
     const p = S.profile;
@@ -2012,6 +2169,7 @@ function renderAudience() {
         { icon:'icon-click',     label:'Trigger Moments',   key:'trigger_moments',   desc:'Situations or moments when the audience starts actively looking for help', col:'#4f7763', bg:'#f8fbf3', open:false },
         { icon:'icon-check-circle', label:'Proof Points',  key:'proof_points',      desc:'Types of proof, examples, or evidence that would make the audience trust the creator', col:'#337a36', bg:'#eef5dc', open:false },
         { icon:'icon-talk',      label:'Audience Language', key:'audience_language', desc:'Plain-language phrases the audience might use to describe their problems or desired outcomes', col:'#337a36', bg:'#eef5dc', open:false },
+        { icon:'icon-globe',     label:'Market Context',   key:'market_context',   desc:'Geography, currency, local alternatives, buying expectations, and cultural reference notes for this audience', col:'#4f7763', bg:'#f8fbf3', open:false },
         { icon:'icon-target',    label:'Content Angles',    key:'content_angles',    desc:'Strategic content angles for this audience', col:'#337a36', bg:'#eef5dc', open:false },
         { icon:'icon-star',      label:'Recommended Tone',  key:'tone',              desc:'Recommended tone of voice', col:'#337a36', bg:'#eef5dc', open:false },
         { icon:'icon-flag',      label:'Positioning',       key:'positioning',       desc:'Clear expert positioning statement', col:'#4f7763', bg:'#f8fbf3', open:false },
@@ -2043,6 +2201,10 @@ function renderProfileGrid() {
         { label:'Target Audience', val: p.target_audience },
         { label:'Expertise',       val: p.expertise },
         { label:'Personal Touch',  val: p.personal_touch },
+        { label:'Market Scope',    val: p.market_scope },
+        { label:'Primary Market',  val: p.primary_market },
+        { label:'Currency',        val: p.currency },
+        { label:'Locale Notes',    val: p.locale_notes },
         { label:'Tone',            val: p.tone },
         { label:'Goal',            val: p.goal },
     ];
@@ -2056,22 +2218,193 @@ function renderProfileGrid() {
 function renderIdeas() {
     const grid = document.getElementById('ideas-grid');
     document.getElementById('ideas-count').textContent = `${S.ideas.length} ideas`;
+    renderIdeaFormatFilter();
 
     if (!S.ideas.length) {
-        grid.innerHTML = `<div class="empty" style="grid-column:1/-1"><div class="empty-icon"></div><div class="empty-title">No ideas yet</div><div class="empty-desc">Create or update your profile to prepare ideas</div></div>`;
+        grid.innerHTML = `<div class="empty" style="grid-column:1/-1"><div class="empty-icon"></div><div class="empty-title">No ideas yet</div><div class="empty-desc">Generate ideas or add a custom one</div></div>`;
         return;
     }
 
-    grid.innerHTML = S.ideas.map((idea, i) => `
+    const visibleIdeas = S.ideaFilter === 'all'
+        ? S.ideas
+        : S.ideas.filter(idea => ideaFormat(idea) === S.ideaFilter);
+
+    if (!visibleIdeas.length) {
+        grid.innerHTML = `<div class="empty" style="grid-column:1/-1"><div class="empty-icon"></div><div class="empty-title">No ideas in this style</div><div class="empty-desc">Choose another style or generate more ideas</div></div>`;
+        return;
+    }
+
+    grid.innerHTML = visibleIdeas.map((idea) => {
+        const i = S.ideas.findIndex(item => item.id === idea.id);
+        const format = ideaFormat(idea);
+        return `
         <div class="idea-card ${i % 2 === 0 ? 'idea-green' : 'idea-pink'}" onclick="openGenModal(${i})">
-            <div class="idea-topic-badge">${esc(idea.topic || idea.angle || 'content')}</div>
+            <div class="idea-topic-badge">${esc(formatLabel(format))}</div>
             <div class="idea-title">${esc(idea.title)}</div>
             <div class="idea-hook">${esc(idea.hook)}</div>
             <div class="idea-foot">
-                <span class="idea-angle">${esc(idea.angle || '')}</span>
+                <span class="idea-angle">${esc(idea.topic || '')}</span>
                 <span class="idea-cta-hint">Draft post</span>
             </div>
-        </div>`).join('');
+            <div class="idea-card-actions" onclick="event.stopPropagation()">
+                <button class="btn btn-secondary btn-sm" onclick="openIdeaModal('${idea.id}')">Edit</button>
+                <button class="btn btn-danger btn-sm" onclick="deleteIdea('${idea.id}')">Delete</button>
+            </div>
+        </div>`;
+    }).join('');
+}
+
+function renderIdeaFormatFilter() {
+    const select = document.getElementById('idea-format-filter');
+    if (!select) return;
+    const formats = [...new Set(S.ideas.map(ideaFormat))];
+    select.innerHTML = [
+        '<option value="all">All formats</option>',
+        ...formats.map(format => `<option value="${format}">${esc(formatLabel(format))}</option>`)
+    ].join('');
+    select.value = S.ideaFilter;
+}
+
+function setIdeaFilter(format) {
+    S.ideaFilter = format;
+    renderIdeas();
+}
+
+function ideaFormat(idea) {
+    return idea.post_format || idea.content_style || normalizeLegacyFormat(idea.angle);
+}
+
+function normalizeLegacyFormat(value) {
+    const raw = String(value || '').trim().toLowerCase();
+    const map = {
+        story: 'personal_story',
+        mistake: 'mistakes',
+        pain_point: 'objection_handling',
+        list: 'checklist',
+        'how-to': 'how_to',
+    };
+    return FORMAT_LABELS[raw] ? raw : (map[raw] || 'how_to');
+}
+
+function formatLabel(format) {
+    return FORMAT_LABELS[format] || String(format || 'how_to').replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+}
+
+function capitalizeFirst(value) {
+    const text = String(value || '').trim();
+    return text ? text.charAt(0).toUpperCase() + text.slice(1) : '';
+}
+
+function isDuplicateFraming(format, framing) {
+    const clean = value => String(value || '').trim().toLowerCase().replace(/[_-]/g, ' ');
+    const formatValue = clean(format);
+    const labelValue = clean(formatLabel(format));
+    const framingValue = clean(framing);
+    return framingValue === formatValue || framingValue === labelValue;
+}
+
+function fillIdeaFormatSelect() {
+    const select = document.getElementById('idea-format');
+    if (!select || select.options.length) return;
+    select.innerHTML = POST_FORMATS.map(([value, label]) => `<option value="${value}">${esc(label)}</option>`).join('');
+}
+
+function openIdeaModal(ideaId = null) {
+    fillIdeaFormatSelect();
+    S.ideaEditId = ideaId;
+    const idea = ideaId ? S.ideas.find(item => item.id === ideaId) : null;
+    document.getElementById('idea-modal-title').textContent = idea ? 'Edit Idea' : 'Custom Idea';
+    document.getElementById('idea-format').value = idea ? ideaFormat(idea) : 'personal_story';
+    document.getElementById('idea-title').value = capitalizeFirst(idea?.title);
+    document.getElementById('idea-hook').value = capitalizeFirst(idea?.hook);
+    document.getElementById('idea-angle').value = capitalizeFirst(idea?.angle);
+    document.getElementById('idea-topic').value = capitalizeFirst(idea?.topic);
+    openModal('modal-idea');
+}
+
+async function saveIdea() {
+    const body = {
+        post_format: val('idea-format'),
+        title: capitalizeFirst(val('idea-title')),
+        hook: capitalizeFirst(val('idea-hook')),
+        angle: capitalizeFirst(val('idea-angle')),
+        topic: capitalizeFirst(val('idea-topic')),
+    };
+
+    if (Object.values(body).some(v => !v)) {
+        toast('Please fill in all idea fields', 'error');
+        return;
+    }
+
+    if (isDuplicateFraming(body.post_format, body.angle)) {
+        toast('Idea framing should be more specific than the post format', 'error');
+        return;
+    }
+
+    try {
+        const path = S.ideaEditId
+            ? `/content-ideas/${S.ideaEditId}`
+            : `/user-profiles/${S.profileId}/content-ideas`;
+        const method = S.ideaEditId ? 'PUT' : 'POST';
+        const res = await api(method, path, body);
+        if (res.error) throw new Error(res.error);
+        closeModal('modal-idea');
+        await refreshIdeas();
+        toast(S.ideaEditId ? 'Idea updated' : 'Idea saved', 'success');
+        S.ideaEditId = null;
+    } catch (e) {
+        toast(e.message || 'Could not save idea', 'error');
+    }
+}
+
+async function deleteIdea(ideaId) {
+    try {
+        const res = await api('DELETE', `/content-ideas/${ideaId}`);
+        if (res.error) throw new Error(res.error);
+        await refreshIdeas();
+        toast('Idea deleted', 'success');
+    } catch (e) {
+        toast(e.message || 'Could not delete idea', 'error');
+    }
+}
+
+async function generateMoreIdeas() {
+    showLoading('Creating more ideas…', [
+        { label:'Reading audience notes', delay:0 },
+        { label:'Mixing content styles', delay:2500 },
+        { label:'Saving new ideas', delay:6500 },
+    ]);
+
+    try {
+        const res = await api('POST', `/user-profiles/${S.profileId}/content-ideas/generate-more`, { count: 10 });
+        if (res.error) throw new Error(res.error);
+        await refreshIdeas();
+        hideLoading();
+        toast('New ideas added', 'success');
+    } catch (e) {
+        hideLoading();
+        toast(e.message || 'Could not generate ideas', 'error');
+    }
+}
+
+async function regenerateIdeas() {
+    showLoading('Regenerating ideas…', [
+        { label:'Keeping audience notes', delay:0 },
+        { label:'Preparing 20 fresh ideas', delay:3500 },
+        { label:'Saving new idea set', delay:8500 },
+    ]);
+
+    try {
+        const res = await api('POST', `/user-profiles/${S.profileId}/content-ideas/regenerate`, { count: 20 });
+        if (res.error) throw new Error(res.error);
+        S.ideaFilter = 'all';
+        await refreshIdeas();
+        hideLoading();
+        toast('Ideas regenerated', 'success');
+    } catch (e) {
+        hideLoading();
+        toast(e.message || 'Could not regenerate ideas', 'error');
+    }
 }
 
 function renderPosts() {
@@ -2109,14 +2442,14 @@ function openGenModal(idx) {
     const idea = S.ideas[idx];
     document.getElementById('gen-title').textContent = idea.title;
     document.getElementById('gen-hook').textContent  = idea.hook;
+    document.getElementById('gen-style').textContent = formatLabel(ideaFormat(idea));
     document.getElementById('gen-result').style.display = 'none';
 
     // Reset options to defaults
-    S.genOpts = { platform: 'instagram', format: 'contrarian', goal: 'comment' };
+    S.genOpts = { platform: 'instagram', goal: 'comment' };
     document.querySelectorAll('#modal-generate .opt-btn').forEach(b => {
         const isDefault = (
             (b.dataset.group === 'platform' && b.dataset.val === 'instagram') ||
-            (b.dataset.group === 'format'   && b.dataset.val === 'contrarian') ||
             (b.dataset.group === 'goal'     && b.dataset.val === 'comment')
         );
         b.classList.toggle('sel', isDefault);
@@ -2134,7 +2467,7 @@ function pickOpt(el) {
     const val   = el.dataset.val;
     document.querySelectorAll(`#modal-generate .opt-btn[data-group="${group}"]`).forEach(b => b.classList.remove('sel'));
     el.classList.add('sel');
-    S.genOpts[group === 'format' ? 'format' : group] = val;
+    S.genOpts[group] = val;
 }
 
 async function generatePost() {
@@ -2148,7 +2481,6 @@ async function generatePost() {
         const data = await api('POST', '/posts', {
             content_idea_id: idea.id,
             platform:    S.genOpts.platform,
-            post_format: S.genOpts.format,
             post_goal:   S.genOpts.goal,
         });
 
@@ -2258,6 +2590,10 @@ function openEditModalFill() {
     document.getElementById('e-target').value        = p.target_audience || '';
     document.getElementById('e-expertise').value     = p.expertise       || '';
     document.getElementById('e-personal-touch').value = p.personal_touch || '';
+    document.getElementById('e-market-scope').value  = p.market_scope    || '';
+    document.getElementById('e-primary-market').value = p.primary_market || '';
+    document.getElementById('e-currency').value      = p.currency        || '';
+    document.getElementById('e-locale-notes').value  = p.locale_notes    || '';
     document.getElementById('e-tone').value          = p.tone            || '';
     document.getElementById('e-goal').value          = p.goal            || '';
 }
@@ -2277,6 +2613,10 @@ async function updateProfile() {
         target_audience: val('e-target'),
         expertise:       val('e-expertise'),
         personal_touch:  val('e-personal-touch'),
+        market_scope:    val('e-market-scope'),
+        primary_market:  val('e-primary-market'),
+        currency:        val('e-currency'),
+        locale_notes:    val('e-locale-notes'),
         tone:            val('e-tone'),
         goal:            val('e-goal'),
     };
@@ -2419,7 +2759,7 @@ function loadSteps(type) {
             { label:'Preparing audience notes',      delay: 4000  },
             { label:'Identifying pains & desires',   delay: 8000  },
             { label:'Building content angles',       delay: 13000 },
-            { label:'Preparing 10 content ideas',    delay: 18000 },
+            { label:'Preparing 20 content ideas',    delay: 18000 },
             { label:'Finalizing…',                   delay: 24000 },
         ],
         update: [
@@ -2805,7 +3145,14 @@ async function api(method, path, body) {
         toast('Session expired — please sign in again', 'error');
         throw new Error('Unauthorized');
     }
-    return res.json();
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) {
+        const detail = Array.isArray(data.detail)
+            ? data.detail.map(item => item.msg).join(', ')
+            : data.detail;
+        return { error: detail || data.error || `Request failed (${res.status})` };
+    }
+    return data;
 }
 </script>
 </body>

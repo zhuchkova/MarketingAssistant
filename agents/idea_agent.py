@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Literal
 from pydantic import BaseModel, Field
 from dotenv import load_dotenv
 from langchain.chat_models import init_chat_model
@@ -9,11 +9,39 @@ from rag.idea_retriever import retrieve_idea_knowledge
 load_dotenv()
 
 
+PostFormat = Literal[
+    "personal_story",
+    "mistakes",
+    "day_in_life",
+    "contrarian",
+    "how_to",
+    "checklist",
+    "myth_busting",
+    "client_example",
+    "behind_scenes",
+    "objection_handling",
+]
+
+FORMAT_LABELS = {
+    "personal_story": "personal story",
+    "mistakes": "mistakes",
+    "day_in_life": "day in life",
+    "contrarian": "contrarian",
+    "how_to": "how-to",
+    "checklist": "checklist",
+    "myth_busting": "myth busting",
+    "client_example": "client example",
+    "behind_scenes": "behind the scenes",
+    "objection_handling": "objection handling",
+}
+
+
 class ContentIdea(BaseModel):
     title: str = Field(description="Short internal title for the content idea")
     hook: str = Field(description="Strong opening line for the post")
-    angle: str = Field(description="The framing of the topic, e.g. contrarian, how-to, mistake, story")
-    topic: str = Field(description="Main topic of the post")
+    post_format: PostFormat = Field(description="One exact post format slug from the allowed list")
+    angle: str = Field(description="The strategic point of view or audience-specific framing, not a format label")
+    topic: str = Field(description="Main subject of the post")
 
 
 class ContentIdeasResult(BaseModel):
@@ -38,6 +66,10 @@ Creator profile:
 - Target audience: {target_audience}
 - Expertise: {expertise}
 - Personal touch: {personal_touch}
+- Market scope: {market_scope}
+- Primary market: {primary_market}
+- Currency: {currency}
+- Locale notes: {locale_notes}
 - Tone: {tone}
 - Goal: {goal}
 
@@ -49,6 +81,7 @@ Audience analysis:
 - Trigger moments: {trigger_moments}
 - Proof points: {proof_points}
 - Audience language: {audience_language}
+- Market context: {market_context}
 - Content angles: {content_angles}
 - Positioning: {positioning}
 - Known for: {known_for}
@@ -63,7 +96,15 @@ Rules:
 - Avoid generic marketing advice
 - Each idea needs a strong hook
 - Each idea should connect to one clear audience pain, desire, or objection
+- Use these fields clearly:
+  - post_format = the structure of the post. Use exactly one of: personal_story, mistakes, day_in_life, contrarian, how_to, checklist, myth_busting, client_example, behind_scenes, objection_handling
+  - angle = the specific idea framing or point of view, e.g. "why cheap bouquets disappoint," "the hidden cost of skipping prep," "what changed after I learned this myself"
+  - topic = the subject, e.g. "wedding flowers," "weekly meal planning," "beginner strength training"
+- angle must not repeat the post_format label. For example, if post_format is objection_handling, angle should explain which objection and why, not say "objection handling"
+- Do not invent post_format labels such as artisanal focus, community engagement, audience interaction, educational, or storytime
+- Smartly mix post formats so the set includes personal, practical, trust-building, and objection-handling ideas
 - Use trigger moments and audience language to make hooks feel timely and specific
+- Use market context for relevant local/global references, price/currency examples, and nearby alternatives
 - Use the creator's personal touch when it makes the idea more human, but do not force it into every idea
 """)
 
@@ -71,8 +112,8 @@ Rules:
 def run_idea_agent(
     profile: dict,
     audience_analysis: dict,
-    number_of_ideas: int = 10
-) -> list[dict]:
+    number_of_ideas: int = 20
+) -> list:
     idea_knowledge = retrieve_idea_knowledge(profile, audience_analysis)
 
     chain_input = {
@@ -85,4 +126,28 @@ def run_idea_agent(
     chain = prompt | structured_model
     result = chain.invoke(chain_input)
 
-    return [idea.model_dump() for idea in result.ideas]
+    return [normalize_idea(idea.model_dump()) for idea in result.ideas]
+
+
+def normalize_idea(idea: dict) -> dict:
+    post_format = idea.get("post_format") or "how_to"
+    angle = (idea.get("angle") or "").strip()
+    format_label = FORMAT_LABELS.get(post_format, post_format).lower()
+    compact_angle = angle.lower().replace("_", " ").replace("-", " ")
+
+    if compact_angle == format_label or compact_angle == post_format.replace("_", " "):
+        topic = (idea.get("topic") or "this topic").strip()
+        title = (idea.get("title") or topic).strip()
+        idea["angle"] = f"Why {topic} matters: {title}"
+    else:
+        idea["angle"] = angle
+
+    for field in ("title", "hook", "angle", "topic"):
+        idea[field] = capitalize_first(idea.get(field) or "")
+
+    return idea
+
+
+def capitalize_first(value: str) -> str:
+    value = value.strip()
+    return value[:1].upper() + value[1:] if value else value

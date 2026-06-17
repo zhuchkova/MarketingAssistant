@@ -16,6 +16,7 @@ class AudienceAnalysis(BaseModel):
     trigger_moments: List[str] = Field(description="Situations or moments when the audience starts actively looking for help")
     proof_points: List[str] = Field(description="Types of proof, examples, or evidence that would make the audience trust the creator")
     audience_language: List[str] = Field(description="Plain-language phrases the audience might use to describe their problems or desired outcomes")
+    market_context: List[str] = Field(description="Market-specific context such as geography, currency, local alternatives, local buying expectations, and cultural reference notes")
     content_angles: List[str] = Field(description="Strategic content angles for this audience")
     tone: str = Field(description="Recommended tone of voice")
     positioning: str = Field(description="Clear expert positioning statement")
@@ -40,14 +41,19 @@ Profile:
 - Target audience: {target_audience}
 - Expertise: {expertise}
 - Personal touch: {personal_touch}
+- Market scope: {market_scope}
+- Primary market: {primary_market}
+- Currency: {currency}
+- Locale notes: {locale_notes}
 - Tone: {tone}
 - Goal: {goal}
 
 Relevant positioning knowledge from RAG:
 {positioning_knowledge}
 
-Return trigger moments, proof points, and audience language as concrete, audience-specific lists.
+Return trigger moments, proof points, audience language, and market context as concrete, audience-specific lists.
 Use the personal touch as a source of relatability and differentiation when it is relevant.
+Use market context to choose relevant currency, local/global references, buying expectations, and nearby alternatives. Keep output language English.
 """)
 
 

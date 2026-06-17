@@ -11,6 +11,11 @@ CREATE TABLE user_profiles (
     offer TEXT,
     target_audience TEXT,
     expertise TEXT,
+    personal_touch TEXT,
+    market_scope TEXT,
+    primary_market TEXT,
+    currency TEXT,
+    locale_notes TEXT,
     tone TEXT,
     goal TEXT
 );
@@ -23,6 +28,10 @@ CREATE TABLE audience_analyses (
     pains TEXT,
     desires TEXT,
     objections TEXT,
+    trigger_moments JSONB DEFAULT '[]'::jsonb,
+    proof_points JSONB DEFAULT '[]'::jsonb,
+    audience_language JSONB DEFAULT '[]'::jsonb,
+    market_context JSONB DEFAULT '[]'::jsonb,
     content_angles TEXT,
     tone TEXT,
     positioning TEXT,
@@ -38,7 +47,9 @@ CREATE TABLE content_ideas (
     title TEXT,
     hook TEXT,
     angle TEXT,
-    topic TEXT
+    topic TEXT,
+    post_format TEXT,
+    content_style TEXT
 );
 
 CREATE TABLE platforms (
