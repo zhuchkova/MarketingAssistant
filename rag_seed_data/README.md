@@ -23,7 +23,7 @@ Good documents to add:
 * Audience pains, desires, objections, failed alternatives, and trigger moments.
 * Proven hook patterns with examples.
 * LinkedIn and Instagram post frameworks.
-* CTA examples by goal: comment, DM keyword, save, follow, download.
+* CTA examples by goal: comment, DM keyword, save, follow, download, share, book/visit, and buy/order.
 * ManyChat flow examples with first message, qualification question, and follow-up.
 
 The `positioning_knowledge/` collection is split into smaller files:
@@ -41,6 +41,16 @@ The `idea_knowledge.json` collection includes 60 audience-led hook patterns:
 * 10 audience-language hooks for exact customer phrases, plain-language objections, buying signals, and search-style questions.
 
 These hook cards are designed to work with the audience-analysis fields `pains`, `desires`, `objections`, `trigger_moments`, `proof_points`, and `audience_language`.
+
+The `content_frameworks.json` collection includes:
+
+* 20 LinkedIn post frameworks with concrete structures.
+* 20 Instagram frameworks across `carousel`, `story`, and `reel`.
+* 3 length rules for `short`, `medium`, and `long` posts.
+
+The `cta_conversion_knowledge.json` collection includes 20 CTA examples and principles across `comment`, `dm_keyword`, `save`, `follow`, `download`, `share`, `book_visit`, and `buy_order`.
+
+The `manychat_funnel_templates.json` collection includes 10 flow templates with first message, qualification question, and follow-up guidance.
 
 Avoid adding full copyrighted articles or long copied posts. Instead, turn each source into a short original summary card.
 

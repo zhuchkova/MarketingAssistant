@@ -99,10 +99,32 @@ class ValidationTests(unittest.TestCase):
         request = GeneratePostRequest(
             content_idea_id="22222222-2222-2222-2222-222222222444",
             platform="instagram",
+            instagram_content_type="carousel",
             post_goal="share",
+            post_length="long",
         )
 
         self.assertEqual(request.post_goal, "share")
+        self.assertEqual(request.instagram_content_type, "carousel")
+        self.assertEqual(request.post_length, "long")
+
+    def test_generate_post_rejects_unknown_instagram_type(self):
+        with self.assertRaises(ValidationError):
+            GeneratePostRequest(
+                content_idea_id="22222222-2222-2222-2222-222222222444",
+                platform="instagram",
+                instagram_content_type="grid",
+                post_goal="share",
+            )
+
+    def test_generate_post_rejects_unknown_length(self):
+        with self.assertRaises(ValidationError):
+            GeneratePostRequest(
+                content_idea_id="22222222-2222-2222-2222-222222222444",
+                platform="linkedin",
+                post_goal="comment",
+                post_length="extra_long",
+            )
 
     def test_custom_idea_rejects_unknown_style(self):
         with self.assertRaises(ValidationError):

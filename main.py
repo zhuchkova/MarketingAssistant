@@ -520,6 +520,8 @@ def get_posts_for_profile(
             cur.execute("""
                 SELECT
                     p.id, p.hook, p.cta, p.final_text,
+                    p.instagram_content_type,
+                    p.post_length,
                     pl.name AS platform,
                     pf.name AS post_format,
                     pg.name AS post_goal
@@ -536,7 +538,8 @@ def get_posts_for_profile(
     return [
         {
             "id": row[0], "hook": row[1], "cta": row[2], "final_text": row[3],
-            "platform": row[4], "post_format": row[5], "post_goal": row[6],
+            "instagram_content_type": row[4], "post_length": row[5],
+            "platform": row[6], "post_format": row[7], "post_goal": row[8],
         }
         for row in rows
     ]
@@ -611,6 +614,8 @@ def generate_post(
         agent_input = {
             **context,
             "platform": request["platform"],
+            "instagram_content_type": request.get("instagram_content_type") if request["platform"] == "instagram" else None,
+            "post_length": request.get("post_length", "medium"),
             "post_format": post_format,
             "post_goal": request["post_goal"],
         }
@@ -623,6 +628,8 @@ def generate_post(
             "platform_id": platform_id,
             "post_format_id": post_format_id,
             "post_goal_id": post_goal_id,
+            "instagram_content_type": agent_input["instagram_content_type"],
+            "post_length": agent_input["post_length"],
         }
 
         post_id = save_post(conn, post_data)
@@ -646,6 +653,8 @@ def get_post(
             cur.execute("""
                 SELECT
                     p.id, p.hook, p.body, p.cta, p.final_text,
+                    p.instagram_content_type,
+                    p.post_length,
                     pl.name AS platform,
                     pf.name AS post_format,
                     pg.name AS post_goal
@@ -664,7 +673,8 @@ def get_post(
 
     return {
         "id": row[0], "hook": row[1], "body": row[2], "cta": row[3],
-        "final_text": row[4], "platform": row[5], "post_format": row[6], "post_goal": row[7],
+        "final_text": row[4], "instagram_content_type": row[5], "post_length": row[6],
+        "platform": row[7], "post_format": row[8], "post_goal": row[9],
     }
 
 

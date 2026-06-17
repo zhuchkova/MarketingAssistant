@@ -1,42 +1,92 @@
 [
   {
-    "id": "manychat_template_resource_then_question",
-    "document": "ManyChat flow: Comment keyword -> deliver promised resource -> ask one qualifying question -> give a tailored next step -> optional soft offer.",
-    "metadata": {"type": "flow_template", "stage": "overview"}
+    "id": "manychat_flow_template_delivery",
+    "document": "ManyChat flow: Trigger keyword TEMPLATE. First message: “Here’s the template I promised. Start with section 1 and customize the examples.” Qualification question: “What are you using it for: content, sales, planning, or client work?” Follow-up: “Based on that, use the [specific section] first. Want me to send an example?”",
+    "metadata": {
+      "type": "flow_template",
+      "goal": "download",
+      "includes": "first_message qualification_question follow_up"
+    }
   },
   {
-    "id": "manychat_first_message_warm",
-    "document": "ManyChat first message: Hey! Here is the resource I mentioned. I made it to help with [specific outcome]. Quick question so I can point you to the right part:",
-    "metadata": {"type": "message_template", "stage": "first_message"}
+    "id": "manychat_flow_audit",
+    "document": "ManyChat flow: Trigger keyword AUDIT. First message: “I’ll help you self-check this quickly.” Qualification question: “Which part feels weakest right now: clarity, offer, proof, consistency, or conversion?” Follow-up: “That usually means your next best step is [small action]. Reply HELP if you want support applying it.”",
+    "metadata": {
+      "type": "flow_template",
+      "goal": "dm_keyword",
+      "includes": "first_message qualification_question follow_up"
+    }
   },
   {
-    "id": "manychat_qualification_stage",
-    "document": "ManyChat qualification question: Which stage are you in right now: just figuring this out, trying to fix it yourself, or ready for help implementing it?",
-    "metadata": {"type": "question_template", "stage": "qualification"}
+    "id": "manychat_flow_local_booking",
+    "document": "ManyChat flow: Trigger keyword VISIT. First message: “Happy to help you plan a visit.” Qualification question: “Are you looking for today/this week, or just comparing options?” Follow-up: “Great. Here’s the best next step and what to expect when you come in.”",
+    "metadata": {
+      "type": "flow_template",
+      "goal": "book_visit",
+      "includes": "first_message qualification_question follow_up"
+    }
   },
   {
-    "id": "manychat_qualification_problem",
-    "document": "ManyChat qualification question: What is the hardest part right now: finding the right idea, explaining the value, staying consistent, or turning attention into leads?",
-    "metadata": {"type": "question_template", "stage": "qualification"}
+    "id": "manychat_flow_product_order",
+    "document": "ManyChat flow: Trigger keyword ORDER. First message: “I can point you to the best option.” Qualification question: “Is this for you, a gift, an event, or your business?” Follow-up: “Based on that, I’d start with [offer]. Here’s the link/details.”",
+    "metadata": {
+      "type": "flow_template",
+      "goal": "buy_order",
+      "includes": "first_message qualification_question follow_up"
+    }
   },
   {
-    "id": "manychat_followup_tailored",
-    "document": "ManyChat follow-up: Got it. Based on that, I would start with [specific small action]. It usually gives the fastest clarity before you change everything else.",
-    "metadata": {"type": "message_template", "stage": "follow_up"}
+    "id": "manychat_flow_comment_diagnosis",
+    "document": "ManyChat flow: Trigger keyword BLOCKER. First message: “Tell me what’s getting stuck and I’ll point you to the right next step.” Qualification question: “Is the blocker time, clarity, confidence, budget, or knowing what to choose?” Follow-up: “That makes sense. Try this first: [specific step].”",
+    "metadata": {
+      "type": "flow_template",
+      "goal": "comment",
+      "includes": "first_message qualification_question follow_up"
+    }
   },
   {
-    "id": "manychat_followup_soft_offer",
-    "document": "ManyChat soft offer: If you want, I can also help you adapt this to your business. Reply HELP and I will send the next step.",
-    "metadata": {"type": "message_template", "stage": "soft_offer"}
+    "id": "manychat_flow_save_checklist",
+    "document": "ManyChat flow: Trigger keyword CHECKLIST. First message: “Here’s the checklist version so you can save it properly.” Qualification question: “When do you plan to use it: now, this week, or later?” Follow-up: “When you use it, pay most attention to [highest-leverage item].”",
+    "metadata": {
+      "type": "flow_template",
+      "goal": "save",
+      "includes": "first_message qualification_question follow_up"
+    }
   },
   {
-    "id": "manychat_download_delivery",
-    "document": "ManyChat download flow: Thank user -> deliver link/resource -> tell them how to use it in one sentence -> ask what they are trying to improve.",
-    "metadata": {"type": "flow_template", "stage": "lead_magnet"}
+    "id": "manychat_flow_friend_share",
+    "document": "ManyChat flow: Trigger keyword FRIEND. First message: “Here’s the short version you can send to someone.” Qualification question: “Are they dealing with the beginner version or the advanced version of this?” Follow-up: “Send them this part first; it will make the rest easier to understand.”",
+    "metadata": {
+      "type": "flow_template",
+      "goal": "share",
+      "includes": "first_message qualification_question follow_up"
+    }
   },
   {
-    "id": "manychat_instagram_comment",
-    "document": "Instagram comment automation pattern: Public comment CTA should be simple. DM should immediately acknowledge the comment and deliver the promised value before asking anything.",
-    "metadata": {"type": "flow_template", "stage": "instagram"}
+    "id": "manychat_flow_series_follow",
+    "document": "ManyChat flow: Trigger keyword SERIES. First message: “I’ll send the next part when it’s ready.” Qualification question: “Which topic do you want next: basics, mistakes, examples, or advanced tips?” Follow-up: “Perfect. I’ll use that for the next post, and here’s one quick tip now.”",
+    "metadata": {
+      "type": "flow_template",
+      "goal": "follow",
+      "includes": "first_message qualification_question follow_up"
+    }
+  },
+  {
+    "id": "manychat_flow_webinar_resource",
+    "document": "ManyChat flow: Trigger keyword CLASS. First message: “Here are the class details/resource.” Qualification question: “Are you exploring, ready to join, or comparing options?” Follow-up: “Based on that, here’s the right page and one thing to check before deciding.”",
+    "metadata": {
+      "type": "flow_template",
+      "goal": "download",
+      "includes": "first_message qualification_question follow_up"
+    }
+  },
+  {
+    "id": "manychat_flow_objection_reframe",
+    "document": "ManyChat flow: Trigger keyword WORTHIT. First message: “Here’s the breakdown behind the price/value.” Qualification question: “What matters most to you: price, quality, time, trust, or result?” Follow-up: “Then compare options using this one criterion first: [criterion].”",
+    "metadata": {
+      "type": "flow_template",
+      "goal": "objection_handling",
+      "includes": "first_message qualification_question follow_up"
+    }
   }
 ]

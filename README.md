@@ -118,6 +118,15 @@ Generates content ideas based on:
 
 ### 3. Content Agent
 
+Creates a post draft from a saved content idea.
+
+Draft controls:
+
+* `platform`: `instagram` or `linkedin`
+* `instagram_content_type`: `carousel`, `story`, or `reel` when platform is Instagram
+* `post_length`: `short`, `medium`, or `long`
+* `post_goal`: comment, DM keyword, save, follow, download, share, book/visit, or buy/order
+
 Generates complete LinkedIn or Instagram posts.
 
 #### Input
@@ -262,6 +271,12 @@ content_ideas
   ├── topic
   └── post_format
 posts
+  ├── instagram_content_type
+  ├── post_length
+  ├── hook
+  ├── body
+  ├── cta
+  └── final_text
 manychat_flows
 ```
 
@@ -325,8 +340,8 @@ The seed script uses `upsert`, so rerunning it updates existing cards with the s
 
 * `positioning_knowledge/` for audience research, positioning, pains, desires, objections, and voice-of-customer patterns. This collection is split into smaller JSON files so editors can open them comfortably.
 * `idea_knowledge.json` for hook patterns, content angles, belief shifts, and audience-specific idea triggers.
-* `content_frameworks.json` for LinkedIn and Instagram post structures.
-* `cta_conversion_knowledge.json` for comment, DM, save, follow, and download CTA patterns.
+* `content_frameworks.json` for LinkedIn structures, Instagram carousel/story/Reel structures, and length rules.
+* `cta_conversion_knowledge.json` for comment, DM, save, follow, download, share, book/visit, and buy/order CTA patterns.
 * `manychat_funnel_templates.json` for keyword flows, first messages, qualifying questions, and follow-ups.
 
 To inspect the current Chroma collections:
@@ -625,13 +640,17 @@ Authorization: Bearer JWT_TOKEN
 ### Generate Post
 
 Post format is inferred from the selected content idea's `post_format`.
+Use `instagram_content_type` only when `platform` is `instagram`.
 Allowed `post_goal` values are `comment`, `dm_keyword`, `follow`, `download`, `share`, `save`, `book_visit`, and `buy_order`.
+Allowed `post_length` values are `short`, `medium`, and `long`.
 
 ```json
 {
   "content_idea_id": "CONTENT_IDEA_UUID",
-  "platform": "linkedin",
-  "post_goal": "share"
+  "platform": "instagram",
+  "instagram_content_type": "carousel",
+  "post_goal": "share",
+  "post_length": "medium"
 }
 ```
 

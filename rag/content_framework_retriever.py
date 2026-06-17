@@ -11,7 +11,7 @@ def retrieve_content_frameworks(
     profile: dict,
     audience_analysis: dict,
     content_idea: dict,
-    n_results: int = 3
+    n_results: int = 5
 ) -> str:
     query = f"""
     Niche: {profile.get("niche")}
@@ -35,6 +35,9 @@ def retrieve_content_frameworks(
     Idea framing: {content_idea.get("angle")}
     Hook: {content_idea.get("hook")}
     Post format: {content_idea.get("post_format") or content_idea.get("idea_post_format")}
+    Platform: {content_idea.get("platform")}
+    Instagram content type: {content_idea.get("instagram_content_type")}
+    Post length: {content_idea.get("post_length")}
     """
 
     results = collection.query(

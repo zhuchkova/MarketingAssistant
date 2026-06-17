@@ -15,6 +15,10 @@ ALTER TABLE content_ideas
     ADD COLUMN IF NOT EXISTS post_format TEXT,
     ADD COLUMN IF NOT EXISTS content_style TEXT;
 
+ALTER TABLE posts
+    ADD COLUMN IF NOT EXISTS instagram_content_type TEXT,
+    ADD COLUMN IF NOT EXISTS post_length TEXT DEFAULT 'medium';
+
 INSERT INTO users (id, name, email) VALUES
 ('11111111-1111-1111-1111-111111111111', 'Ekaterina', 'katya@example.com')
 ON CONFLICT (id) DO NOTHING;

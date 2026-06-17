@@ -1,52 +1,446 @@
 [
   {
-    "id": "framework_linkedin_contrarian_belief",
-    "document": "LinkedIn framework: Contrarian belief -> why people believe it -> hidden cost -> better belief -> concrete example -> soft CTA. Use when the audience has a common but limiting assumption.",
-    "metadata": {"type": "framework", "platform": "linkedin", "format": "contrarian"}
+    "id": "linkedin_open_loop_diagnosis",
+    "document": "LinkedIn framework: Open with a surprising symptom -> diagnose the real cause -> explain why the obvious fix fails -> give 3 practical corrections -> close with a small CTA. Best for expert education and stuck audiences.",
+    "metadata": {
+      "type": "framework",
+      "platform": "linkedin",
+      "format": "educational",
+      "count_group": "linkedin_20"
+    }
   },
   {
-    "id": "framework_linkedin_problem_diagnosis",
-    "document": "LinkedIn framework: Symptom -> real diagnosis -> why common fixes fail -> 3-part better approach -> what to do first -> CTA. Use when the audience feels stuck but misidentifies the cause.",
-    "metadata": {"type": "framework", "platform": "linkedin", "format": "educational"}
+    "id": "linkedin_customer_quote_reframe",
+    "document": "LinkedIn framework: Start with an exact customer objection in quotes -> validate the fear -> reframe what the objection is really about -> show one example -> invite comments from people who feel the same.",
+    "metadata": {
+      "type": "framework",
+      "platform": "linkedin",
+      "format": "objection_handling",
+      "count_group": "linkedin_20"
+    }
   },
   {
-    "id": "framework_linkedin_story_lesson",
-    "document": "LinkedIn framework: Short scene -> tension -> decision -> result -> lesson -> audience application -> CTA. Keep story details specific and tie the lesson back to the reader's problem.",
-    "metadata": {"type": "framework", "platform": "linkedin", "format": "story"}
+    "id": "linkedin_before_after_bridge",
+    "document": "LinkedIn framework: Before state -> emotional friction -> turning point -> after state -> bridge steps -> CTA. Keep before and after concrete, not vague transformation language.",
+    "metadata": {
+      "type": "framework",
+      "platform": "linkedin",
+      "format": "client_example",
+      "count_group": "linkedin_20"
+    }
   },
   {
-    "id": "framework_instagram_carousel_mistakes",
-    "document": "Instagram carousel framework: Slide 1 bold mistake hook -> slides 2-4 specific mistakes -> slides 5-7 fixes -> slide 8 quick checklist -> slide 9 CTA to save/comment. Each slide should carry one clear idea.",
-    "metadata": {"type": "framework", "platform": "instagram", "format": "list"}
+    "id": "linkedin_mistake_stack",
+    "document": "LinkedIn framework: Name the costly mistake -> show 3 ways it appears -> explain the hidden cost of each -> give the better replacement -> CTA to save or comment.",
+    "metadata": {
+      "type": "framework",
+      "platform": "linkedin",
+      "format": "mistakes",
+      "count_group": "linkedin_20"
+    }
   },
   {
-    "id": "framework_instagram_tiny_how_to",
-    "document": "Instagram how-to framework: Promise one small outcome -> show 3 concise steps -> give an example -> name common trap -> CTA to save or comment keyword for template.",
-    "metadata": {"type": "framework", "platform": "instagram", "format": "how_to"}
+    "id": "linkedin_personal_scene_lesson",
+    "document": "LinkedIn framework: Specific personal scene -> tension or embarrassment -> decision made -> lesson learned -> how the reader can apply it -> CTA. Use sensory or situational detail early.",
+    "metadata": {
+      "type": "framework",
+      "platform": "linkedin",
+      "format": "personal_story",
+      "count_group": "linkedin_20"
+    }
   },
   {
-    "id": "framework_instagram_story_poll",
-    "document": "Instagram story framework: Relatable problem -> quick poll -> short tip -> proof or example -> DM keyword CTA. Use for lightweight engagement and lead flow entry points.",
-    "metadata": {"type": "framework", "platform": "instagram", "format": "story"}
+    "id": "linkedin_myth_evidence_shift",
+    "document": "LinkedIn framework: State the myth -> why it sounds believable -> evidence or repeated observation against it -> better belief -> first action. Use for belief-change posts.",
+    "metadata": {
+      "type": "framework",
+      "platform": "linkedin",
+      "format": "myth_busting",
+      "count_group": "linkedin_20"
+    }
   },
   {
-    "id": "framework_authority_proof",
-    "document": "Authority framework: Claim -> proof from experience -> what most people miss -> practical takeaway -> CTA. The proof can be a client pattern, repeated observation, data point, or before-after example.",
-    "metadata": {"type": "framework", "format": "authority"}
+    "id": "linkedin_checklist_decision",
+    "document": "LinkedIn framework: When to use this checklist -> 5-7 checks -> one priority check explained deeper -> warning sign -> CTA to save for the next decision.",
+    "metadata": {
+      "type": "framework",
+      "platform": "linkedin",
+      "format": "checklist",
+      "count_group": "linkedin_20"
+    }
   },
   {
-    "id": "framework_objection_post",
-    "document": "Objection framework: Quote the objection -> validate why it feels true -> reframe the risk -> show lower-friction path -> invite reply/comment. Use for skeptical audiences.",
-    "metadata": {"type": "framework", "format": "objection"}
+    "id": "linkedin_contrarian_cost",
+    "document": "LinkedIn framework: Common advice -> who it hurts -> hidden tradeoff -> better principle -> example from the creator or audience -> soft CTA.",
+    "metadata": {
+      "type": "framework",
+      "platform": "linkedin",
+      "format": "contrarian",
+      "count_group": "linkedin_20"
+    }
   },
   {
-    "id": "framework_checklist",
-    "document": "Checklist framework: Name task -> list 5-7 checks -> explain the highest-leverage check -> tell the reader when to use it -> CTA to save or request the full version.",
-    "metadata": {"type": "framework", "format": "list"}
+    "id": "linkedin_method_teardown",
+    "document": "LinkedIn framework: Show the old method -> where it breaks -> introduce the new method -> break it into named steps -> show what improves. Good for authority building.",
+    "metadata": {
+      "type": "framework",
+      "platform": "linkedin",
+      "format": "how_to",
+      "count_group": "linkedin_20"
+    }
   },
   {
-    "id": "framework_before_after_bridge",
-    "document": "Transformation framework: Before state -> friction and emotion -> turning point -> after state -> bridge steps -> CTA. Make the before state vivid enough that the reader recognizes themselves.",
-    "metadata": {"type": "framework", "format": "transformation"}
+    "id": "linkedin_day_in_life_insight",
+    "document": "LinkedIn framework: One ordinary day moment -> what outsiders do not see -> why it matters for results -> one lesson -> CTA. Good for service businesses and creators.",
+    "metadata": {
+      "type": "framework",
+      "platform": "linkedin",
+      "format": "day_in_life",
+      "count_group": "linkedin_20"
+    }
+  },
+  {
+    "id": "linkedin_client_pattern",
+    "document": "LinkedIn framework: Pattern seen across clients/customers -> example without private details -> why the pattern happens -> what to try instead -> CTA.",
+    "metadata": {
+      "type": "framework",
+      "platform": "linkedin",
+      "format": "client_example",
+      "count_group": "linkedin_20"
+    }
+  },
+  {
+    "id": "linkedin_framework_named_model",
+    "document": "LinkedIn framework: Name a simple model -> explain each part in short sections -> show a use case -> identify who should use it -> CTA for template or comment.",
+    "metadata": {
+      "type": "framework",
+      "platform": "linkedin",
+      "format": "how_to",
+      "count_group": "linkedin_20"
+    }
+  },
+  {
+    "id": "linkedin_failed_attempts",
+    "document": "LinkedIn framework: List failed alternatives the audience has tried -> explain why each feels reasonable -> reveal the missing piece -> offer a simpler next step.",
+    "metadata": {
+      "type": "framework",
+      "platform": "linkedin",
+      "format": "objection_handling",
+      "count_group": "linkedin_20"
+    }
+  },
+  {
+    "id": "linkedin_prediction_trend",
+    "document": "LinkedIn framework: Predict a change in the niche -> explain current signal -> show risk of ignoring it -> give preparation steps -> invite opinions.",
+    "metadata": {
+      "type": "framework",
+      "platform": "linkedin",
+      "format": "contrarian",
+      "count_group": "linkedin_20"
+    }
+  },
+  {
+    "id": "linkedin_origin_story_offer",
+    "document": "LinkedIn framework: Why the creator started -> what problem kept repeating -> how the offer/method formed -> who it is for now -> CTA.",
+    "metadata": {
+      "type": "framework",
+      "platform": "linkedin",
+      "format": "personal_story",
+      "count_group": "linkedin_20"
+    }
+  },
+  {
+    "id": "linkedin_practical_case_breakdown",
+    "document": "LinkedIn framework: Mini case context -> constraint -> action taken -> result -> what others can copy -> CTA. Keep numbers or observable outcomes specific.",
+    "metadata": {
+      "type": "framework",
+      "platform": "linkedin",
+      "format": "client_example",
+      "count_group": "linkedin_20"
+    }
+  },
+  {
+    "id": "linkedin_question_answer",
+    "document": "LinkedIn framework: Open with a high-intent question -> short answer -> nuanced answer -> example -> what to do next. Good for SEO-style LinkedIn posts.",
+    "metadata": {
+      "type": "framework",
+      "platform": "linkedin",
+      "format": "educational",
+      "count_group": "linkedin_20"
+    }
+  },
+  {
+    "id": "linkedin_red_flags",
+    "document": "LinkedIn framework: Name the situation -> list red flags -> explain the highest-risk one -> safer alternative -> CTA to save/share.",
+    "metadata": {
+      "type": "framework",
+      "platform": "linkedin",
+      "format": "checklist",
+      "count_group": "linkedin_20"
+    }
+  },
+  {
+    "id": "linkedin_unpopular_truth",
+    "document": "LinkedIn framework: Unpopular truth -> why people resist it -> what changes after accepting it -> practical example -> CTA for discussion.",
+    "metadata": {
+      "type": "framework",
+      "platform": "linkedin",
+      "format": "contrarian",
+      "count_group": "linkedin_20"
+    }
+  },
+  {
+    "id": "linkedin_step_by_step_story",
+    "document": "LinkedIn framework: Story hook -> 3 chronological steps -> mistake or surprise at each step -> final lesson -> CTA. Blends story with practical instruction.",
+    "metadata": {
+      "type": "framework",
+      "platform": "linkedin",
+      "format": "personal_story",
+      "count_group": "linkedin_20"
+    }
+  },
+  {
+    "id": "instagram_carousel_problem_steps",
+    "document": "Instagram carousel framework: Slide 1 problem hook -> slide 2 why it happens -> slides 3-6 step-by-step fix -> slide 7 example -> slide 8 save/share CTA.",
+    "metadata": {
+      "type": "framework",
+      "platform": "instagram",
+      "instagram_content_type": "carousel",
+      "format": "how_to",
+      "count_group": "instagram_20"
+    }
+  },
+  {
+    "id": "instagram_carousel_mistakes_fix",
+    "document": "Instagram carousel framework: Slide 1 “Stop doing this” hook -> slides 2-5 mistakes -> slides 6-8 fixes -> slide 9 quick recap -> slide 10 save CTA.",
+    "metadata": {
+      "type": "framework",
+      "platform": "instagram",
+      "instagram_content_type": "carousel",
+      "format": "mistakes",
+      "count_group": "instagram_20"
+    }
+  },
+  {
+    "id": "instagram_carousel_myth_bust",
+    "document": "Instagram carousel framework: Slide 1 myth statement -> slides 2-3 why people believe it -> slides 4-7 truth and proof -> final slide “share with someone who needs this.”",
+    "metadata": {
+      "type": "framework",
+      "platform": "instagram",
+      "instagram_content_type": "carousel",
+      "format": "myth_busting",
+      "count_group": "instagram_20"
+    }
+  },
+  {
+    "id": "instagram_carousel_checklist",
+    "document": "Instagram carousel framework: Slide 1 outcome promise -> slides 2-8 one checklist item per slide -> final slide when to use it and save CTA.",
+    "metadata": {
+      "type": "framework",
+      "platform": "instagram",
+      "instagram_content_type": "carousel",
+      "format": "checklist",
+      "count_group": "instagram_20"
+    }
+  },
+  {
+    "id": "instagram_carousel_objection",
+    "document": "Instagram carousel framework: Slide 1 quote the objection -> slides 2-4 validate and unpack it -> slides 5-8 reframe with examples -> final slide comment or DM CTA.",
+    "metadata": {
+      "type": "framework",
+      "platform": "instagram",
+      "instagram_content_type": "carousel",
+      "format": "objection_handling",
+      "count_group": "instagram_20"
+    }
+  },
+  {
+    "id": "instagram_carousel_before_after",
+    "document": "Instagram carousel framework: Slide 1 before/after contrast -> slides 2-3 before details -> slides 4-6 bridge actions -> slides 7-8 after signs -> final CTA.",
+    "metadata": {
+      "type": "framework",
+      "platform": "instagram",
+      "instagram_content_type": "carousel",
+      "format": "client_example",
+      "count_group": "instagram_20"
+    }
+  },
+  {
+    "id": "instagram_carousel_personal_story",
+    "document": "Instagram carousel framework: Slide 1 personal confession -> slides 2-4 what happened -> slides 5-7 lesson -> final slide “if this is you, start here.”",
+    "metadata": {
+      "type": "framework",
+      "platform": "instagram",
+      "instagram_content_type": "carousel",
+      "format": "personal_story",
+      "count_group": "instagram_20"
+    }
+  },
+  {
+    "id": "instagram_story_poll_tip",
+    "document": "Instagram story framework: Story 1 relatable problem -> story 2 poll -> story 3 quick tip -> story 4 example/proof -> story 5 DM keyword CTA.",
+    "metadata": {
+      "type": "framework",
+      "platform": "instagram",
+      "instagram_content_type": "story",
+      "format": "educational",
+      "count_group": "instagram_20"
+    }
+  },
+  {
+    "id": "instagram_story_quiz_myth",
+    "document": "Instagram story framework: Story 1 quiz myth/truth -> story 2 reveal -> story 3 explain why -> story 4 ask if they want a checklist -> story 5 DM keyword.",
+    "metadata": {
+      "type": "framework",
+      "platform": "instagram",
+      "instagram_content_type": "story",
+      "format": "myth_busting",
+      "count_group": "instagram_20"
+    }
+  },
+  {
+    "id": "instagram_story_day_in_life",
+    "document": "Instagram story framework: Story 1 morning/context -> stories 2-4 behind-the-scenes moments -> story 5 lesson -> story 6 question sticker.",
+    "metadata": {
+      "type": "framework",
+      "platform": "instagram",
+      "instagram_content_type": "story",
+      "format": "day_in_life",
+      "count_group": "instagram_20"
+    }
+  },
+  {
+    "id": "instagram_story_client_path",
+    "document": "Instagram story framework: Story 1 anonymous client/customer starting point -> story 2 obstacle -> story 3 action -> story 4 result -> story 5 reply prompt.",
+    "metadata": {
+      "type": "framework",
+      "platform": "instagram",
+      "instagram_content_type": "story",
+      "format": "client_example",
+      "count_group": "instagram_20"
+    }
+  },
+  {
+    "id": "instagram_story_objection_box",
+    "document": "Instagram story framework: Story 1 ask for objections/questions -> story 2 answer one objection -> story 3 proof -> story 4 soft offer or DM CTA.",
+    "metadata": {
+      "type": "framework",
+      "platform": "instagram",
+      "instagram_content_type": "story",
+      "format": "objection_handling",
+      "count_group": "instagram_20"
+    }
+  },
+  {
+    "id": "instagram_story_this_or_that",
+    "document": "Instagram story framework: Story 1 this-or-that choice -> story 2 explain better choice -> story 3 quick example -> story 4 saveable summary screenshot.",
+    "metadata": {
+      "type": "framework",
+      "platform": "instagram",
+      "instagram_content_type": "story",
+      "format": "educational",
+      "count_group": "instagram_20"
+    }
+  },
+  {
+    "id": "instagram_reel_hook_demo",
+    "document": "Instagram Reel framework: 0-2s visual hook -> 3-8s show the mistake/result -> 9-20s demonstrate fix -> 21-28s recap -> caption CTA.",
+    "metadata": {
+      "type": "framework",
+      "platform": "instagram",
+      "instagram_content_type": "reel",
+      "format": "how_to",
+      "count_group": "instagram_20"
+    }
+  },
+  {
+    "id": "instagram_reel_pov_shift",
+    "document": "Instagram Reel framework: POV text hook -> show familiar frustrating moment -> cut to better way -> add 3 caption beats -> CTA to follow/save.",
+    "metadata": {
+      "type": "framework",
+      "platform": "instagram",
+      "instagram_content_type": "reel",
+      "format": "contrarian",
+      "count_group": "instagram_20"
+    }
+  },
+  {
+    "id": "instagram_reel_three_mistakes",
+    "document": "Instagram Reel framework: Fast hook -> count 3 mistakes with quick examples -> show replacement for each -> end with save CTA.",
+    "metadata": {
+      "type": "framework",
+      "platform": "instagram",
+      "instagram_content_type": "reel",
+      "format": "mistakes",
+      "count_group": "instagram_20"
+    }
+  },
+  {
+    "id": "instagram_reel_before_after",
+    "document": "Instagram Reel framework: Show before visual or phrase -> transition to after -> overlay the 3 bridge steps -> caption adds detail -> CTA.",
+    "metadata": {
+      "type": "framework",
+      "platform": "instagram",
+      "instagram_content_type": "reel",
+      "format": "client_example",
+      "count_group": "instagram_20"
+    }
+  },
+  {
+    "id": "instagram_reel_bts_process",
+    "document": "Instagram Reel framework: Behind-the-scenes process clips -> overlay why each step matters -> reveal final result -> caption teaches one lesson.",
+    "metadata": {
+      "type": "framework",
+      "platform": "instagram",
+      "instagram_content_type": "reel",
+      "format": "behind_scenes",
+      "count_group": "instagram_20"
+    }
+  },
+  {
+    "id": "instagram_reel_reply_to_comment",
+    "document": "Instagram Reel framework: Use a comment/question as the hook -> answer directly -> show example -> invite more questions in comments.",
+    "metadata": {
+      "type": "framework",
+      "platform": "instagram",
+      "instagram_content_type": "reel",
+      "format": "objection_handling",
+      "count_group": "instagram_20"
+    }
+  },
+  {
+    "id": "instagram_reel_story_micro_lesson",
+    "document": "Instagram Reel framework: “I used to think…” hook -> one personal detail -> what changed -> one practical lesson -> CTA to share with a friend.",
+    "metadata": {
+      "type": "framework",
+      "platform": "instagram",
+      "instagram_content_type": "reel",
+      "format": "personal_story",
+      "count_group": "instagram_20"
+    }
+  },
+  {
+    "id": "framework_length_short",
+    "document": "Length rule: Short posts should make one point only: hook -> 1 insight -> 1 example or proof -> CTA. Avoid multiple sections.",
+    "metadata": {
+      "type": "length_rule",
+      "length": "short"
+    }
+  },
+  {
+    "id": "framework_length_medium",
+    "document": "Length rule: Medium posts can include hook -> context -> 2-3 teaching points -> example -> CTA. This is the default for most useful posts.",
+    "metadata": {
+      "type": "length_rule",
+      "length": "medium"
+    }
+  },
+  {
+    "id": "framework_length_long",
+    "document": "Length rule: Long posts should earn the extra length with narrative, proof, nuance, and a clear structure. Use sections, but keep paragraphs short.",
+    "metadata": {
+      "type": "length_rule",
+      "length": "long"
+    }
   }
 ]
