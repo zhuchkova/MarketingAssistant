@@ -1,3 +1,4 @@
+# python -m unittest discover -s tests
 import unittest
 
 from pydantic import ValidationError
@@ -38,6 +39,20 @@ class ValidationTests(unittest.TestCase):
         )
 
         self.assertIsNone(request.id)
+
+    def test_profile_personal_touch_is_optional(self):
+        request = CreateUserProfileRequest(
+            profile_name="AI Founder",
+            niche="AI automation",
+            offer="AI workflows",
+            target_audience="Founders",
+            expertise="ML engineering",
+            personal_touch="   ",
+            tone="Practical",
+            goal="Generate leads",
+        )
+
+        self.assertIsNone(request.personal_touch)
 
     def test_profile_rejects_invalid_id(self):
         with self.assertRaises(ValidationError):

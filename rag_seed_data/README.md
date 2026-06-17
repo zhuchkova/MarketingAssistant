@@ -31,6 +31,17 @@ The `positioning_knowledge/` collection is split into smaller files:
 * `base.json`: core positioning principles.
 * `niches_001_025.json`, `niches_026_050.json`, `niches_051_075.json`, `niches_076_100.json`: voice-of-customer cards for the 100 included niches.
 
+The `idea_knowledge.json` collection includes 60 audience-led hook patterns:
+
+* 10 pain-led hooks for frustrations, stuck moments, bad advice fatigue, and failed DIY cycles.
+* 10 desire-led hooks for identity, relief, visible progress, small wins, and future pacing.
+* 10 objection-led hooks for fit, price, DIY hesitation, trust, bad past experiences, and fear of judgment.
+* 10 trigger-led hooks for deadlines, failed attempts, decision moments, seasonal shifts, and visibility moments.
+* 10 proof-led hooks for process proof, before-after specificity, risk reduction, measurable wins, and method transparency.
+* 10 audience-language hooks for exact customer phrases, plain-language objections, buying signals, and search-style questions.
+
+These hook cards are designed to work with the audience-analysis fields `pains`, `desires`, `objections`, `trigger_moments`, `proof_points`, and `audience_language`.
+
 Avoid adding full copyrighted articles or long copied posts. Instead, turn each source into a short original summary card.
 
 To seed all collections:

@@ -227,6 +227,7 @@ user_profiles
   ├── offer
   ├── target_audience
   ├── expertise
+  ├── personal_touch
   ├── tone
   └── goal
 
@@ -561,6 +562,7 @@ Authorization: Bearer JWT_TOKEN
   "offer": "AI marketing workflows and systems",
   "target_audience": "early-stage founders struggling with marketing",
   "expertise": "ML engineer building AI agents",
+  "personal_touch": "I used to build these workflows manually before automating them.",
   "tone": "bold, practical",
   "goal": "generate leads"
 }

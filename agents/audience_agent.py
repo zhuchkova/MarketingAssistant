@@ -39,6 +39,7 @@ Profile:
 - Offer: {offer}
 - Target audience: {target_audience}
 - Expertise: {expertise}
+- Personal touch: {personal_touch}
 - Tone: {tone}
 - Goal: {goal}
 
@@ -46,6 +47,7 @@ Relevant positioning knowledge from RAG:
 {positioning_knowledge}
 
 Return trigger moments, proof points, and audience language as concrete, audience-specific lists.
+Use the personal touch as a source of relatability and differentiation when it is relevant.
 """)
 
 

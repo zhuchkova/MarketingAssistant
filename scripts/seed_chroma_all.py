@@ -1,4 +1,3 @@
-# python scripts/seed_chroma_all.py
 from chroma_seed_utils import seed_collection
 
 

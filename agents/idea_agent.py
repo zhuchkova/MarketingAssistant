@@ -37,6 +37,7 @@ Creator profile:
 - Offer: {offer}
 - Target audience: {target_audience}
 - Expertise: {expertise}
+- Personal touch: {personal_touch}
 - Tone: {tone}
 - Goal: {goal}
 
@@ -63,6 +64,7 @@ Rules:
 - Each idea needs a strong hook
 - Each idea should connect to one clear audience pain, desire, or objection
 - Use trigger moments and audience language to make hooks feel timely and specific
+- Use the creator's personal touch when it makes the idea more human, but do not force it into every idea
 """)
 
 

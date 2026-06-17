@@ -6,11 +6,12 @@ collection = client.get_or_create_collection(
     name="idea_knowledge"
 )
 
-def retrieve_idea_knowledge(profile: dict, audience_analysis: dict, n_results: int = 6) -> str:
+def retrieve_idea_knowledge(profile: dict, audience_analysis: dict, n_results: int = 8) -> str:
     query = f"""
     Niche: {profile.get("niche")}
     Offer: {profile.get("offer")}
     Target audience: {profile.get("target_audience")}
+    Personal touch: {profile.get("personal_touch")}
     Goal: {profile.get("goal")}
     Audience profile: {audience_analysis.get("audience_profile")}
     Pains: {audience_analysis.get("pains")}

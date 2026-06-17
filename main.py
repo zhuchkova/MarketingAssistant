@@ -148,9 +148,9 @@ def create_profile(
         with conn.cursor() as cur:
             cur.execute("""
                 INSERT INTO user_profiles (
-                    id, user_id, profile_name, niche, offer, target_audience, expertise, tone, goal
+                    id, user_id, profile_name, niche, offer, target_audience, expertise, personal_touch, tone, goal
                 )
-                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
             """, (
                 profile["id"],
                 profile["user_id"],
@@ -159,6 +159,7 @@ def create_profile(
                 profile["offer"],
                 profile["target_audience"],
                 profile["expertise"],
+                profile.get("personal_touch"),
                 profile["tone"],
                 profile["goal"]
             ))
@@ -202,7 +203,7 @@ def get_user_profile(
     try:
         with conn.cursor() as cur:
             cur.execute("""
-                SELECT id, user_id, profile_name, niche, offer, target_audience, expertise, tone, goal
+                SELECT id, user_id, profile_name, niche, offer, target_audience, expertise, personal_touch, tone, goal
                 FROM user_profiles
                 WHERE id = %s
             """, (profile_id,))
@@ -223,8 +224,9 @@ def get_user_profile(
         "offer": row[4],
         "target_audience": row[5],
         "expertise": row[6],
-        "tone": row[7],
-        "goal": row[8],
+        "personal_touch": row[7],
+        "tone": row[8],
+        "goal": row[9],
     }
 
 
@@ -347,11 +349,11 @@ def update_user_profile(
             cur.execute("DELETE FROM audience_analyses WHERE user_profile_id = %s", (profile_id,))
             cur.execute("""
                 UPDATE user_profiles
-                SET profile_name=%s, niche=%s, offer=%s, target_audience=%s, expertise=%s, tone=%s, goal=%s
+                SET profile_name=%s, niche=%s, offer=%s, target_audience=%s, expertise=%s, personal_touch=%s, tone=%s, goal=%s
                 WHERE id=%s
             """, (
                 request["profile_name"], request["niche"], request["offer"], request["target_audience"],
-                request["expertise"], request["tone"], request["goal"], profile_id,
+                request["expertise"], request.get("personal_touch"), request["tone"], request["goal"], profile_id,
             ))
 
         profile = {

@@ -1,3 +1,4 @@
+# python -m unittest discover -s tests
 import unittest
 
 from fastapi import HTTPException
