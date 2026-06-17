@@ -32,6 +32,7 @@ Creator profile:
 - Offer: {offer}
 - Target audience: {target_audience}
 - Expertise: {expertise}
+- Personal touch: {personal_touch}
 - Tone: {tone}
 - Goal: {goal}
 

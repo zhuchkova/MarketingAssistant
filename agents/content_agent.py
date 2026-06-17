@@ -30,6 +30,7 @@ Creator profile:
 - Offer: {offer}
 - Target audience: {target_audience}
 - Expertise: {expertise}
+- Personal touch: {personal_touch}
 - Tone: {tone}
 - Goal: {goal}
 
@@ -65,6 +66,7 @@ Rules:
 - Start with a strong hook
 - Connect the post to the audience pain/desire
 - Use audience language and proof points to make the post concrete and credible
+- Weave in the creator's personal touch only when it strengthens trust, relatability, or story
 - End with a CTA matching the post goal
 """)
 

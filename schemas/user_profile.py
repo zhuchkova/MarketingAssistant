@@ -1,3 +1,4 @@
+from typing import Optional
 from uuid import UUID
 from pydantic import BaseModel, ConfigDict, field_validator
 
@@ -9,7 +10,7 @@ def clean_required_text(value: str) -> str:
     return value
 
 
-def validate_uuid(value: str | None) -> str | None:
+def validate_uuid(value: Optional[str]) -> Optional[str]:
     if value is None:
         return None
     try:
@@ -19,18 +20,19 @@ def validate_uuid(value: str | None) -> str | None:
 
 
 class CreateUserProfileRequest(BaseModel):
-    id: str | None = None
+    id: Optional[str] = None
     profile_name: str
     niche: str
     offer: str
     target_audience: str
     expertise: str
+    personal_touch: Optional[str] = None
     tone: str
     goal: str
 
     @field_validator("id")
     @classmethod
-    def validate_id(cls, value: str | None) -> str | None:
+    def validate_id(cls, value: Optional[str]) -> Optional[str]:
         return validate_uuid(value)
 
     @field_validator(
@@ -46,6 +48,14 @@ class CreateUserProfileRequest(BaseModel):
     def validate_required_text(cls, value: str) -> str:
         return clean_required_text(value)
 
+    @field_validator("personal_touch")
+    @classmethod
+    def clean_optional_text(cls, value: Optional[str]) -> Optional[str]:
+        if value is None:
+            return None
+        value = value.strip()
+        return value or None
+
     model_config = ConfigDict(
         json_schema_extra={
             "example": {
@@ -55,6 +65,7 @@ class CreateUserProfileRequest(BaseModel):
                 "offer": "AI marketing workflows and systems",
                 "target_audience": "early-stage founders struggling with marketing",
                 "expertise": "ML engineer building AI agents",
+                "personal_touch": "I used to build these workflows manually before automating them.",
                 "tone": "bold, practical",
                 "goal": "generate leads"
             }
@@ -68,6 +79,7 @@ class UpdateUserProfileRequest(BaseModel):
     offer: str
     target_audience: str
     expertise: str
+    personal_touch: Optional[str] = None
     tone: str
     goal: str
 
@@ -84,6 +96,14 @@ class UpdateUserProfileRequest(BaseModel):
     def validate_required_text(cls, value: str) -> str:
         return clean_required_text(value)
 
+    @field_validator("personal_touch")
+    @classmethod
+    def clean_optional_text(cls, value: Optional[str]) -> Optional[str]:
+        if value is None:
+            return None
+        value = value.strip()
+        return value or None
+
     model_config = ConfigDict(
         json_schema_extra={
             "example": {
@@ -92,6 +112,7 @@ class UpdateUserProfileRequest(BaseModel):
                 "offer": "AI marketing workflows and systems",
                 "target_audience": "early-stage founders struggling with marketing",
                 "expertise": "ML engineer building AI agents",
+                "personal_touch": "I used to build these workflows manually before automating them.",
                 "tone": "bold, practical",
                 "goal": "generate leads"
             }

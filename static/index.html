@@ -1289,6 +1289,12 @@
                     <textarea id="f-expertise" placeholder="e.g. engineer building practical automation systems"></textarea>
                 </div>
 
+                <div class="form-group">
+                    <label>Personal Touch</label>
+                    <textarea id="f-personal-touch" placeholder="e.g. I learned this the hard way, we speak Russian, I used to be in your audience"></textarea>
+                    <span class="form-hint">Optional: a story, lived experience, language, origin detail, or small human note your audience can connect with.</span>
+                </div>
+
                 <div class="grid-2">
                     <div class="form-group">
                         <label>Tone *</label>
@@ -1617,6 +1623,10 @@
                 <label>Expertise</label>
                 <textarea id="e-expertise"></textarea>
             </div>
+            <div class="form-group">
+                <label>Personal Touch</label>
+                <textarea id="e-personal-touch" placeholder="Optional: story, lived experience, language, or origin detail"></textarea>
+            </div>
             <div class="grid-2">
                 <div class="form-group">
                     <label>Tone</label>
@@ -1871,12 +1881,14 @@ async function createProfile() {
         offer:           val('f-offer'),
         target_audience: val('f-target'),
         expertise:       val('f-expertise'),
+        personal_touch:  val('f-personal-touch'),
         tone:            val('f-tone'),
         goal:            val('f-goal'),
     };
 
-    if (Object.values(vals).some(v => !v)) {
-        toast('Please fill in all fields', 'error');
+    const required = ['profile_name', 'niche', 'offer', 'target_audience', 'expertise', 'tone', 'goal'];
+    if (required.some(k => !vals[k])) {
+        toast('Please fill in all required fields', 'error');
         return;
     }
 
@@ -2030,6 +2042,7 @@ function renderProfileGrid() {
         { label:'Offer',           val: p.offer },
         { label:'Target Audience', val: p.target_audience },
         { label:'Expertise',       val: p.expertise },
+        { label:'Personal Touch',  val: p.personal_touch },
         { label:'Tone',            val: p.tone },
         { label:'Goal',            val: p.goal },
     ];
@@ -2244,6 +2257,7 @@ function openEditModalFill() {
     document.getElementById('e-offer').value         = p.offer           || '';
     document.getElementById('e-target').value        = p.target_audience || '';
     document.getElementById('e-expertise').value     = p.expertise       || '';
+    document.getElementById('e-personal-touch').value = p.personal_touch || '';
     document.getElementById('e-tone').value          = p.tone            || '';
     document.getElementById('e-goal').value          = p.goal            || '';
 }
@@ -2262,10 +2276,12 @@ async function updateProfile() {
         offer:           val('e-offer'),
         target_audience: val('e-target'),
         expertise:       val('e-expertise'),
+        personal_touch:  val('e-personal-touch'),
         tone:            val('e-tone'),
         goal:            val('e-goal'),
     };
-    if (Object.values(body).some(v => !v)) { toast('Please fill in all fields', 'error'); return; }
+    const required = ['profile_name', 'niche', 'offer', 'target_audience', 'expertise', 'tone', 'goal'];
+    if (required.some(k => !body[k])) { toast('Please fill in all required fields', 'error'); return; }
 
     closeModal('modal-edit');
     showLoading('Updating your profile…', loadSteps('update'), { logo: true, kind: 'update' });

@@ -12,6 +12,7 @@ def retrieve_positioning_knowledge(profile: dict, n_results: int = 5) -> str:
     Offer: {profile.get("offer")}
     Target audience: {profile.get("target_audience")}
     Expertise: {profile.get("expertise")}
+    Personal touch: {profile.get("personal_touch")}
     Goal: {profile.get("goal")}
     """
 

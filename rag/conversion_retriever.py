@@ -16,6 +16,7 @@ def retrieve_conversion_knowledge(context: dict, n_results: int = 4) -> dict:
     Niche: {context.get("niche")}
     Offer: {context.get("offer")}
     Target audience: {context.get("target_audience")}
+    Personal touch: {context.get("personal_touch")}
     Goal: {context.get("goal")}
 
     Audience pains: {context.get("pains")}

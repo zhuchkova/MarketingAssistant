@@ -16,6 +16,7 @@ def retrieve_content_frameworks(
     query = f"""
     Niche: {profile.get("niche")}
     Target audience: {profile.get("target_audience")}
+    Personal touch: {profile.get("personal_touch")}
     Goal: {profile.get("goal")}
     Audience profile: {audience_analysis.get("audience_profile")}
     Pains: {audience_analysis.get("pains")}

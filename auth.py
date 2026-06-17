@@ -44,11 +44,7 @@ def get_current_user(
 ) -> dict:
     try:
         payload = jwt.decode(credentials.credentials, get_secret_key(), algorithms=[ALGORITHM])
-        return {
-            "user_id": payload["sub"],
-            "email": payload["email"],
-            "name": payload.get("name", ""),
-        }
+        return {"user_id": payload["sub"], "email": payload["email"], "name": payload.get("name", "")}
     except RuntimeError:
         raise HTTPException(status_code=500, detail="Authentication is not configured")
     except jwt.ExpiredSignatureError:

@@ -2,51 +2,811 @@
   {
     "id": "idea_hook_inner_monologue",
     "document": "Hook pattern: Start with the audience's private thought. Example: You are not bad at content. You are trying to write for an audience you have not listened to closely enough.",
-    "metadata": {"type": "hook_pattern", "angle": "voice_of_customer", "agent": "idea_agent"}
+    "metadata": {
+      "type": "hook_pattern",
+      "angle": "voice_of_customer",
+      "agent": "idea_agent"
+    }
   },
   {
     "id": "idea_hook_false_problem",
     "document": "Hook pattern: Name the false problem, then reveal the real one. Example: Your problem is not a lack of ideas. It is that every idea is disconnected from a real audience pain.",
-    "metadata": {"type": "hook_pattern", "angle": "contrarian", "agent": "idea_agent"}
+    "metadata": {
+      "type": "hook_pattern",
+      "angle": "contrarian",
+      "agent": "idea_agent"
+    }
   },
   {
     "id": "idea_hook_cost_of_delay",
     "document": "Hook pattern: Show the cost of waiting. Example: Every week you delay clarifying your offer, your audience learns to ignore your content.",
-    "metadata": {"type": "hook_pattern", "angle": "urgency", "agent": "idea_agent"}
+    "metadata": {
+      "type": "hook_pattern",
+      "angle": "urgency",
+      "agent": "idea_agent"
+    }
   },
   {
     "id": "idea_angle_objection_reversal",
     "document": "Content angle: Turn a common objection into the post topic. If the audience thinks 'I do not have time,' write about the smallest useful version. If they think 'this will not work for my niche,' show niche-specific proof.",
-    "metadata": {"type": "content_angle", "angle": "objection", "agent": "idea_agent"}
+    "metadata": {
+      "type": "content_angle",
+      "angle": "objection",
+      "agent": "idea_agent"
+    }
   },
   {
     "id": "idea_angle_moment_of_need",
     "document": "Content angle: Build ideas around moments of need: before a launch, after a failed post, before a sales call, after a quiet week, when comparing tools, or when trying to explain value.",
-    "metadata": {"type": "content_angle", "angle": "situational", "agent": "idea_agent"}
+    "metadata": {
+      "type": "content_angle",
+      "angle": "situational",
+      "agent": "idea_agent"
+    }
   },
   {
     "id": "idea_angle_specific_before_after",
     "document": "Content angle: Before-after posts work best when the before state is emotionally recognizable and the after state is concrete. Avoid vague transformation; name what changes in behavior, confidence, speed, or results.",
-    "metadata": {"type": "content_angle", "angle": "before_after", "agent": "idea_agent"}
+    "metadata": {
+      "type": "content_angle",
+      "angle": "before_after",
+      "agent": "idea_agent"
+    }
   },
   {
     "id": "idea_angle_tiny_tutorial",
     "document": "Content angle: A tiny tutorial should solve one narrow step, not teach the whole subject. Strong posts help the audience do one thing immediately and correctly.",
-    "metadata": {"type": "content_angle", "angle": "how_to", "agent": "idea_agent"}
+    "metadata": {
+      "type": "content_angle",
+      "angle": "how_to",
+      "agent": "idea_agent"
+    }
   },
   {
     "id": "idea_hook_specific_mistake",
     "document": "Hook pattern: The mistake hook is strongest when it names a specific behavior. Example: The biggest mistake coaches make in their bio is describing their method before naming the result clients want.",
-    "metadata": {"type": "hook_pattern", "angle": "mistake", "agent": "idea_agent"}
+    "metadata": {
+      "type": "hook_pattern",
+      "angle": "mistake",
+      "agent": "idea_agent"
+    }
   },
   {
     "id": "idea_angle_belief_shift",
     "document": "Content angle: High-engagement educational posts often create a belief shift: what the audience currently believes, why that belief is incomplete, and what better belief helps them act.",
-    "metadata": {"type": "content_angle", "angle": "belief_shift", "agent": "idea_agent"}
+    "metadata": {
+      "type": "content_angle",
+      "angle": "belief_shift",
+      "agent": "idea_agent"
+    }
   },
   {
     "id": "idea_hook_specificity_test",
     "document": "Idea quality test: Replace broad words like marketing, strategy, content, growth, and value with concrete nouns from the audience's daily life. Specificity usually improves relevance and engagement.",
-    "metadata": {"type": "quality_rule", "angle": "specificity", "agent": "idea_agent"}
+    "metadata": {
+      "type": "quality_rule",
+      "angle": "specificity",
+      "agent": "idea_agent"
+    }
+  },
+  {
+    "id": "idea_hook_pain_01",
+    "document": "Hook pattern: Name the exact moment the audience feels stuck, then point to the hidden cause. Example: If choosing flowers feels weirdly stressful, it is usually because you are trying to send the right emotion, not just pick the prettiest bouquet.",
+    "metadata": {
+      "type": "hook_pattern",
+      "agent": "idea_agent",
+      "label": "pain",
+      "angle": "pain",
+      "title": "Name the stuck moment",
+      "source_fields": "pains"
+    }
+  },
+  {
+    "id": "idea_hook_pain_02",
+    "document": "Hook pattern: Start with the frustration the audience may not say out loud. Example: You are not lazy about workouts. You are tired of plans that ignore how busy your real week is.",
+    "metadata": {
+      "type": "hook_pattern",
+      "agent": "idea_agent",
+      "label": "pain",
+      "angle": "pain",
+      "title": "Private frustration",
+      "source_fields": "pains"
+    }
+  },
+  {
+    "id": "idea_hook_pain_03",
+    "document": "Hook pattern: Show what the pain quietly costs if ignored. Example: A confusing homepage does not just look messy. It makes good-fit clients hesitate before they ever contact you.",
+    "metadata": {
+      "type": "hook_pattern",
+      "agent": "idea_agent",
+      "label": "pain",
+      "angle": "pain",
+      "title": "Cost of tolerating",
+      "source_fields": "pains"
+    }
+  },
+  {
+    "id": "idea_hook_pain_04",
+    "document": "Hook pattern: Name the DIY loop the audience keeps repeating. Example: If you keep buying skincare products and still feel confused, the problem may be the routine, not your skin.",
+    "metadata": {
+      "type": "hook_pattern",
+      "agent": "idea_agent",
+      "label": "pain",
+      "angle": "pain",
+      "title": "Failed DIY cycle",
+      "source_fields": "pains"
+    }
+  },
+  {
+    "id": "idea_hook_pain_05",
+    "document": "Hook pattern: Validate why a supposedly simple task feels difficult. Example: Choosing a nail design is harder when you are trying to match your event, your style, and three weeks of wear.",
+    "metadata": {
+      "type": "hook_pattern",
+      "agent": "idea_agent",
+      "label": "pain",
+      "angle": "pain",
+      "title": "Simple task feels hard",
+      "source_fields": "pains"
+    }
+  },
+  {
+    "id": "idea_hook_pain_06",
+    "document": "Hook pattern: Contrast the visible symptom with the real problem underneath. Example: Your dog is not ignoring you on walks. They may not understand what behavior gets rewarded.",
+    "metadata": {
+      "type": "hook_pattern",
+      "agent": "idea_agent",
+      "label": "pain",
+      "angle": "pain",
+      "title": "Symptom versus real problem",
+      "source_fields": "pains"
+    }
+  },
+  {
+    "id": "idea_hook_pain_07",
+    "document": "Hook pattern: Open with the audience's overwhelm and promise a smaller first step. Example: You do not need to organize your whole home this weekend. Start with the one cabinet you open every morning.",
+    "metadata": {
+      "type": "hook_pattern",
+      "agent": "idea_agent",
+      "label": "pain",
+      "angle": "pain",
+      "title": "Overwhelm reducer",
+      "source_fields": "pains"
+    }
+  },
+  {
+    "id": "idea_hook_pain_08",
+    "document": "Hook pattern: Call out the problem the audience keeps avoiding because it feels uncomfortable. Example: The reason you keep postponing your tax prep is not the paperwork. It is the fear of what the numbers might reveal.",
+    "metadata": {
+      "type": "hook_pattern",
+      "agent": "idea_agent",
+      "label": "pain",
+      "angle": "pain",
+      "title": "Avoided problem",
+      "source_fields": "pains"
+    }
+  },
+  {
+    "id": "idea_hook_pain_09",
+    "document": "Hook pattern: Reject generic advice that has not helped the audience. Example: 'Just post consistently' is useless advice if you do not know what your audience is already trying to decide.",
+    "metadata": {
+      "type": "hook_pattern",
+      "agent": "idea_agent",
+      "label": "pain",
+      "angle": "pain",
+      "title": "Bad advice fatigue",
+      "source_fields": "pains"
+    }
+  },
+  {
+    "id": "idea_hook_pain_10",
+    "document": "Hook pattern: Use an overheard customer sentence as the hook. Example: 'I know my brand looks amateur, but I do not even know what to ask a designer for.'",
+    "metadata": {
+      "type": "hook_pattern",
+      "agent": "idea_agent",
+      "label": "pain",
+      "angle": "pain",
+      "title": "Pain in audience language",
+      "source_fields": "pains"
+    }
+  },
+  {
+    "id": "idea_hook_desire_01",
+    "document": "Hook pattern: Connect the outcome to who the audience wants to become. Example: The goal is not just stronger arms. It is feeling like the kind of person who keeps promises to herself.",
+    "metadata": {
+      "type": "hook_pattern",
+      "agent": "idea_agent",
+      "label": "desire",
+      "angle": "desire",
+      "title": "Desired identity",
+      "source_fields": "desires"
+    }
+  },
+  {
+    "id": "idea_hook_desire_02",
+    "document": "Hook pattern: Lead with the relief the audience wants after the problem is handled. Example: Imagine opening your closet and knowing exactly what works together before a busy morning.",
+    "metadata": {
+      "type": "hook_pattern",
+      "agent": "idea_agent",
+      "label": "desire",
+      "angle": "desire",
+      "title": "Relief promise",
+      "source_fields": "desires"
+    }
+  },
+  {
+    "id": "idea_hook_desire_03",
+    "document": "Hook pattern: Make the desired after-state specific and sensory. Example: A great hotel stay starts before check-in: clear directions, easy parking, and a room that looks like the photos.",
+    "metadata": {
+      "type": "hook_pattern",
+      "agent": "idea_agent",
+      "label": "desire",
+      "angle": "desire",
+      "title": "Concrete after-state",
+      "source_fields": "desires"
+    }
+  },
+  {
+    "id": "idea_hook_desire_04",
+    "document": "Hook pattern: Tie the big desire to a small achievable first win. Example: You do not need a full AI transformation. Start with one workflow that saves your team thirty minutes every day.",
+    "metadata": {
+      "type": "hook_pattern",
+      "agent": "idea_agent",
+      "label": "desire",
+      "angle": "desire",
+      "title": "Small first win",
+      "source_fields": "desires"
+    }
+  },
+  {
+    "id": "idea_hook_desire_05",
+    "document": "Hook pattern: Show how the offer reduces choices and mental load. Example: The best bouquet is not the biggest one. It is the one that matches the moment you are trying to honor.",
+    "metadata": {
+      "type": "hook_pattern",
+      "agent": "idea_agent",
+      "label": "desire",
+      "angle": "desire",
+      "title": "Less decision fatigue",
+      "source_fields": "desires"
+    }
+  },
+  {
+    "id": "idea_hook_desire_06",
+    "document": "Hook pattern: Hook around the first signs the audience is moving toward the result. Example: Your first sign of better nutrition is not a perfect meal plan. It is fewer chaotic decisions at 6 p.m.",
+    "metadata": {
+      "type": "hook_pattern",
+      "agent": "idea_agent",
+      "label": "desire",
+      "angle": "desire",
+      "title": "Visible progress",
+      "source_fields": "desires"
+    }
+  },
+  {
+    "id": "idea_hook_desire_07",
+    "document": "Hook pattern: Name the pride or status desire behind the practical outcome. Example: A polished website is not vanity. It lets people feel they are dealing with a serious business.",
+    "metadata": {
+      "type": "hook_pattern",
+      "agent": "idea_agent",
+      "label": "desire",
+      "angle": "desire",
+      "title": "Status and pride",
+      "source_fields": "desires"
+    }
+  },
+  {
+    "id": "idea_hook_desire_08",
+    "document": "Hook pattern: Contrast the desired outcome with the workaround they are tired of. Example: You do not want another spreadsheet for your business. You want to stop wondering what is slipping through the cracks.",
+    "metadata": {
+      "type": "hook_pattern",
+      "agent": "idea_agent",
+      "label": "desire",
+      "angle": "desire",
+      "title": "Freedom from workaround",
+      "source_fields": "desires"
+    }
+  },
+  {
+    "id": "idea_hook_desire_09",
+    "document": "Hook pattern: Make the desired outcome emotionally meaningful. Example: Custom jewelry works when it feels like a memory someone can wear, not just an accessory.",
+    "metadata": {
+      "type": "hook_pattern",
+      "agent": "idea_agent",
+      "label": "desire",
+      "angle": "desire",
+      "title": "Personal meaning",
+      "source_fields": "desires"
+    }
+  },
+  {
+    "id": "idea_hook_desire_10",
+    "document": "Hook pattern: Place the reader in a near-future moment where the result matters. Example: Two weeks before your launch is the worst time to realize your offer still sounds unclear.",
+    "metadata": {
+      "type": "hook_pattern",
+      "agent": "idea_agent",
+      "label": "desire",
+      "angle": "desire",
+      "title": "Future pacing",
+      "source_fields": "desires"
+    }
+  },
+  {
+    "id": "idea_hook_objection_01",
+    "document": "Hook pattern: Start with the fit objection and answer it through specificity. Example: If you think Pilates is only for flexible people, this is exactly why beginner sessions exist.",
+    "metadata": {
+      "type": "hook_pattern",
+      "agent": "idea_agent",
+      "label": "objection",
+      "angle": "objection",
+      "title": "Is this for me",
+      "source_fields": "objections"
+    }
+  },
+  {
+    "id": "idea_hook_objection_02",
+    "document": "Hook pattern: Reframe price around risk, time, and avoided mistakes. Example: A UX audit is not expensive because of the report. It is valuable because it shows where users stop trusting the product.",
+    "metadata": {
+      "type": "hook_pattern",
+      "agent": "idea_agent",
+      "label": "objection",
+      "angle": "objection",
+      "title": "Worth the price",
+      "source_fields": "objections"
+    }
+  },
+  {
+    "id": "idea_hook_objection_03",
+    "document": "Hook pattern: Respect the DIY instinct, then explain where expert help changes the outcome. Example: You can plan your own trip. But complex travel is where one missed transfer can cost more than the planning help.",
+    "metadata": {
+      "type": "hook_pattern",
+      "agent": "idea_agent",
+      "label": "objection",
+      "angle": "objection",
+      "title": "I should DIY",
+      "source_fields": "objections"
+    }
+  },
+  {
+    "id": "idea_hook_objection_04",
+    "document": "Hook pattern: Remove pressure by explaining the first step. Example: A first therapy session is not a lifetime commitment. It is a conversation about what support could look like.",
+    "metadata": {
+      "type": "hook_pattern",
+      "agent": "idea_agent",
+      "label": "objection",
+      "angle": "objection",
+      "title": "Fear of pressure",
+      "source_fields": "objections"
+    }
+  },
+  {
+    "id": "idea_hook_objection_05",
+    "document": "Hook pattern: Speak to people who tried before and were disappointed. Example: If your last haircut looked good for one day and impossible after that, the consultation missed your real routine.",
+    "metadata": {
+      "type": "hook_pattern",
+      "agent": "idea_agent",
+      "label": "objection",
+      "angle": "objection",
+      "title": "Bad past experience",
+      "source_fields": "objections"
+    }
+  },
+  {
+    "id": "idea_hook_objection_06",
+    "document": "Hook pattern: Use proof points to make progress visible. Example: A good driving lesson does not just say 'practice more.' It shows exactly which road situations make you hesitate.",
+    "metadata": {
+      "type": "hook_pattern",
+      "agent": "idea_agent",
+      "label": "objection",
+      "angle": "objection",
+      "title": "What if nothing changes",
+      "source_fields": "objections"
+    }
+  },
+  {
+    "id": "idea_hook_objection_07",
+    "document": "Hook pattern: Challenge the belief that the audience must wait until they are more ready. Example: You do not need a finished course idea before mapping the curriculum. The map is what exposes the gaps.",
+    "metadata": {
+      "type": "hook_pattern",
+      "agent": "idea_agent",
+      "label": "objection",
+      "angle": "objection",
+      "title": "Too early to start",
+      "source_fields": "objections"
+    }
+  },
+  {
+    "id": "idea_hook_objection_08",
+    "document": "Hook pattern: Acknowledge edge cases and show a decision framework. Example: Not every garden needs the same plants. Sun, soil, pets, and how much you actually water matter more than Pinterest.",
+    "metadata": {
+      "type": "hook_pattern",
+      "agent": "idea_agent",
+      "label": "objection",
+      "angle": "objection",
+      "title": "My situation is different",
+      "source_fields": "objections"
+    }
+  },
+  {
+    "id": "idea_hook_objection_09",
+    "document": "Hook pattern: Name the shame or judgment fear directly and make the space feel safe. Example: A home organizer has seen clutter before. The point is not to judge the mess. It is to build a system you can keep.",
+    "metadata": {
+      "type": "hook_pattern",
+      "agent": "idea_agent",
+      "label": "objection",
+      "angle": "objection",
+      "title": "Fear of judgment",
+      "source_fields": "objections"
+    }
+  },
+  {
+    "id": "idea_hook_objection_10",
+    "document": "Hook pattern: Teach how to evaluate the provider before buying. Example: Before choosing a cat breeder, ask about health testing, socialization, parent cats, and what support continues after pickup.",
+    "metadata": {
+      "type": "hook_pattern",
+      "agent": "idea_agent",
+      "label": "objection",
+      "angle": "objection",
+      "title": "Trust before action",
+      "source_fields": "objections"
+    }
+  },
+  {
+    "id": "idea_hook_trigger_01",
+    "document": "Hook pattern: Open with a deadline or time-sensitive moment that makes the problem urgent. Example: If your wedding is six weeks away and you still have not booked a photographer, start with timeline fit, not portfolio style.",
+    "metadata": {
+      "type": "hook_pattern",
+      "agent": "idea_agent",
+      "label": "trigger",
+      "angle": "trigger",
+      "title": "Deadline pressure",
+      "source_fields": "trigger_moments"
+    }
+  },
+  {
+    "id": "idea_hook_trigger_02",
+    "document": "Hook pattern: Start after the audience has already tried and been disappointed. Example: If your last launch was quiet, do not write more posts yet. Find the point where your offer stopped sounding specific.",
+    "metadata": {
+      "type": "hook_pattern",
+      "agent": "idea_agent",
+      "label": "trigger",
+      "angle": "trigger",
+      "title": "After failed attempt",
+      "source_fields": "trigger_moments"
+    }
+  },
+  {
+    "id": "idea_hook_trigger_03",
+    "document": "Hook pattern: Hook into the moment before a high-stakes decision. Example: Before you choose a daycare, ask how they communicate on the ordinary days, not only during tours.",
+    "metadata": {
+      "type": "hook_pattern",
+      "agent": "idea_agent",
+      "label": "trigger",
+      "angle": "trigger",
+      "title": "Before big decision",
+      "source_fields": "trigger_moments"
+    }
+  },
+  {
+    "id": "idea_hook_trigger_04",
+    "document": "Hook pattern: Use a season or life transition as the reason to act now. Example: Spring is when neglected gardens reveal last year's shortcuts. Start with soil and light before buying more plants.",
+    "metadata": {
+      "type": "hook_pattern",
+      "agent": "idea_agent",
+      "label": "trigger",
+      "angle": "trigger",
+      "title": "Seasonal shift",
+      "source_fields": "trigger_moments"
+    }
+  },
+  {
+    "id": "idea_hook_trigger_05",
+    "document": "Hook pattern: Name the moment the problem becomes visible to others. Example: When guests are coming over, the clutter you stopped seeing suddenly feels impossible to ignore.",
+    "metadata": {
+      "type": "hook_pattern",
+      "agent": "idea_agent",
+      "label": "trigger",
+      "angle": "trigger",
+      "title": "Visible problem appears",
+      "source_fields": "trigger_moments"
+    }
+  },
+  {
+    "id": "idea_hook_trigger_06",
+    "document": "Hook pattern: Start when the audience is comparing providers and unsure what matters. Example: If every yoga class looks beginner-friendly, check how the teacher explains modifications.",
+    "metadata": {
+      "type": "hook_pattern",
+      "agent": "idea_agent",
+      "label": "trigger",
+      "angle": "trigger",
+      "title": "Comparison moment",
+      "source_fields": "trigger_moments"
+    }
+  },
+  {
+    "id": "idea_hook_trigger_07",
+    "document": "Hook pattern: Hook around a new role or responsibility. Example: The moment you hire your first team member is when messy processes stop being a personal problem and become a company problem.",
+    "metadata": {
+      "type": "hook_pattern",
+      "agent": "idea_agent",
+      "label": "trigger",
+      "angle": "trigger",
+      "title": "New responsibility",
+      "source_fields": "trigger_moments"
+    }
+  },
+  {
+    "id": "idea_hook_trigger_08",
+    "document": "Hook pattern: Name the moment frustration finally outweighs avoidance. Example: Most people book driving lessons when anxiety becomes more exhausting than learning.",
+    "metadata": {
+      "type": "hook_pattern",
+      "agent": "idea_agent",
+      "label": "trigger",
+      "angle": "trigger",
+      "title": "Emotional tipping point",
+      "source_fields": "trigger_moments"
+    }
+  },
+  {
+    "id": "idea_hook_trigger_09",
+    "document": "Hook pattern: Use a moment when the audience will be seen, judged, photographed, or evaluated. Example: If your brand photos are next month, your outfits should support your message before they support trends.",
+    "metadata": {
+      "type": "hook_pattern",
+      "agent": "idea_agent",
+      "label": "trigger",
+      "angle": "trigger",
+      "title": "Upcoming visibility",
+      "source_fields": "trigger_moments"
+    }
+  },
+  {
+    "id": "idea_hook_trigger_10",
+    "document": "Hook pattern: Start with a small recurring annoyance that signals a bigger need. Example: If you apologize for your website every time you send the link, the design problem is already costing trust.",
+    "metadata": {
+      "type": "hook_pattern",
+      "agent": "idea_agent",
+      "label": "trigger",
+      "angle": "trigger",
+      "title": "Quiet recurring annoyance",
+      "source_fields": "trigger_moments"
+    }
+  },
+  {
+    "id": "idea_hook_proof_01",
+    "document": "Hook pattern: Lead with how the creator thinks, not just the result. Example: The best proof a florist can show is not only the bouquet. It is why those flowers match that occasion.",
+    "metadata": {
+      "type": "hook_pattern",
+      "agent": "idea_agent",
+      "label": "proof",
+      "angle": "proof",
+      "title": "Process proof",
+      "source_fields": "proof_points"
+    }
+  },
+  {
+    "id": "idea_hook_proof_02",
+    "document": "Hook pattern: Use a specific before-after contrast as the hook. Example: Before: a homepage full of services. After: one sentence that tells the right client, 'this is for me.'",
+    "metadata": {
+      "type": "hook_pattern",
+      "agent": "idea_agent",
+      "label": "proof",
+      "angle": "proof",
+      "title": "Before-after specificity",
+      "source_fields": "proof_points"
+    }
+  },
+  {
+    "id": "idea_hook_proof_03",
+    "document": "Hook pattern: Teach the audience what proof to look for before buying. Example: Before choosing a tattoo artist, look at healed work, not only fresh photos.",
+    "metadata": {
+      "type": "hook_pattern",
+      "agent": "idea_agent",
+      "label": "proof",
+      "angle": "proof",
+      "title": "Decision criteria",
+      "source_fields": "proof_points"
+    }
+  },
+  {
+    "id": "idea_hook_proof_04",
+    "document": "Hook pattern: Lead with the proof that reduces the audience's biggest risk. Example: A good puppy breeder can explain temperament, health testing, and what support continues after pickup.",
+    "metadata": {
+      "type": "hook_pattern",
+      "agent": "idea_agent",
+      "label": "proof",
+      "angle": "proof",
+      "title": "Risk reducer",
+      "source_fields": "proof_points"
+    }
+  },
+  {
+    "id": "idea_hook_proof_05",
+    "document": "Hook pattern: Show behind-the-scenes expertise that the audience would not know to value. Example: A good massage therapist is not just following pressure points. They are adjusting to how your body responds in real time.",
+    "metadata": {
+      "type": "hook_pattern",
+      "agent": "idea_agent",
+      "label": "proof",
+      "angle": "proof",
+      "title": "Behind-the-scenes authority",
+      "source_fields": "proof_points"
+    }
+  },
+  {
+    "id": "idea_hook_proof_06",
+    "document": "Hook pattern: Open with a small measurable result instead of a dramatic transformation. Example: One saved hour per week is often the first sign your AI workflow is actually useful.",
+    "metadata": {
+      "type": "hook_pattern",
+      "agent": "idea_agent",
+      "label": "proof",
+      "angle": "proof",
+      "title": "Small measurable win",
+      "source_fields": "proof_points"
+    }
+  },
+  {
+    "id": "idea_hook_proof_07",
+    "document": "Hook pattern: Use repeated client/customer patterns as proof. Example: After reviewing dozens of resumes, the same problem appears: strong experience hidden behind vague bullets.",
+    "metadata": {
+      "type": "hook_pattern",
+      "agent": "idea_agent",
+      "label": "proof",
+      "angle": "proof",
+      "title": "Pattern recognition",
+      "source_fields": "proof_points"
+    }
+  },
+  {
+    "id": "idea_hook_proof_08",
+    "document": "Hook pattern: Position proof around what the creator prevents. Example: A good architect does not only design beautiful rooms. They prevent expensive decisions that are hard to reverse.",
+    "metadata": {
+      "type": "hook_pattern",
+      "agent": "idea_agent",
+      "label": "proof",
+      "angle": "proof",
+      "title": "Mistake prevention",
+      "source_fields": "proof_points"
+    }
+  },
+  {
+    "id": "idea_hook_proof_09",
+    "document": "Hook pattern: Use proof that resembles the reader's current situation. Example: If you are a nervous adult swimmer, a child's swim milestone will not reassure you. You need to see adult beginner progress.",
+    "metadata": {
+      "type": "hook_pattern",
+      "agent": "idea_agent",
+      "label": "proof",
+      "angle": "proof",
+      "title": "Close-to-reader example",
+      "source_fields": "proof_points"
+    }
+  },
+  {
+    "id": "idea_hook_proof_10",
+    "document": "Hook pattern: Make the method itself the proof. Example: The easiest way to trust a nutrition coach is to see how they adapt the plan when real life interrupts it.",
+    "metadata": {
+      "type": "hook_pattern",
+      "agent": "idea_agent",
+      "label": "proof",
+      "angle": "proof",
+      "title": "Transparent method",
+      "source_fields": "proof_points"
+    }
+  },
+  {
+    "id": "idea_hook_language_01",
+    "document": "Hook pattern: Start with a sentence that sounds like the audience said it. Example: 'I know my site is outdated, but I do not know what to change first.'",
+    "metadata": {
+      "type": "hook_pattern",
+      "agent": "idea_agent",
+      "label": "language",
+      "angle": "language",
+      "title": "Direct quote style",
+      "source_fields": "audience_language"
+    }
+  },
+  {
+    "id": "idea_hook_language_02",
+    "document": "Hook pattern: Use the audience's tired phrase, then reframe it. Example: 'I tried everything for my skin' usually means you tried products before anyone helped you build a routine.",
+    "metadata": {
+      "type": "hook_pattern",
+      "agent": "idea_agent",
+      "label": "language",
+      "angle": "language",
+      "title": "I tried everything",
+      "source_fields": "audience_language"
+    }
+  },
+  {
+    "id": "idea_hook_language_03",
+    "document": "Hook pattern: Replace professional jargon with the audience's plain-language version. Example: Your client is not asking for 'conversion copy.' They are asking why people read the page and still do not book.",
+    "metadata": {
+      "type": "hook_pattern",
+      "agent": "idea_agent",
+      "label": "language",
+      "angle": "language",
+      "title": "Not expert jargon",
+      "source_fields": "audience_language"
+    }
+  },
+  {
+    "id": "idea_hook_language_04",
+    "document": "Hook pattern: Turn a common customer phrase into a buying-signal hook. Example: 'I just need something simple' often means the person wants confidence without another complicated system.",
+    "metadata": {
+      "type": "hook_pattern",
+      "agent": "idea_agent",
+      "label": "language",
+      "angle": "language",
+      "title": "Buying signal phrase",
+      "source_fields": "audience_language"
+    }
+  },
+  {
+    "id": "idea_hook_language_05",
+    "document": "Hook pattern: Decode what the audience really means when they say a vague phrase. Example: When someone says 'I want natural makeup,' they usually mean they want to feel polished without feeling disguised.",
+    "metadata": {
+      "type": "hook_pattern",
+      "agent": "idea_agent",
+      "label": "language",
+      "angle": "language",
+      "title": "Hidden meaning",
+      "source_fields": "audience_language"
+    }
+  },
+  {
+    "id": "idea_hook_language_06",
+    "document": "Hook pattern: Quote the objection exactly, then answer it with empathy. Example: 'I am too old to start learning piano' is not a fact. It is a fear about being seen as a beginner.",
+    "metadata": {
+      "type": "hook_pattern",
+      "agent": "idea_agent",
+      "label": "language",
+      "angle": "language",
+      "title": "Exact objection sentence",
+      "source_fields": "audience_language"
+    }
+  },
+  {
+    "id": "idea_hook_language_07",
+    "document": "Hook pattern: Start with the phrase the audience might type into search or say to a friend. Example: 'Best flowers for an apology' is not really about flowers. It is about repairing a moment.",
+    "metadata": {
+      "type": "hook_pattern",
+      "agent": "idea_agent",
+      "label": "language",
+      "angle": "language",
+      "title": "Search phrase hook",
+      "source_fields": "audience_language"
+    }
+  },
+  {
+    "id": "idea_hook_language_08",
+    "document": "Hook pattern: Use the question people ask right before they book or buy. Example: 'How do I know if my dog needs training or just more exercise?' is the post.",
+    "metadata": {
+      "type": "hook_pattern",
+      "agent": "idea_agent",
+      "label": "language",
+      "angle": "language",
+      "title": "Before booking question",
+      "source_fields": "audience_language"
+    }
+  },
+  {
+    "id": "idea_hook_language_09",
+    "document": "Hook pattern: Name the emotion using everyday words. Example: You do not need to say 'decision fatigue.' Say, 'I am tired of guessing what to wear every morning.'",
+    "metadata": {
+      "type": "hook_pattern",
+      "agent": "idea_agent",
+      "label": "language",
+      "angle": "language",
+      "title": "Emotion in plain words",
+      "source_fields": "audience_language"
+    }
+  },
+  {
+    "id": "idea_hook_language_10",
+    "document": "Hook pattern: Mirror the reader's situation so clearly that it feels personal. Example: If your content ideas sound fine in a doc but awkward when you post them, your issue is audience distance.",
+    "metadata": {
+      "type": "hook_pattern",
+      "agent": "idea_agent",
+      "label": "language",
+      "angle": "language",
+      "title": "Audience mirror",
+      "source_fields": "audience_language"
+    }
   }
 ]
