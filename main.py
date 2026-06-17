@@ -1,6 +1,7 @@
 # uvicorn main:app --reload
 import os
 import uuid
+from typing import List
 from dotenv import load_dotenv
 load_dotenv()
 from fastapi import FastAPI, HTTPException, Depends
@@ -10,6 +11,7 @@ from fastapi.middleware.cors import CORSMiddleware
 import psycopg
 from schemas.user_profile import CreateUserProfileRequest, UpdateUserProfileRequest
 from schemas.post_generation import GeneratePostRequest
+from schemas.content_idea import ContentIdeaRequest, GenerateIdeasRequest
 from schemas.auth import RegisterRequest, LoginRequest
 from auth import get_current_user, hash_password, verify_password, create_token
 from authorization import check_profile_owner, check_post_owner
@@ -26,7 +28,7 @@ from db.conversion_repository import (get_conversion_context,
     save_manychat_flow)
 
 
-def get_allowed_origins() -> list[str]:
+def get_allowed_origins() -> List[str]:
     origins = os.getenv(
         "FRONTEND_ORIGINS",
         "http://127.0.0.1:8000,http://localhost:8000,http://127.0.0.1:3000,http://localhost:3000",
@@ -40,7 +42,7 @@ def handle_new_profile(conn, profile):
     saved_profile, saved_audience_analysis = get_profile_with_audience_analysis(
         conn, profile["id"]
     )
-    ideas = run_idea_agent(saved_profile, saved_audience_analysis, number_of_ideas=10)
+    ideas = run_idea_agent(saved_profile, saved_audience_analysis, number_of_ideas=20)
     save_content_ideas(
         conn,
         user_profile_id=profile["id"],
@@ -56,13 +58,54 @@ def regenerate_profile_outputs(conn, profile):
     saved_profile, saved_audience_analysis = get_profile_with_audience_analysis(
         conn, profile["id"]
     )
-    ideas = run_idea_agent(saved_profile, saved_audience_analysis, number_of_ideas=10)
+    ideas = run_idea_agent(saved_profile, saved_audience_analysis, number_of_ideas=20)
     save_content_ideas(
         conn,
         user_profile_id=profile["id"],
         audience_analysis_id=saved_audience_analysis["id"],
         ideas=ideas
     )
+
+
+def ensure_content_idea_owner(conn, idea_id: str, user_id: str) -> dict:
+    with conn.cursor() as cur:
+        cur.execute("""
+            SELECT
+                ci.id,
+                ci.user_profile_id,
+                ci.audience_analysis_id,
+                ci.title,
+                ci.hook,
+                ci.angle,
+                ci.topic,
+                COALESCE(ci.post_format, ci.content_style) AS post_format
+            FROM content_ideas ci
+            JOIN user_profiles up ON ci.user_profile_id = up.id
+            WHERE ci.id = %s AND up.user_id = %s
+        """, (idea_id, user_id))
+        row = cur.fetchone()
+
+    if not row:
+        raise HTTPException(status_code=404, detail="Content idea not found")
+
+    return {
+        "id": row[0],
+        "user_profile_id": row[1],
+        "audience_analysis_id": row[2],
+        "title": row[3],
+        "hook": row[4],
+        "angle": row[5],
+        "topic": row[6],
+        "post_format": row[7],
+    }
+
+
+def get_profile_and_audience_for_generation(conn, profile_id: str, user_id: str) -> tuple:
+    check_profile_owner(conn, profile_id, user_id)
+    try:
+        return get_profile_with_audience_analysis(conn, profile_id)
+    except ValueError:
+        raise HTTPException(status_code=400, detail="Audience analysis is missing for this profile")
 
 
 app = FastAPI()
@@ -148,9 +191,10 @@ def create_profile(
         with conn.cursor() as cur:
             cur.execute("""
                 INSERT INTO user_profiles (
-                    id, user_id, profile_name, niche, offer, target_audience, expertise, personal_touch, tone, goal
+                    id, user_id, profile_name, niche, offer, target_audience, expertise, personal_touch,
+                    market_scope, primary_market, currency, locale_notes, tone, goal
                 )
-                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
             """, (
                 profile["id"],
                 profile["user_id"],
@@ -160,6 +204,10 @@ def create_profile(
                 profile["target_audience"],
                 profile["expertise"],
                 profile.get("personal_touch"),
+                profile.get("market_scope"),
+                profile.get("primary_market"),
+                profile.get("currency"),
+                profile.get("locale_notes"),
                 profile["tone"],
                 profile["goal"]
             ))
@@ -203,7 +251,8 @@ def get_user_profile(
     try:
         with conn.cursor() as cur:
             cur.execute("""
-                SELECT id, user_id, profile_name, niche, offer, target_audience, expertise, personal_touch, tone, goal
+                SELECT id, user_id, profile_name, niche, offer, target_audience, expertise, personal_touch,
+                       market_scope, primary_market, currency, locale_notes, tone, goal
                 FROM user_profiles
                 WHERE id = %s
             """, (profile_id,))
@@ -225,8 +274,12 @@ def get_user_profile(
         "target_audience": row[5],
         "expertise": row[6],
         "personal_touch": row[7],
-        "tone": row[8],
-        "goal": row[9],
+        "market_scope": row[8],
+        "primary_market": row[9],
+        "currency": row[10],
+        "locale_notes": row[11],
+        "tone": row[12],
+        "goal": row[13],
     }
 
 
@@ -243,7 +296,7 @@ def get_audience_analysis(
             cur.execute("""
                 SELECT id, audience_profile, pains, desires, objections,
                        trigger_moments, proof_points, audience_language,
-                       content_angles, tone, positioning, known_for
+                       market_context, content_angles, tone, positioning, known_for
                 FROM audience_analyses
                 WHERE user_profile_id = %s
             """, (profile_id,))
@@ -263,10 +316,11 @@ def get_audience_analysis(
         "trigger_moments": row[5],
         "proof_points": row[6],
         "audience_language": row[7],
-        "content_angles": row[8],
-        "tone": row[9],
-        "positioning": row[10],
-        "known_for": row[11],
+        "market_context": row[8],
+        "content_angles": row[9],
+        "tone": row[10],
+        "positioning": row[11],
+        "known_for": row[12],
     }
 
 
@@ -281,18 +335,176 @@ def get_content_ideas(
 
         with conn.cursor() as cur:
             cur.execute("""
-                SELECT id, title, hook, angle, topic
+                SELECT id, title, hook, angle, topic, COALESCE(post_format, content_style) AS post_format
                 FROM content_ideas
                 WHERE user_profile_id = %s
+                ORDER BY title
             """, (profile_id,))
             rows = cur.fetchall()
     finally:
         conn.close()
 
     return [
-        {"id": row[0], "title": row[1], "hook": row[2], "angle": row[3], "topic": row[4]}
+        {
+            "id": row[0],
+            "title": row[1],
+            "hook": row[2],
+            "angle": row[3],
+            "topic": row[4],
+            "post_format": row[5],
+        }
         for row in rows
     ]
+
+
+@app.post("/user-profiles/{profile_id}/content-ideas/generate-more")
+def generate_more_content_ideas(
+    profile_id: str,
+    request: GenerateIdeasRequest,
+    current_user: dict = Depends(get_current_user),
+):
+    request = request.model_dump()
+
+    conn = psycopg.connect(os.getenv("DATABASE_URL"))
+    try:
+        profile, audience_analysis = get_profile_and_audience_for_generation(
+            conn, profile_id, current_user["user_id"]
+        )
+        ideas = run_idea_agent(profile, audience_analysis, number_of_ideas=request["count"])
+        idea_ids = save_content_ideas(
+            conn,
+            user_profile_id=profile_id,
+            audience_analysis_id=audience_analysis["id"],
+            ideas=ideas,
+        )
+        conn.commit()
+        return {"status": "ideas added", "idea_ids": idea_ids}
+    except Exception:
+        conn.rollback()
+        raise
+    finally:
+        conn.close()
+
+
+@app.post("/user-profiles/{profile_id}/content-ideas/regenerate")
+def regenerate_content_ideas(
+    profile_id: str,
+    request: GenerateIdeasRequest,
+    current_user: dict = Depends(get_current_user),
+):
+    request = request.model_dump()
+
+    conn = psycopg.connect(os.getenv("DATABASE_URL"))
+    try:
+        profile, audience_analysis = get_profile_and_audience_for_generation(
+            conn, profile_id, current_user["user_id"]
+        )
+        with conn.cursor() as cur:
+            cur.execute("DELETE FROM content_ideas WHERE user_profile_id = %s", (profile_id,))
+
+        ideas = run_idea_agent(profile, audience_analysis, number_of_ideas=request["count"])
+        idea_ids = save_content_ideas(
+            conn,
+            user_profile_id=profile_id,
+            audience_analysis_id=audience_analysis["id"],
+            ideas=ideas,
+        )
+        conn.commit()
+        return {"status": "ideas regenerated", "idea_ids": idea_ids}
+    except Exception:
+        conn.rollback()
+        raise
+    finally:
+        conn.close()
+
+
+@app.post("/user-profiles/{profile_id}/content-ideas")
+def create_custom_content_idea(
+    profile_id: str,
+    request: ContentIdeaRequest,
+    current_user: dict = Depends(get_current_user),
+):
+    request = request.model_dump()
+
+    conn = psycopg.connect(os.getenv("DATABASE_URL"))
+    try:
+        _, audience_analysis = get_profile_and_audience_for_generation(
+            conn, profile_id, current_user["user_id"]
+        )
+        idea_id = str(uuid.uuid4())
+        with conn.cursor() as cur:
+            cur.execute("""
+                INSERT INTO content_ideas (
+                    id, user_profile_id, audience_analysis_id,
+                    title, hook, angle, topic, post_format
+                )
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+            """, (
+                idea_id,
+                profile_id,
+                audience_analysis["id"],
+                request["title"],
+                request["hook"],
+                request["angle"],
+                request["topic"],
+                request["post_format"],
+            ))
+        conn.commit()
+        return {"status": "idea created", "idea_id": idea_id}
+    except Exception:
+        conn.rollback()
+        raise
+    finally:
+        conn.close()
+
+
+@app.put("/content-ideas/{idea_id}")
+def update_content_idea(
+    idea_id: str,
+    request: ContentIdeaRequest,
+    current_user: dict = Depends(get_current_user),
+):
+    request = request.model_dump()
+
+    conn = psycopg.connect(os.getenv("DATABASE_URL"))
+    try:
+        ensure_content_idea_owner(conn, idea_id, current_user["user_id"])
+        with conn.cursor() as cur:
+            cur.execute("""
+                UPDATE content_ideas
+                SET title=%s, hook=%s, angle=%s, topic=%s, post_format=%s
+                WHERE id=%s
+            """, (
+                request["title"],
+                request["hook"],
+                request["angle"],
+                request["topic"],
+                request["post_format"],
+                idea_id,
+            ))
+        conn.commit()
+        return {"status": "idea updated", "idea_id": idea_id}
+    except Exception:
+        conn.rollback()
+        raise
+    finally:
+        conn.close()
+
+
+@app.delete("/content-ideas/{idea_id}")
+def delete_content_idea(
+    idea_id: str,
+    current_user: dict = Depends(get_current_user),
+):
+    conn = psycopg.connect(os.getenv("DATABASE_URL"))
+    try:
+        ensure_content_idea_owner(conn, idea_id, current_user["user_id"])
+        with conn.cursor() as cur:
+            cur.execute("DELETE FROM content_ideas WHERE id = %s", (idea_id,))
+        conn.commit()
+        return {"status": "idea deleted", "idea_id": idea_id}
+    finally:
+        conn.close()
 
 
 @app.get("/user-profiles/{profile_id}/posts")
@@ -349,11 +561,14 @@ def update_user_profile(
             cur.execute("DELETE FROM audience_analyses WHERE user_profile_id = %s", (profile_id,))
             cur.execute("""
                 UPDATE user_profiles
-                SET profile_name=%s, niche=%s, offer=%s, target_audience=%s, expertise=%s, personal_touch=%s, tone=%s, goal=%s
+                SET profile_name=%s, niche=%s, offer=%s, target_audience=%s, expertise=%s, personal_touch=%s,
+                    market_scope=%s, primary_market=%s, currency=%s, locale_notes=%s, tone=%s, goal=%s
                 WHERE id=%s
             """, (
                 request["profile_name"], request["niche"], request["offer"], request["target_audience"],
-                request["expertise"], request.get("personal_touch"), request["tone"], request["goal"], profile_id,
+                request["expertise"], request.get("personal_touch"),
+                request.get("market_scope"), request.get("primary_market"), request.get("currency"), request.get("locale_notes"),
+                request["tone"], request["goal"], profile_id,
             ))
 
         profile = {
@@ -388,15 +603,16 @@ def generate_post(
     try:
         context = get_content_generation_context(conn, request["content_idea_id"])
         check_profile_owner(conn, context["user_profile_id"], current_user["user_id"])
-        platform_id   = get_lookup_id(conn, "platforms",    request["platform"])
-        post_format_id = get_lookup_id(conn, "post_formats", request["post_format"])
-        post_goal_id   = get_lookup_id(conn, "post_goals",   request["post_goal"])
+        platform_id = get_lookup_id(conn, "platforms", request["platform"])
+        post_format = context.get("idea_post_format") or "how_to"
+        post_format_id = get_lookup_id(conn, "post_formats", post_format)
+        post_goal_id = get_lookup_id(conn, "post_goals", request["post_goal"])
 
         agent_input = {
             **context,
-            "platform":    request["platform"],
-            "post_format": request["post_format"],
-            "post_goal":   request["post_goal"],
+            "platform": request["platform"],
+            "post_format": post_format,
+            "post_goal": request["post_goal"],
         }
 
         generated_post = run_content_agent(agent_input)
@@ -404,9 +620,9 @@ def generate_post(
         post_data = {
             **context,
             **generated_post,
-            "platform_id":    platform_id,
+            "platform_id": platform_id,
             "post_format_id": post_format_id,
-            "post_goal_id":   post_goal_id,
+            "post_goal_id": post_goal_id,
         }
 
         post_id = save_post(conn, post_data)

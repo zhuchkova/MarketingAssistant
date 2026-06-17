@@ -27,6 +27,10 @@ class CreateUserProfileRequest(BaseModel):
     target_audience: str
     expertise: str
     personal_touch: Optional[str] = None
+    market_scope: Optional[str] = None
+    primary_market: Optional[str] = None
+    currency: Optional[str] = None
+    locale_notes: Optional[str] = None
     tone: str
     goal: str
 
@@ -48,7 +52,7 @@ class CreateUserProfileRequest(BaseModel):
     def validate_required_text(cls, value: str) -> str:
         return clean_required_text(value)
 
-    @field_validator("personal_touch")
+    @field_validator("personal_touch", "market_scope", "primary_market", "currency", "locale_notes")
     @classmethod
     def clean_optional_text(cls, value: Optional[str]) -> Optional[str]:
         if value is None:
@@ -66,6 +70,10 @@ class CreateUserProfileRequest(BaseModel):
                 "target_audience": "early-stage founders struggling with marketing",
                 "expertise": "ML engineer building AI agents",
                 "personal_touch": "I used to build these workflows manually before automating them.",
+                "market_scope": "local",
+                "primary_market": "Berlin, Germany",
+                "currency": "EUR",
+                "locale_notes": "Use local European cafe examples but write in English.",
                 "tone": "bold, practical",
                 "goal": "generate leads"
             }
@@ -80,6 +88,10 @@ class UpdateUserProfileRequest(BaseModel):
     target_audience: str
     expertise: str
     personal_touch: Optional[str] = None
+    market_scope: Optional[str] = None
+    primary_market: Optional[str] = None
+    currency: Optional[str] = None
+    locale_notes: Optional[str] = None
     tone: str
     goal: str
 
@@ -96,7 +108,7 @@ class UpdateUserProfileRequest(BaseModel):
     def validate_required_text(cls, value: str) -> str:
         return clean_required_text(value)
 
-    @field_validator("personal_touch")
+    @field_validator("personal_touch", "market_scope", "primary_market", "currency", "locale_notes")
     @classmethod
     def clean_optional_text(cls, value: Optional[str]) -> Optional[str]:
         if value is None:
@@ -113,6 +125,10 @@ class UpdateUserProfileRequest(BaseModel):
                 "target_audience": "early-stage founders struggling with marketing",
                 "expertise": "ML engineer building AI agents",
                 "personal_touch": "I used to build these workflows manually before automating them.",
+                "market_scope": "local",
+                "primary_market": "Berlin, Germany",
+                "currency": "EUR",
+                "locale_notes": "Use local European cafe examples but write in English.",
                 "tone": "bold, practical",
                 "goal": "generate leads"
             }

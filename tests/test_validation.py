@@ -1,9 +1,9 @@
-# python -m unittest discover -s tests
 import unittest
 
 from pydantic import ValidationError
 
 from schemas.auth import LoginRequest, RegisterRequest
+from schemas.content_idea import ContentIdeaRequest
 from schemas.post_generation import GeneratePostRequest
 from schemas.user_profile import CreateUserProfileRequest
 
@@ -54,6 +54,26 @@ class ValidationTests(unittest.TestCase):
 
         self.assertIsNone(request.personal_touch)
 
+    def test_profile_market_context_is_optional(self):
+        request = CreateUserProfileRequest(
+            profile_name="Local Cafe",
+            niche="specialty coffee",
+            offer="coffee and pastries",
+            target_audience="Neighborhood regulars",
+            expertise="Barista team",
+            market_scope=" local ",
+            primary_market=" Berlin, Germany ",
+            currency=" EUR ",
+            locale_notes=" Write in English, but use local European context. ",
+            tone="Warm",
+            goal="Increase visits",
+        )
+
+        self.assertEqual(request.market_scope, "local")
+        self.assertEqual(request.primary_market, "Berlin, Germany")
+        self.assertEqual(request.currency, "EUR")
+        self.assertEqual(request.locale_notes, "Write in English, but use local European context.")
+
     def test_profile_rejects_invalid_id(self):
         with self.assertRaises(ValidationError):
             CreateUserProfileRequest(
@@ -72,8 +92,36 @@ class ValidationTests(unittest.TestCase):
             GeneratePostRequest(
                 content_idea_id="22222222-2222-2222-2222-222222222444",
                 platform="threads",
-                post_format="contrarian",
                 post_goal="comment",
+            )
+
+    def test_generate_post_accepts_share_goal(self):
+        request = GeneratePostRequest(
+            content_idea_id="22222222-2222-2222-2222-222222222444",
+            platform="instagram",
+            post_goal="share",
+        )
+
+        self.assertEqual(request.post_goal, "share")
+
+    def test_custom_idea_rejects_unknown_style(self):
+        with self.assertRaises(ValidationError):
+            ContentIdeaRequest(
+                title="A useful idea",
+                hook="A useful hook",
+                angle="A useful angle",
+                topic="A useful topic",
+                post_format="unknown_style",
+            )
+
+    def test_custom_idea_rejects_format_as_framing(self):
+        with self.assertRaises(ValidationError):
+            ContentIdeaRequest(
+                title="A useful idea",
+                hook="A useful hook",
+                angle="Objection Handling",
+                topic="A useful topic",
+                post_format="objection_handling",
             )
 
 

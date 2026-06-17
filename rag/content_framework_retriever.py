@@ -17,6 +17,10 @@ def retrieve_content_frameworks(
     Niche: {profile.get("niche")}
     Target audience: {profile.get("target_audience")}
     Personal touch: {profile.get("personal_touch")}
+    Market scope: {profile.get("market_scope")}
+    Primary market: {profile.get("primary_market")}
+    Currency: {profile.get("currency")}
+    Locale notes: {profile.get("locale_notes")}
     Goal: {profile.get("goal")}
     Audience profile: {audience_analysis.get("audience_profile")}
     Pains: {audience_analysis.get("pains")}
@@ -25,10 +29,12 @@ def retrieve_content_frameworks(
     Trigger moments: {audience_analysis.get("trigger_moments")}
     Proof points: {audience_analysis.get("proof_points")}
     Audience language: {audience_analysis.get("audience_language")}
+    Market context: {audience_analysis.get("market_context")}
     Content angles: {audience_analysis.get("content_angles")}
     Topic: {content_idea.get("topic")}
-    Angle: {content_idea.get("angle")}
+    Idea framing: {content_idea.get("angle")}
     Hook: {content_idea.get("hook")}
+    Post format: {content_idea.get("post_format") or content_idea.get("idea_post_format")}
     """
 
     results = collection.query(

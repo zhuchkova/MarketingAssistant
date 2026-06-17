@@ -1,0 +1,42 @@
+[
+  {
+    "id": "cta_comment_keyword_resource",
+    "document": "CTA pattern: If the post teaches a process, ask users to comment a short keyword for the template, checklist, swipe file, or worksheet that helps them apply it.",
+    "metadata": {"type": "cta_pattern", "goal": "comment"}
+  },
+  {
+    "id": "cta_dm_keyword_private_problem",
+    "document": "CTA pattern: Use DM keyword when the topic is personal, sensitive, or business-specific. Example: DM AUDIT and I will send the 5-question self-check.",
+    "metadata": {"type": "cta_pattern", "goal": "dm_keyword"}
+  },
+  {
+    "id": "cta_save_later_checklist",
+    "document": "CTA pattern: Save this if the post is a checklist, tutorial, or decision criteria. The CTA should tell the reader when they will need it later.",
+    "metadata": {"type": "cta_pattern", "goal": "save"}
+  },
+  {
+    "id": "cta_comment_challenge",
+    "document": "CTA pattern: For diagnostic posts, ask readers to comment their biggest blocker or current situation. This creates useful replies and gives the creator sales insight.",
+    "metadata": {"type": "cta_pattern", "goal": "comment"}
+  },
+  {
+    "id": "cta_download_lead_magnet",
+    "document": "CTA pattern: For download goals, the resource must match the post promise exactly. If the post promises better hooks, offer a hook checklist, not a broad marketing guide.",
+    "metadata": {"type": "principle", "goal": "download"}
+  },
+  {
+    "id": "cta_low_friction",
+    "document": "Conversion principle: The CTA should feel like the obvious next small step, not a leap to a sales call. Match ask intensity to audience trust and post depth.",
+    "metadata": {"type": "principle", "goal": "conversion"}
+  },
+  {
+    "id": "cta_keyword_rules",
+    "document": "Keyword rule: Choose a keyword that is short, easy to spell, emotionally connected to the promise, and unlikely to appear accidentally in normal comments.",
+    "metadata": {"type": "principle", "goal": "manychat"}
+  },
+  {
+    "id": "cta_soft_offer",
+    "document": "Soft offer principle: After delivering value, invite the user to describe their situation before mentioning the paid offer. This keeps the flow helpful rather than pushy.",
+    "metadata": {"type": "principle", "goal": "conversion"}
+  }
+]

@@ -33,6 +33,10 @@ Creator profile:
 - Target audience: {target_audience}
 - Expertise: {expertise}
 - Personal touch: {personal_touch}
+- Market scope: {market_scope}
+- Primary market: {primary_market}
+- Currency: {currency}
+- Locale notes: {locale_notes}
 - Tone: {tone}
 - Goal: {goal}
 
@@ -44,6 +48,7 @@ Audience analysis:
 - Trigger moments: {trigger_moments}
 - Proof points: {proof_points}
 - Audience language: {audience_language}
+- Market context: {market_context}
 - Positioning: {positioning}
 - Known for: {known_for}
 

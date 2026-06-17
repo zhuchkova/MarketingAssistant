@@ -1,6 +1,7 @@
 # python scripts/migrate.py
 import os
 from pathlib import Path
+from typing import List
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -12,7 +13,7 @@ MIGRATIONS_DIR = Path("migrations")
 print("Migrating DB_URL =", DB_URL)
 
 
-def split_sql(sql: str) -> list[str]:
+def split_sql(sql: str) -> List[str]:
     """
     Very small SQL splitter good enough for typical migration files.
     It respects single-quoted strings and dollar-quoted blocks ($$...$$ or $tag$...$tag$).

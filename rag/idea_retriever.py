@@ -12,6 +12,10 @@ def retrieve_idea_knowledge(profile: dict, audience_analysis: dict, n_results: i
     Offer: {profile.get("offer")}
     Target audience: {profile.get("target_audience")}
     Personal touch: {profile.get("personal_touch")}
+    Market scope: {profile.get("market_scope")}
+    Primary market: {profile.get("primary_market")}
+    Currency: {profile.get("currency")}
+    Locale notes: {profile.get("locale_notes")}
     Goal: {profile.get("goal")}
     Audience profile: {audience_analysis.get("audience_profile")}
     Pains: {audience_analysis.get("pains")}
@@ -20,6 +24,7 @@ def retrieve_idea_knowledge(profile: dict, audience_analysis: dict, n_results: i
     Trigger moments: {audience_analysis.get("trigger_moments")}
     Proof points: {audience_analysis.get("proof_points")}
     Audience language: {audience_analysis.get("audience_language")}
+    Market context: {audience_analysis.get("market_context")}
     Content angles: {audience_analysis.get("content_angles")}
     """
 

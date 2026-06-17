@@ -17,6 +17,10 @@ def retrieve_conversion_knowledge(context: dict, n_results: int = 4) -> dict:
     Offer: {context.get("offer")}
     Target audience: {context.get("target_audience")}
     Personal touch: {context.get("personal_touch")}
+    Market scope: {context.get("market_scope")}
+    Primary market: {context.get("primary_market")}
+    Currency: {context.get("currency")}
+    Locale notes: {context.get("locale_notes")}
     Goal: {context.get("goal")}
 
     Audience pains: {context.get("pains")}
@@ -25,6 +29,7 @@ def retrieve_conversion_knowledge(context: dict, n_results: int = 4) -> dict:
     Trigger moments: {context.get("trigger_moments")}
     Proof points: {context.get("proof_points")}
     Audience language: {context.get("audience_language")}
+    Market context: {context.get("market_context")}
 
     Post:
     Hook: {context.get("hook")}

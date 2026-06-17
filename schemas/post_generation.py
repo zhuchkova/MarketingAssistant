@@ -3,14 +3,21 @@ from pydantic import BaseModel, ConfigDict, field_validator
 
 
 ALLOWED_PLATFORMS = {"instagram", "linkedin"}
-ALLOWED_POST_FORMATS = {"story", "how_to", "list", "contrarian"}
-ALLOWED_POST_GOALS = {"comment", "dm_keyword", "follow", "download"}
+ALLOWED_POST_GOALS = {
+    "comment",
+    "dm_keyword",
+    "follow",
+    "download",
+    "share",
+    "save",
+    "book_visit",
+    "buy_order",
+}
 
 
 class GeneratePostRequest(BaseModel):
     content_idea_id: str
     platform: str
-    post_format: str
     post_goal: str
 
     @field_validator("content_idea_id")
@@ -29,14 +36,6 @@ class GeneratePostRequest(BaseModel):
             raise ValueError(f"platform must be one of: {', '.join(sorted(ALLOWED_PLATFORMS))}")
         return value
 
-    @field_validator("post_format")
-    @classmethod
-    def validate_post_format(cls, value: str) -> str:
-        value = value.strip().lower()
-        if value not in ALLOWED_POST_FORMATS:
-            raise ValueError(f"post_format must be one of: {', '.join(sorted(ALLOWED_POST_FORMATS))}")
-        return value
-
     @field_validator("post_goal")
     @classmethod
     def validate_post_goal(cls, value: str) -> str:
@@ -50,7 +49,6 @@ class GeneratePostRequest(BaseModel):
             "example": {
                 "content_idea_id": "CONTENT_IDEA_UUID",
                 "platform": "linkedin",
-                "post_format": "contrarian",
                 "post_goal": "comment"
             }
         }

@@ -1,5 +1,6 @@
 import json
 from pathlib import Path
+from typing import Dict, List
 
 import chromadb
 
@@ -9,7 +10,7 @@ DATA_DIR = ROOT / "rag_seed_data"
 CHROMA_PATH = ROOT / "chroma_db"
 
 
-def load_records(data_path: str) -> list[dict]:
+def load_records(data_path: str) -> List[Dict]:
     path = DATA_DIR / data_path
     files = sorted(path.glob("*.json")) if path.is_dir() else [path]
 

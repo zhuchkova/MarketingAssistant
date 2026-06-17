@@ -1,6 +1,8 @@
 import uuid
+from typing import Dict, Tuple
 
-def get_profile_with_audience_analysis(conn, profile_id: str) -> tuple[dict, dict]:
+
+def get_profile_with_audience_analysis(conn, profile_id: str) -> Tuple[Dict, Dict]:
     with conn.cursor() as cur:
         cur.execute("""
             SELECT
@@ -11,6 +13,10 @@ def get_profile_with_audience_analysis(conn, profile_id: str) -> tuple[dict, dic
                 up.target_audience,
                 up.expertise,
                 up.personal_touch,
+                up.market_scope,
+                up.primary_market,
+                up.currency,
+                up.locale_notes,
                 up.tone,
                 up.goal,
                 aa.id AS audience_analysis_id,
@@ -21,6 +27,7 @@ def get_profile_with_audience_analysis(conn, profile_id: str) -> tuple[dict, dic
                 aa.trigger_moments,
                 aa.proof_points,
                 aa.audience_language,
+                aa.market_context,
                 aa.content_angles,
                 aa.positioning,
                 aa.known_for
@@ -43,22 +50,27 @@ def get_profile_with_audience_analysis(conn, profile_id: str) -> tuple[dict, dic
             "target_audience": row[4],
             "expertise": row[5],
             "personal_touch": row[6],
-            "tone": row[7],
-            "goal": row[8],
+            "market_scope": row[7],
+            "primary_market": row[8],
+            "currency": row[9],
+            "locale_notes": row[10],
+            "tone": row[11],
+            "goal": row[12],
         }
 
         audience_analysis = {
-            "id": row[9],
-            "audience_profile": row[10],
-            "pains": row[11],
-            "desires": row[12],
-            "objections": row[13],
-            "trigger_moments": row[14],
-            "proof_points": row[15],
-            "audience_language": row[16],
-            "content_angles": row[17],
-            "positioning": row[18],
-            "known_for": row[19],
+            "id": row[13],
+            "audience_profile": row[14],
+            "pains": row[15],
+            "desires": row[16],
+            "objections": row[17],
+            "trigger_moments": row[18],
+            "proof_points": row[19],
+            "audience_language": row[20],
+            "market_context": row[21],
+            "content_angles": row[22],
+            "positioning": row[23],
+            "known_for": row[24],
         }
 
         return profile, audience_analysis
@@ -68,8 +80,8 @@ def save_content_ideas(
     conn,
     user_profile_id: str,
     audience_analysis_id: str,
-    ideas: list[dict]
-) -> list[str]:
+    ideas: list
+) -> list:
     idea_ids = []
 
     with conn.cursor() as cur:
@@ -85,9 +97,10 @@ def save_content_ideas(
                     title,
                     hook,
                     angle,
-                    topic
+                    topic,
+                    post_format
                 )
-                VALUES (%s, %s, %s, %s, %s, %s, %s)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
             """, (
                 idea_id,
                 user_profile_id,
@@ -96,6 +109,7 @@ def save_content_ideas(
                 idea["hook"],
                 idea["angle"],
                 idea["topic"],
+                idea.get("post_format") or idea.get("content_style") or "how_to",
             ))
 
     return idea_ids
