@@ -269,10 +269,14 @@ content_ideas
   ├── hook
   ├── angle
   ├── topic
-  └── post_format
+  ├── post_format
+  └── is_favorite
 posts
   ├── instagram_content_type
   ├── post_length
+  ├── is_favorite
+  ├── is_published
+  ├── published_at
   ├── hook
   ├── body
   ├── cta
@@ -468,6 +472,8 @@ Audience Analysis
 Content Ideas
 ```
 
+Existing posts are preserved. Favorite ideas are preserved; non-favorite ideas are replaced with fresh ideas.
+
 #### Get Profile
 
 ```http
@@ -485,6 +491,14 @@ GET /user-profiles/{profile_id}/audience-analysis
 ```http
 GET /user-profiles/{profile_id}/content-ideas
 ```
+
+#### Favorite Idea
+
+```http
+PUT /content-ideas/{idea_id}/favorite
+```
+
+Toggles whether an idea is saved as a favorite. Favorite ideas are preserved when ideas are regenerated.
 
 ---
 
@@ -513,6 +527,22 @@ GET /posts/{post_id}
 ```http
 GET /user-profiles/{profile_id}/posts
 ```
+
+#### Favorite Post
+
+```http
+PUT /posts/{post_id}/favorite
+```
+
+Toggles whether a post is saved as a favorite.
+
+#### Published Post
+
+```http
+PUT /posts/{post_id}/published
+```
+
+Toggles whether a post is marked as published. The frontend marks a post as published automatically when the full post text is copied.
 
 #### Delete Post
 
@@ -682,6 +712,19 @@ Allowed `post_length` values are `short`, `medium`, and `long`.
     "qualification_question": "Are you building this for yourself or for clients?",
     "follow_up": "Start with the simple version first, then automate the repeatable parts."
   }
+}
+```
+
+### Update Post Manually
+
+`PUT /posts/{post_id}`
+
+```json
+{
+  "hook": "Updated hook",
+  "body": "Updated body copy.",
+  "cta": "Updated CTA.",
+  "final_text": "Updated hook\n\nUpdated body copy.\n\nUpdated CTA."
 }
 ```
 

@@ -49,7 +49,8 @@ CREATE TABLE content_ideas (
     angle TEXT,
     topic TEXT,
     post_format TEXT,
-    content_style TEXT
+    content_style TEXT,
+    is_favorite BOOLEAN DEFAULT FALSE
 );
 
 CREATE TABLE platforms (
@@ -81,6 +82,9 @@ CREATE TABLE posts (
         REFERENCES post_goals(id),
     instagram_content_type TEXT,
     post_length TEXT DEFAULT 'medium',
+    is_favorite BOOLEAN DEFAULT FALSE,
+    is_published BOOLEAN DEFAULT FALSE,
+    published_at TIMESTAMP,
     hook TEXT,
     body TEXT,
     cta TEXT,

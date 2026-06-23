@@ -651,6 +651,51 @@
             border-top: 1px solid rgba(67,116,61,0.12);
         }
         .idea-card-actions .btn { flex: 1; justify-content: center; }
+        .card-mark-btn {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            border: 1px solid var(--border);
+            background: rgba(255,255,255,0.86);
+            color: var(--text-4);
+            display: inline-grid;
+            place-items: center;
+            cursor: pointer;
+            transition: all 0.15s;
+            z-index: 2;
+            font-family: inherit;
+            font-size: 18px;
+            line-height: 1;
+        }
+        .card-mark-btn:hover {
+            border-color: var(--pink);
+            color: var(--danger);
+            background: var(--pink-soft);
+        }
+        .card-mark-btn.active {
+            border-color: #f7c8d9;
+            color: var(--danger);
+            background: var(--pink-soft);
+        }
+        .post-status-actions {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            display: flex;
+            gap: 7px;
+        }
+        .post-status-actions .card-mark-btn {
+            position: static;
+        }
+        .card-check-btn:hover,
+        .card-check-btn.active {
+            border-color: var(--border);
+            color: var(--primary);
+            background: var(--surface-3);
+        }
         .idea-filter-control { display: flex; align-items: center; gap: 8px; }
         .idea-filter-control label {
             font-size: 13px;
@@ -662,6 +707,26 @@
             padding: 8px 32px 8px 11px;
             font-size: 14px;
         }
+        .post-filter-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 16px;
+        }
+        .post-filter-row .idea-filter-control select { min-width: 150px; }
+        .length-mark {
+            display: inline-grid;
+            place-items: center;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: #fff;
+            font-size: 11px;
+            font-weight: 900;
+            line-height: 1;
+        }
 
         /* Posts tab */
         .posts-list { display: flex; flex-direction: column; gap: 12px; }
@@ -671,6 +736,7 @@
             border-radius: var(--r);
             padding: 18px 20px;
             transition: border-color 0.15s;
+            position: relative;
         }
         .post-row:hover { border-color: var(--surface-3); }
         .post-row-meta { display: flex; align-items: center; gap: 6px; margin-bottom: 10px; flex-wrap: wrap; }
@@ -1434,6 +1500,13 @@
                         <label for="idea-format-filter">Filter</label>
                         <select id="idea-format-filter" onchange="setIdeaFilter(this.value)"></select>
                     </div>
+                    <div class="idea-filter-control">
+                        <label for="idea-favorite-filter">Favorites</label>
+                        <select id="idea-favorite-filter" onchange="setIdeaFavoriteFilter(this.value)">
+                            <option value="all">All</option>
+                            <option value="favorite">Favorites</option>
+                        </select>
+                    </div>
                     <button class="btn btn-secondary btn-sm" onclick="openIdeaModal()">Custom Idea</button>
                     <button class="btn btn-primary btn-sm" onclick="generateMoreIdeas()">Generate More</button>
                     <button class="btn btn-ghost btn-sm" onclick="regenerateIdeas()">Regenerate All</button>
@@ -1448,6 +1521,33 @@
                 <div>
                     <h3>My Posts</h3>
                     <p>Drafts saved for this profile</p>
+                </div>
+                <div class="ideas-toolbar-right">
+                    <div class="idea-filter-control">
+                        <label for="post-platform-filter">Platform</label>
+                        <select id="post-platform-filter" onchange="setPostPlatformFilter(this.value)">
+                            <option value="all">All</option>
+                            <option value="instagram">Instagram</option>
+                            <option value="linkedin">LinkedIn</option>
+                        </select>
+                    </div>
+                    <div class="idea-filter-control" id="post-type-filter-wrap">
+                        <label for="post-type-filter">Type</label>
+                        <select id="post-type-filter" onchange="setPostTypeFilter(this.value)">
+                            <option value="all">All</option>
+                            <option value="carousel">Carousel</option>
+                            <option value="story">Story</option>
+                            <option value="reel">Reel</option>
+                        </select>
+                    </div>
+                    <div class="idea-filter-control">
+                        <label for="post-status-filter">Status</label>
+                        <select id="post-status-filter" onchange="setPostStatusFilter(this.value)">
+                            <option value="all">All</option>
+                            <option value="favorite">Favorites</option>
+                            <option value="published">Published</option>
+                        </select>
+                    </div>
                 </div>
             </div>
             <div id="posts-container"></div>
@@ -1530,13 +1630,13 @@
                 <label>Length</label>
                 <div class="option-grid">
                     <button class="opt-btn" data-group="post_length" data-val="short" onclick="pickOpt(this)">
-                        <svg class="opt-icon"><use href="#icon-bolt"></use></svg>Short
+                        <span class="opt-icon length-mark">S</span>Short
                     </button>
                     <button class="opt-btn sel" data-group="post_length" data-val="medium" onclick="pickOpt(this)">
-                        <svg class="opt-icon"><use href="#icon-list"></use></svg>Medium
+                        <span class="opt-icon length-mark">M</span>Medium
                     </button>
                     <button class="opt-btn" data-group="post_length" data-val="long" onclick="pickOpt(this)">
-                        <svg class="opt-icon"><use href="#icon-book"></use></svg>Long
+                        <span class="opt-icon length-mark">L</span>Long
                     </button>
                 </div>
             </div>
@@ -1619,8 +1719,41 @@
         </div>
         <div class="modal-foot">
             <button class="btn btn-danger btn-sm" onclick="deleteDetailPost()">Delete</button>
+            <button class="btn btn-secondary btn-sm" onclick="openPostEditModal(S.detailPostId)">Edit</button>
             <button class="btn btn-ghost" onclick="closeModal('modal-detail')">Close</button>
             <button class="btn btn-primary btn-sm" onclick="detailConversionFlow()">Lead Flow</button>
+        </div>
+    </div>
+</div>
+
+<!-- ═══════════════════════════════════
+     MODAL: EDIT POST
+════════════════════════════════════ -->
+<div class="backdrop" id="modal-post-edit">
+    <div class="modal">
+        <div class="modal-head">
+            <span class="modal-title">Edit Post</span>
+            <button class="modal-close" onclick="closeModal('modal-post-edit')" aria-label="Close">
+                <svg class="flat-icon"><use href="#icon-x"></use></svg>
+            </button>
+        </div>
+        <div class="modal-body">
+            <div class="form-group">
+                <label>Hook</label>
+                <textarea id="post-edit-hook" oninput="syncPostFullFromParts()"></textarea>
+            </div>
+            <div class="form-group">
+                <label>Body</label>
+                <textarea id="post-edit-body" style="min-height:150px" oninput="syncPostFullFromParts()"></textarea>
+            </div>
+            <div class="form-group">
+                <label>Call to Action</label>
+                <textarea id="post-edit-cta" oninput="syncPostFullFromParts()"></textarea>
+            </div>
+        </div>
+        <div class="modal-foot">
+            <button class="btn btn-ghost" onclick="closeModal('modal-post-edit')">Cancel</button>
+            <button class="btn btn-primary" onclick="saveEditedPost()">Save Post</button>
         </div>
     </div>
 </div>
@@ -1731,7 +1864,7 @@
         </div>
         <div class="modal-body">
             <div class="warn-banner">
-                Saving profile changes will refresh audience notes and content ideas. Existing posts will be deleted.
+                Saving profile changes will refresh audience notes and add fresh ideas. Existing posts and favorite ideas will stay.
             </div>
             <div class="form-group">
                 <label>Profile Name</label>
@@ -1819,7 +1952,13 @@ const S = {
     genPostId:  null,
     genPost:    null,
     ideaFilter: 'all',
+    ideaFavoriteFilter: 'all',
     ideaEditId: null,
+    postPlatformFilter: 'all',
+    postTypeFilter: 'all',
+    postStatusFilter: 'all',
+    postEditId: null,
+    postEditSyncing: false,
     detailPostId: null,
     flowPostId:   null,
 };
@@ -2249,12 +2388,14 @@ function renderIdeas() {
         return;
     }
 
-    const visibleIdeas = S.ideaFilter === 'all'
-        ? S.ideas
-        : S.ideas.filter(idea => ideaFormat(idea) === S.ideaFilter);
+    const visibleIdeas = S.ideas.filter(idea => {
+        const formatOk = S.ideaFilter === 'all' || ideaFormat(idea) === S.ideaFilter;
+        const favoriteOk = S.ideaFavoriteFilter === 'all' || idea.is_favorite;
+        return formatOk && favoriteOk;
+    });
 
     if (!visibleIdeas.length) {
-        grid.innerHTML = `<div class="empty" style="grid-column:1/-1"><div class="empty-icon"></div><div class="empty-title">No ideas in this style</div><div class="empty-desc">Choose another style or generate more ideas</div></div>`;
+        grid.innerHTML = `<div class="empty" style="grid-column:1/-1"><div class="empty-icon"></div><div class="empty-title">No ideas match these filters</div><div class="empty-desc">Choose another filter or generate more ideas</div></div>`;
         return;
     }
 
@@ -2263,6 +2404,7 @@ function renderIdeas() {
         const format = ideaFormat(idea);
         return `
         <div class="idea-card ${i % 2 === 0 ? 'idea-green' : 'idea-pink'}" onclick="openGenModal(${i})">
+            <button class="card-mark-btn ${idea.is_favorite ? 'active' : ''}" onclick="toggleIdeaFavorite(event, '${idea.id}')" aria-label="${idea.is_favorite ? 'Remove from favorite ideas' : 'Add to favorite ideas'}">♥</button>
             <div class="idea-topic-badge">${esc(formatLabel(format))}</div>
             <div class="idea-title">${esc(idea.title)}</div>
             <div class="idea-hook">${esc(idea.hook)}</div>
@@ -2287,10 +2429,17 @@ function renderIdeaFormatFilter() {
         ...formats.map(format => `<option value="${format}">${esc(formatLabel(format))}</option>`)
     ].join('');
     select.value = S.ideaFilter;
+    const favoriteSelect = document.getElementById('idea-favorite-filter');
+    if (favoriteSelect) favoriteSelect.value = S.ideaFavoriteFilter;
 }
 
 function setIdeaFilter(format) {
     S.ideaFilter = format;
+    renderIdeas();
+}
+
+function setIdeaFavoriteFilter(value) {
+    S.ideaFavoriteFilter = value;
     renderIdeas();
 }
 
@@ -2392,12 +2541,29 @@ async function deleteIdea(ideaId) {
     }
 }
 
+async function toggleIdeaFavorite(event, ideaId) {
+    event.stopPropagation();
+    try {
+        const res = await api('PUT', `/content-ideas/${ideaId}/favorite`);
+        if (res.error) throw new Error(res.error);
+        S.ideas = S.ideas.map(idea => idea.id === ideaId
+            ? { ...idea, is_favorite: res.is_favorite }
+            : idea
+        );
+        renderIdeas();
+        toast(res.is_favorite ? 'Idea added to favorites' : 'Idea removed from favorites', 'success');
+    } catch (e) {
+        toast(e.message || 'Could not update favorite idea', 'error');
+    }
+}
+
 async function generateMoreIdeas() {
     showLoading('Creating more ideas…', [
         { label:'Reading audience notes', delay:0 },
-        { label:'Mixing content styles', delay:2500 },
+        { label:'Keeping favorite ideas', delay:2500 },
+        { label:'Mixing fresh content ideas', delay:5000 },
         { label:'Saving new ideas', delay:6500 },
-    ]);
+    ], { logo: true, kind: 'ideas' });
 
     try {
         const res = await api('POST', `/user-profiles/${S.profileId}/content-ideas/generate-more`, { count: 10 });
@@ -2414,9 +2580,10 @@ async function generateMoreIdeas() {
 async function regenerateIdeas() {
     showLoading('Regenerating ideas…', [
         { label:'Keeping audience notes', delay:0 },
-        { label:'Preparing 20 fresh ideas', delay:3500 },
+        { label:'Keeping favorite ideas', delay:2500 },
+        { label:'Preparing 20 fresh ideas', delay:5500 },
         { label:'Saving new idea set', delay:8500 },
-    ]);
+    ], { logo: true, kind: 'ideas' });
 
     try {
         const res = await api('POST', `/user-profiles/${S.profileId}/content-ideas/regenerate`, { count: 20 });
@@ -2433,12 +2600,25 @@ async function regenerateIdeas() {
 
 function renderPosts() {
     const cont = document.getElementById('posts-container');
+    syncPostFilters();
+
     if (!S.posts.length) {
         cont.innerHTML = `<div class="empty"><div class="empty-icon"></div><div class="empty-title">No posts yet</div><div class="empty-desc">Open Content Ideas and choose one to draft your first post</div></div>`;
         return;
     }
-    cont.innerHTML = `<div class="posts-list">${S.posts.map(p => `
+
+    const visiblePosts = filteredPosts();
+    if (!visiblePosts.length) {
+        cont.innerHTML = `<div class="empty"><div class="empty-icon"></div><div class="empty-title">No posts match these filters</div><div class="empty-desc">Try another platform or Instagram type</div></div>`;
+        return;
+    }
+
+    cont.innerHTML = `<div class="posts-list">${visiblePosts.map(p => `
         <div class="post-row" id="pr-${p.id}">
+            <div class="post-status-actions">
+                <button class="card-mark-btn ${p.is_favorite ? 'active' : ''}" onclick="togglePostFavorite(event, '${p.id}')" aria-label="${p.is_favorite ? 'Remove from favorite posts' : 'Add to favorite posts'}">♥</button>
+                <button class="card-mark-btn card-check-btn ${p.is_published ? 'active' : ''}" onclick="togglePostPublished(event, '${p.id}')" aria-label="${p.is_published ? 'Remove from published posts' : 'Mark post as published'}">✓</button>
+            </div>
             <div class="post-row-meta">
                 <span class="tag tag-platform">${esc(p.platform||'')}</span>
                 ${p.instagram_content_type ? `<span class="tag tag-format">${esc(p.instagram_content_type)}</span>` : ''}
@@ -2450,13 +2630,58 @@ function renderPosts() {
             <div class="post-row-preview">${esc(p.final_text||'')}</div>
             <div class="post-row-actions">
                 <button class="btn btn-secondary btn-sm" onclick="openDetailModal('${p.id}')">View Post</button>
-                <button class="btn btn-secondary btn-sm js-copy-post" type="button">
+                <button class="btn btn-secondary btn-sm" onclick="openPostEditModal('${p.id}')">Edit</button>
+                <button class="btn btn-secondary btn-sm" type="button" onclick="copyPost('${p.id}')">
                     <svg class="flat-icon"><use href="#icon-copy"></use></svg>
                     Copy
                 </button>
                 <button class="btn btn-danger btn-sm" onclick="deletePost('${p.id}')">Delete</button>
             </div>
         </div>`).join('')}</div>`;
+}
+
+function filteredPosts() {
+    return S.posts.filter(post => {
+        const platformOk = S.postPlatformFilter === 'all' || post.platform === S.postPlatformFilter;
+        const typeOk = S.postTypeFilter === 'all' || post.instagram_content_type === S.postTypeFilter;
+        const statusOk = S.postStatusFilter === 'all'
+            || (S.postStatusFilter === 'favorite' && post.is_favorite)
+            || (S.postStatusFilter === 'published' && post.is_published);
+        return platformOk && typeOk && statusOk;
+    });
+}
+
+function syncPostFilters() {
+    const platform = document.getElementById('post-platform-filter');
+    const type = document.getElementById('post-type-filter');
+    const status = document.getElementById('post-status-filter');
+    const typeWrap = document.getElementById('post-type-filter-wrap');
+
+    if (platform) platform.value = S.postPlatformFilter;
+    if (type) type.value = S.postTypeFilter;
+    if (status) status.value = S.postStatusFilter;
+
+    const showType = S.postPlatformFilter !== 'linkedin';
+    if (typeWrap) typeWrap.style.display = showType ? '' : 'none';
+}
+
+function setPostPlatformFilter(value) {
+    S.postPlatformFilter = value;
+    if (value === 'linkedin') S.postTypeFilter = 'all';
+    renderPosts();
+}
+
+function setPostTypeFilter(value) {
+    S.postTypeFilter = value;
+    if (value !== 'all' && S.postPlatformFilter === 'linkedin') {
+        S.postPlatformFilter = 'instagram';
+    }
+    renderPosts();
+}
+
+function setPostStatusFilter(value) {
+    S.postStatusFilter = value;
+    renderPosts();
 }
 
 // ─── POST GENERATOR MODAL ──────────────────────────
@@ -2520,7 +2745,13 @@ async function generatePost() {
     const idea = S.ideas[S.genIdeaIdx];
     const btn = document.getElementById('btn-gen');
     btn.disabled = true;
-    btn.innerHTML = '<span class="spin-sm"></span> Generating…';
+    btn.textContent = 'Drafting…';
+    showLoading('Drafting your post…', [
+        { label:'Reading selected idea', delay:0 },
+        { label:'Choosing the right framework', delay:1800 },
+        { label:'Writing the post draft', delay:4200 },
+        { label:'Preparing CTA', delay:7000 },
+    ], { logo: true, kind: 'post' });
 
     try {
         const data = await api('POST', '/posts', {
@@ -2543,9 +2774,11 @@ async function generatePost() {
         document.getElementById('gen-result').scrollIntoView({ behavior:'smooth', block:'nearest' });
 
         await refreshPosts();
+        hideLoading();
         toast('Post drafted', 'success');
         btn.textContent = 'Draft Again';
     } catch (e) {
+        hideLoading();
         toast(e.message || 'Failed to draft post', 'error');
         btn.textContent = 'Draft Post';
     } finally {
@@ -2555,6 +2788,7 @@ async function generatePost() {
 
 function copyGenPost() {
     if (S.genPost) copyTxt(S.genPost.final_text || '');
+    if (S.genPostId) markPostPublished(S.genPostId);
 }
 
 async function genConversionFlow() {
@@ -2582,11 +2816,130 @@ async function openDetailModal(postId) {
     openModal('modal-detail');
 }
 
-function copyDetailPost() { copyTxt(document.getElementById('d-final').textContent); }
+function copyDetailPost() {
+    copyTxt(document.getElementById('d-final').textContent);
+    if (S.detailPostId) markPostPublished(S.detailPostId);
+}
 
 function copyPost(postId) {
     const post = S.posts.find(p => String(p.id) === String(postId));
     copyTxt(post?.final_text || '');
+    markPostPublished(postId);
+}
+
+async function togglePostFavorite(event, postId) {
+    event.stopPropagation();
+    try {
+        const res = await api('PUT', `/posts/${postId}/favorite`);
+        if (res.error) throw new Error(res.error);
+        S.posts = S.posts.map(post => post.id === postId
+            ? { ...post, is_favorite: res.is_favorite }
+            : post
+        );
+        renderPosts();
+        toast(res.is_favorite ? 'Post added to favorites' : 'Post removed from favorites', 'success');
+    } catch (e) {
+        toast(e.message || 'Could not update favorite post', 'error');
+    }
+}
+
+async function togglePostPublished(event, postId) {
+    event.stopPropagation();
+    try {
+        const res = await api('PUT', `/posts/${postId}/published`);
+        if (res.error) throw new Error(res.error);
+        S.posts = S.posts.map(post => post.id === postId
+            ? { ...post, is_published: res.is_published }
+            : post
+        );
+        renderPosts();
+        toast(res.is_published ? 'Post marked as published' : 'Post removed from published', 'success');
+    } catch (e) {
+        toast(e.message || 'Could not update published status', 'error');
+    }
+}
+
+async function markPostPublished(postId) {
+    const post = S.posts.find(p => String(p.id) === String(postId));
+    if (post?.is_published) return;
+
+    try {
+        const res = await api('PUT', `/posts/${postId}/published`);
+        if (res.error) throw new Error(res.error);
+        S.posts = S.posts.map(item => String(item.id) === String(postId)
+            ? { ...item, is_published: res.is_published }
+            : item
+        );
+        renderPosts();
+    } catch {
+        // Copy should still succeed even if status update fails.
+    }
+}
+
+async function openPostEditModal(postId) {
+    if (!postId) return;
+    S.postEditId = postId;
+    S.postEditSyncing = true;
+    const post = await api('GET', `/posts/${postId}`);
+    if (post.error) {
+        S.postEditSyncing = false;
+        toast('Post not found', 'error');
+        return;
+    }
+
+    document.getElementById('post-edit-hook').value = post.hook || '';
+    document.getElementById('post-edit-body').value = post.body || '';
+    document.getElementById('post-edit-cta').value = post.cta || '';
+    S.postEditSyncing = false;
+
+    openModal('modal-post-edit');
+}
+
+function syncPostFullFromParts() {
+    if (S.postEditSyncing) return;
+    return composeEditedPostText();
+}
+
+function composeEditedPostText() {
+    return [
+        rawVal('post-edit-hook'),
+        rawVal('post-edit-body'),
+        rawVal('post-edit-cta'),
+    ].map(part => part.trim()).filter(Boolean).join('\n\n');
+}
+
+async function saveEditedPost() {
+    if (!S.postEditId) return;
+
+    const body = {
+        hook: val('post-edit-hook'),
+        body: val('post-edit-body'),
+        cta: val('post-edit-cta'),
+        final_text: composeEditedPostText(),
+    };
+
+    if (!body.hook || !body.final_text) {
+        toast('Hook is required', 'error');
+        return;
+    }
+
+    try {
+        const res = await api('PUT', `/posts/${S.postEditId}`, body);
+        if (res.error) throw new Error(res.error);
+
+        const editedId = S.postEditId;
+        closeModal('modal-post-edit');
+        await refreshPosts();
+
+        const detailOpen = document.getElementById('modal-detail').classList.contains('active');
+        if (S.detailPostId === editedId && detailOpen) {
+            await openDetailModal(editedId);
+        }
+
+        toast('Post updated', 'success');
+    } catch (e) {
+        toast(e.message || 'Could not update post', 'error');
+    }
 }
 
 async function deleteDetailPost() {
@@ -2805,11 +3158,11 @@ function loadSteps(type) {
     const steps = {
         create: [
             { label:'Saving your profile',          delay: 0     },
-            { label:'Preparing audience notes',      delay: 4000  },
-            { label:'Identifying pains & desires',   delay: 8000  },
-            { label:'Building content angles',       delay: 13000 },
-            { label:'Preparing 20 content ideas',    delay: 18000 },
-            { label:'Finalizing…',                   delay: 24000 },
+            { label:'Preparing audience notes',      delay: 3500  },
+            { label:'Reading market context',        delay: 7000  },
+            { label:'Finding pains, desires, and proof points', delay: 11000 },
+            { label:'Preparing 20 starter ideas',    delay: 16000 },
+            { label:'Opening your workspace…',       delay: 22000 },
         ],
         update: [
             { label:'Saving changes',                delay: 0     },
@@ -2832,8 +3185,9 @@ let _loadingState = null;
 
 function showLoading(heading, steps = [], options = {}) {
     const overlay = document.getElementById('loading-overlay');
-    overlay.classList.toggle('logo-loading', !!options.logo);
-    _loadingState = { startedAt: performance.now(), kind: options.kind || null, logo: !!options.logo };
+    const useLogo = options.logo !== false;
+    overlay.classList.toggle('logo-loading', useLogo);
+    _loadingState = { startedAt: performance.now(), kind: options.kind || null, logo: useLogo };
     document.getElementById('loading-heading').textContent = heading;
     const cont = document.getElementById('loading-steps');
     cont.innerHTML = steps.map((s, i) => `
@@ -2852,7 +3206,7 @@ function showLoading(heading, steps = [], options = {}) {
         if (cur) { cur.classList.add('active-step'); cur.querySelector('.lstep-icon').textContent = '⟳'; }
     }, s.delay));
 
-    if (options.logo) startLoadingLogoAnimation(getLoadingDuration(steps, options.kind));
+    if (useLogo) startLoadingLogoAnimation(getLoadingDuration(steps, options.kind));
     overlay.classList.add('active');
     document.body.style.overflow = 'hidden';
 }
@@ -3022,7 +3376,8 @@ function parseJwt(token) {
     return JSON.parse(atob(b64));
 }
 
-function val(id) { return (document.getElementById(id)?.value || '').trim(); }
+function val(id) { return rawVal(id).trim(); }
+function rawVal(id) { return document.getElementById(id)?.value || ''; }
 
 function esc(s) {
     return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');

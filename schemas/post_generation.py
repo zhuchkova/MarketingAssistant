@@ -1,6 +1,6 @@
 from uuid import UUID
 from typing import Optional
-from pydantic import BaseModel, ConfigDict, field_validator
+from pydantic import BaseModel, ConfigDict, field_validator, model_validator
 
 
 ALLOWED_PLATFORMS = {"instagram", "linkedin"}
@@ -82,3 +82,24 @@ class GeneratePostRequest(BaseModel):
             }
         }
     )
+
+
+class UpdatePostRequest(BaseModel):
+    hook: str
+    body: str
+    cta: str
+    final_text: str
+
+    @model_validator(mode="after")
+    def clean_text_fields(self):
+        self.hook = self.hook.strip()
+        self.body = self.body.strip()
+        self.cta = self.cta.strip()
+        self.final_text = self.final_text.strip()
+
+        if not self.hook:
+            raise ValueError("hook is required")
+        if not self.final_text:
+            raise ValueError("final_text is required")
+
+        return self
