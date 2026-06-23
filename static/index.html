@@ -1500,6 +1500,13 @@
                         <label for="idea-format-filter">Filter</label>
                         <select id="idea-format-filter" onchange="setIdeaFilter(this.value)"></select>
                     </div>
+                    <div class="idea-filter-control">
+                        <label for="idea-favorite-filter">Favorites</label>
+                        <select id="idea-favorite-filter" onchange="setIdeaFavoriteFilter(this.value)">
+                            <option value="all">All</option>
+                            <option value="favorite">Favorites</option>
+                        </select>
+                    </div>
                     <button class="btn btn-secondary btn-sm" onclick="openIdeaModal()">Custom Idea</button>
                     <button class="btn btn-primary btn-sm" onclick="generateMoreIdeas()">Generate More</button>
                     <button class="btn btn-ghost btn-sm" onclick="regenerateIdeas()">Regenerate All</button>
@@ -1531,6 +1538,14 @@
                             <option value="carousel">Carousel</option>
                             <option value="story">Story</option>
                             <option value="reel">Reel</option>
+                        </select>
+                    </div>
+                    <div class="idea-filter-control">
+                        <label for="post-status-filter">Status</label>
+                        <select id="post-status-filter" onchange="setPostStatusFilter(this.value)">
+                            <option value="all">All</option>
+                            <option value="favorite">Favorites</option>
+                            <option value="published">Published</option>
                         </select>
                     </div>
                 </div>
@@ -1849,7 +1864,7 @@
         </div>
         <div class="modal-body">
             <div class="warn-banner">
-                Saving profile changes will refresh audience notes and add fresh ideas. Existing posts and favorites will stay.
+                Saving profile changes will refresh audience notes and add fresh ideas. Existing posts and favorite ideas will stay.
             </div>
             <div class="form-group">
                 <label>Profile Name</label>
@@ -1937,9 +1952,11 @@ const S = {
     genPostId:  null,
     genPost:    null,
     ideaFilter: 'all',
+    ideaFavoriteFilter: 'all',
     ideaEditId: null,
     postPlatformFilter: 'all',
     postTypeFilter: 'all',
+    postStatusFilter: 'all',
     postEditId: null,
     postEditSyncing: false,
     detailPostId: null,
@@ -2371,12 +2388,14 @@ function renderIdeas() {
         return;
     }
 
-    const visibleIdeas = S.ideaFilter === 'all'
-        ? S.ideas
-        : S.ideas.filter(idea => ideaFormat(idea) === S.ideaFilter);
+    const visibleIdeas = S.ideas.filter(idea => {
+        const formatOk = S.ideaFilter === 'all' || ideaFormat(idea) === S.ideaFilter;
+        const favoriteOk = S.ideaFavoriteFilter === 'all' || idea.is_favorite;
+        return formatOk && favoriteOk;
+    });
 
     if (!visibleIdeas.length) {
-        grid.innerHTML = `<div class="empty" style="grid-column:1/-1"><div class="empty-icon"></div><div class="empty-title">No ideas in this style</div><div class="empty-desc">Choose another style or generate more ideas</div></div>`;
+        grid.innerHTML = `<div class="empty" style="grid-column:1/-1"><div class="empty-icon"></div><div class="empty-title">No ideas match these filters</div><div class="empty-desc">Choose another filter or generate more ideas</div></div>`;
         return;
     }
 
@@ -2410,10 +2429,17 @@ function renderIdeaFormatFilter() {
         ...formats.map(format => `<option value="${format}">${esc(formatLabel(format))}</option>`)
     ].join('');
     select.value = S.ideaFilter;
+    const favoriteSelect = document.getElementById('idea-favorite-filter');
+    if (favoriteSelect) favoriteSelect.value = S.ideaFavoriteFilter;
 }
 
 function setIdeaFilter(format) {
     S.ideaFilter = format;
+    renderIdeas();
+}
+
+function setIdeaFavoriteFilter(value) {
+    S.ideaFavoriteFilter = value;
     renderIdeas();
 }
 
@@ -2534,9 +2560,10 @@ async function toggleIdeaFavorite(event, ideaId) {
 async function generateMoreIdeas() {
     showLoading('Creating more ideas…', [
         { label:'Reading audience notes', delay:0 },
-        { label:'Mixing content styles', delay:2500 },
+        { label:'Keeping favorite ideas', delay:2500 },
+        { label:'Mixing fresh content ideas', delay:5000 },
         { label:'Saving new ideas', delay:6500 },
-    ]);
+    ], { logo: true, kind: 'ideas' });
 
     try {
         const res = await api('POST', `/user-profiles/${S.profileId}/content-ideas/generate-more`, { count: 10 });
@@ -2553,9 +2580,10 @@ async function generateMoreIdeas() {
 async function regenerateIdeas() {
     showLoading('Regenerating ideas…', [
         { label:'Keeping audience notes', delay:0 },
-        { label:'Preparing 20 fresh ideas', delay:3500 },
+        { label:'Keeping favorite ideas', delay:2500 },
+        { label:'Preparing 20 fresh ideas', delay:5500 },
         { label:'Saving new idea set', delay:8500 },
-    ]);
+    ], { logo: true, kind: 'ideas' });
 
     try {
         const res = await api('POST', `/user-profiles/${S.profileId}/content-ideas/regenerate`, { count: 20 });
@@ -2597,7 +2625,6 @@ function renderPosts() {
                 ${p.post_length ? `<span class="tag tag-format">${esc(p.post_length)}</span>` : ''}
                 <span class="tag tag-format">${esc(p.post_format||'')}</span>
                 <span class="tag tag-goal">${esc(p.post_goal||'')}</span>
-                ${p.is_published ? '<span class="tag tag-goal">published</span>' : ''}
             </div>
             <div class="post-row-hook">${esc(p.hook || (p.final_text||'').slice(0,80))}</div>
             <div class="post-row-preview">${esc(p.final_text||'')}</div>
@@ -2617,17 +2644,22 @@ function filteredPosts() {
     return S.posts.filter(post => {
         const platformOk = S.postPlatformFilter === 'all' || post.platform === S.postPlatformFilter;
         const typeOk = S.postTypeFilter === 'all' || post.instagram_content_type === S.postTypeFilter;
-        return platformOk && typeOk;
+        const statusOk = S.postStatusFilter === 'all'
+            || (S.postStatusFilter === 'favorite' && post.is_favorite)
+            || (S.postStatusFilter === 'published' && post.is_published);
+        return platformOk && typeOk && statusOk;
     });
 }
 
 function syncPostFilters() {
     const platform = document.getElementById('post-platform-filter');
     const type = document.getElementById('post-type-filter');
+    const status = document.getElementById('post-status-filter');
     const typeWrap = document.getElementById('post-type-filter-wrap');
 
     if (platform) platform.value = S.postPlatformFilter;
     if (type) type.value = S.postTypeFilter;
+    if (status) status.value = S.postStatusFilter;
 
     const showType = S.postPlatformFilter !== 'linkedin';
     if (typeWrap) typeWrap.style.display = showType ? '' : 'none';
@@ -2644,6 +2676,11 @@ function setPostTypeFilter(value) {
     if (value !== 'all' && S.postPlatformFilter === 'linkedin') {
         S.postPlatformFilter = 'instagram';
     }
+    renderPosts();
+}
+
+function setPostStatusFilter(value) {
+    S.postStatusFilter = value;
     renderPosts();
 }
 
@@ -2708,7 +2745,13 @@ async function generatePost() {
     const idea = S.ideas[S.genIdeaIdx];
     const btn = document.getElementById('btn-gen');
     btn.disabled = true;
-    btn.innerHTML = '<span class="spin-sm"></span> Generating…';
+    btn.textContent = 'Drafting…';
+    showLoading('Drafting your post…', [
+        { label:'Reading selected idea', delay:0 },
+        { label:'Choosing the right framework', delay:1800 },
+        { label:'Writing the post draft', delay:4200 },
+        { label:'Preparing CTA', delay:7000 },
+    ], { logo: true, kind: 'post' });
 
     try {
         const data = await api('POST', '/posts', {
@@ -2731,9 +2774,11 @@ async function generatePost() {
         document.getElementById('gen-result').scrollIntoView({ behavior:'smooth', block:'nearest' });
 
         await refreshPosts();
+        hideLoading();
         toast('Post drafted', 'success');
         btn.textContent = 'Draft Again';
     } catch (e) {
+        hideLoading();
         toast(e.message || 'Failed to draft post', 'error');
         btn.textContent = 'Draft Post';
     } finally {
@@ -3113,11 +3158,11 @@ function loadSteps(type) {
     const steps = {
         create: [
             { label:'Saving your profile',          delay: 0     },
-            { label:'Preparing audience notes',      delay: 4000  },
-            { label:'Identifying pains & desires',   delay: 8000  },
-            { label:'Building content angles',       delay: 13000 },
-            { label:'Preparing 20 content ideas',    delay: 18000 },
-            { label:'Finalizing…',                   delay: 24000 },
+            { label:'Preparing audience notes',      delay: 3500  },
+            { label:'Reading market context',        delay: 7000  },
+            { label:'Finding pains, desires, and proof points', delay: 11000 },
+            { label:'Preparing 20 starter ideas',    delay: 16000 },
+            { label:'Opening your workspace…',       delay: 22000 },
         ],
         update: [
             { label:'Saving changes',                delay: 0     },
@@ -3140,8 +3185,9 @@ let _loadingState = null;
 
 function showLoading(heading, steps = [], options = {}) {
     const overlay = document.getElementById('loading-overlay');
-    overlay.classList.toggle('logo-loading', !!options.logo);
-    _loadingState = { startedAt: performance.now(), kind: options.kind || null, logo: !!options.logo };
+    const useLogo = options.logo !== false;
+    overlay.classList.toggle('logo-loading', useLogo);
+    _loadingState = { startedAt: performance.now(), kind: options.kind || null, logo: useLogo };
     document.getElementById('loading-heading').textContent = heading;
     const cont = document.getElementById('loading-steps');
     cont.innerHTML = steps.map((s, i) => `
@@ -3160,7 +3206,7 @@ function showLoading(heading, steps = [], options = {}) {
         if (cur) { cur.classList.add('active-step'); cur.querySelector('.lstep-icon').textContent = '⟳'; }
     }, s.delay));
 
-    if (options.logo) startLoadingLogoAnimation(getLoadingDuration(steps, options.kind));
+    if (useLogo) startLoadingLogoAnimation(getLoadingDuration(steps, options.kind));
     overlay.classList.add('active');
     document.body.style.overflow = 'hidden';
 }
