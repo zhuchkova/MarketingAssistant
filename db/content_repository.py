@@ -138,3 +138,21 @@ def save_post(conn, data: dict) -> str:
         ))
 
     return post_id
+
+
+def update_post_content(conn, post_id: str, data: dict) -> None:
+    with conn.cursor() as cur:
+        cur.execute("""
+            UPDATE posts
+            SET hook = %s,
+                body = %s,
+                cta = %s,
+                final_text = %s
+            WHERE id = %s
+        """, (
+            data["hook"],
+            data.get("body", ""),
+            data.get("cta", ""),
+            data["final_text"],
+            post_id,
+        ))

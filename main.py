@@ -10,7 +10,7 @@ from fastapi.responses import FileResponse
 from fastapi.middleware.cors import CORSMiddleware
 import psycopg
 from schemas.user_profile import CreateUserProfileRequest, UpdateUserProfileRequest
-from schemas.post_generation import GeneratePostRequest
+from schemas.post_generation import GeneratePostRequest, UpdatePostRequest
 from schemas.content_idea import ContentIdeaRequest, GenerateIdeasRequest
 from schemas.auth import RegisterRequest, LoginRequest
 from auth import get_current_user, hash_password, verify_password, create_token
@@ -22,7 +22,7 @@ from db.idea_repository import (get_profile_with_audience_analysis,
                                 save_content_ideas)
 from agents.content_agent import run_content_agent
 from db.content_repository import (get_content_generation_context,
-    get_lookup_id, save_post)
+    get_lookup_id, save_post, update_post_content)
 from agents.conversion_agent import run_conversion_agent
 from db.conversion_repository import (get_conversion_context,
     save_manychat_flow)
@@ -676,6 +676,26 @@ def get_post(
         "final_text": row[4], "instagram_content_type": row[5], "post_length": row[6],
         "platform": row[7], "post_format": row[8], "post_goal": row[9],
     }
+
+
+@app.put("/posts/{post_id}")
+def update_post(
+    post_id: str,
+    request: UpdatePostRequest,
+    current_user: dict = Depends(get_current_user),
+):
+    data = request.model_dump()
+    conn = psycopg.connect(os.getenv("DATABASE_URL"))
+    try:
+        check_post_owner(conn, post_id, current_user["user_id"])
+        update_post_content(conn, post_id, data)
+        conn.commit()
+        return {"status": "post updated", "post_id": post_id}
+    except Exception:
+        conn.rollback()
+        raise
+    finally:
+        conn.close()
 
 
 @app.delete("/posts/{post_id}")

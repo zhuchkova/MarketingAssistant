@@ -662,6 +662,26 @@
             padding: 8px 32px 8px 11px;
             font-size: 14px;
         }
+        .post-filter-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 16px;
+        }
+        .post-filter-row .idea-filter-control select { min-width: 150px; }
+        .length-mark {
+            display: inline-grid;
+            place-items: center;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: #fff;
+            font-size: 11px;
+            font-weight: 900;
+            line-height: 1;
+        }
 
         /* Posts tab */
         .posts-list { display: flex; flex-direction: column; gap: 12px; }
@@ -1449,6 +1469,25 @@
                     <h3>My Posts</h3>
                     <p>Drafts saved for this profile</p>
                 </div>
+                <div class="ideas-toolbar-right">
+                    <div class="idea-filter-control">
+                        <label for="post-platform-filter">Platform</label>
+                        <select id="post-platform-filter" onchange="setPostPlatformFilter(this.value)">
+                            <option value="all">All</option>
+                            <option value="instagram">Instagram</option>
+                            <option value="linkedin">LinkedIn</option>
+                        </select>
+                    </div>
+                    <div class="idea-filter-control" id="post-type-filter-wrap">
+                        <label for="post-type-filter">Type</label>
+                        <select id="post-type-filter" onchange="setPostTypeFilter(this.value)">
+                            <option value="all">All</option>
+                            <option value="carousel">Carousel</option>
+                            <option value="story">Story</option>
+                            <option value="reel">Reel</option>
+                        </select>
+                    </div>
+                </div>
             </div>
             <div id="posts-container"></div>
         </div>
@@ -1530,13 +1569,13 @@
                 <label>Length</label>
                 <div class="option-grid">
                     <button class="opt-btn" data-group="post_length" data-val="short" onclick="pickOpt(this)">
-                        <svg class="opt-icon"><use href="#icon-bolt"></use></svg>Short
+                        <span class="opt-icon length-mark">S</span>Short
                     </button>
                     <button class="opt-btn sel" data-group="post_length" data-val="medium" onclick="pickOpt(this)">
-                        <svg class="opt-icon"><use href="#icon-list"></use></svg>Medium
+                        <span class="opt-icon length-mark">M</span>Medium
                     </button>
                     <button class="opt-btn" data-group="post_length" data-val="long" onclick="pickOpt(this)">
-                        <svg class="opt-icon"><use href="#icon-book"></use></svg>Long
+                        <span class="opt-icon length-mark">L</span>Long
                     </button>
                 </div>
             </div>
@@ -1619,8 +1658,46 @@
         </div>
         <div class="modal-foot">
             <button class="btn btn-danger btn-sm" onclick="deleteDetailPost()">Delete</button>
+            <button class="btn btn-secondary btn-sm" onclick="openPostEditModal(S.detailPostId)">Edit</button>
             <button class="btn btn-ghost" onclick="closeModal('modal-detail')">Close</button>
             <button class="btn btn-primary btn-sm" onclick="detailConversionFlow()">Lead Flow</button>
+        </div>
+    </div>
+</div>
+
+<!-- ═══════════════════════════════════
+     MODAL: EDIT POST
+════════════════════════════════════ -->
+<div class="backdrop" id="modal-post-edit">
+    <div class="modal">
+        <div class="modal-head">
+            <span class="modal-title">Edit Post</span>
+            <button class="modal-close" onclick="closeModal('modal-post-edit')" aria-label="Close">
+                <svg class="flat-icon"><use href="#icon-x"></use></svg>
+            </button>
+        </div>
+        <div class="modal-body">
+            <div class="form-group">
+                <label>Hook</label>
+                <textarea id="post-edit-hook"></textarea>
+            </div>
+            <div class="form-group">
+                <label>Body</label>
+                <textarea id="post-edit-body" style="min-height:150px"></textarea>
+            </div>
+            <div class="form-group">
+                <label>Call to Action</label>
+                <textarea id="post-edit-cta"></textarea>
+            </div>
+            <div class="form-group">
+                <label>Full Post</label>
+                <textarea id="post-edit-final" style="min-height:190px"></textarea>
+                <span class="form-hint">Edit this final version directly if you want it to differ from the sections above.</span>
+            </div>
+        </div>
+        <div class="modal-foot">
+            <button class="btn btn-ghost" onclick="closeModal('modal-post-edit')">Cancel</button>
+            <button class="btn btn-primary" onclick="saveEditedPost()">Save Post</button>
         </div>
     </div>
 </div>
@@ -1820,6 +1897,9 @@ const S = {
     genPost:    null,
     ideaFilter: 'all',
     ideaEditId: null,
+    postPlatformFilter: 'all',
+    postTypeFilter: 'all',
+    postEditId: null,
     detailPostId: null,
     flowPostId:   null,
 };
@@ -2433,11 +2513,20 @@ async function regenerateIdeas() {
 
 function renderPosts() {
     const cont = document.getElementById('posts-container');
+    syncPostFilters();
+
     if (!S.posts.length) {
         cont.innerHTML = `<div class="empty"><div class="empty-icon"></div><div class="empty-title">No posts yet</div><div class="empty-desc">Open Content Ideas and choose one to draft your first post</div></div>`;
         return;
     }
-    cont.innerHTML = `<div class="posts-list">${S.posts.map(p => `
+
+    const visiblePosts = filteredPosts();
+    if (!visiblePosts.length) {
+        cont.innerHTML = `<div class="empty"><div class="empty-icon"></div><div class="empty-title">No posts match these filters</div><div class="empty-desc">Try another platform or Instagram type</div></div>`;
+        return;
+    }
+
+    cont.innerHTML = `<div class="posts-list">${visiblePosts.map(p => `
         <div class="post-row" id="pr-${p.id}">
             <div class="post-row-meta">
                 <span class="tag tag-platform">${esc(p.platform||'')}</span>
@@ -2450,6 +2539,7 @@ function renderPosts() {
             <div class="post-row-preview">${esc(p.final_text||'')}</div>
             <div class="post-row-actions">
                 <button class="btn btn-secondary btn-sm" onclick="openDetailModal('${p.id}')">View Post</button>
+                <button class="btn btn-secondary btn-sm" onclick="openPostEditModal('${p.id}')">Edit</button>
                 <button class="btn btn-secondary btn-sm js-copy-post" type="button">
                     <svg class="flat-icon"><use href="#icon-copy"></use></svg>
                     Copy
@@ -2457,6 +2547,40 @@ function renderPosts() {
                 <button class="btn btn-danger btn-sm" onclick="deletePost('${p.id}')">Delete</button>
             </div>
         </div>`).join('')}</div>`;
+}
+
+function filteredPosts() {
+    return S.posts.filter(post => {
+        const platformOk = S.postPlatformFilter === 'all' || post.platform === S.postPlatformFilter;
+        const typeOk = S.postTypeFilter === 'all' || post.instagram_content_type === S.postTypeFilter;
+        return platformOk && typeOk;
+    });
+}
+
+function syncPostFilters() {
+    const platform = document.getElementById('post-platform-filter');
+    const type = document.getElementById('post-type-filter');
+    const typeWrap = document.getElementById('post-type-filter-wrap');
+
+    if (platform) platform.value = S.postPlatformFilter;
+    if (type) type.value = S.postTypeFilter;
+
+    const showType = S.postPlatformFilter !== 'linkedin';
+    if (typeWrap) typeWrap.style.display = showType ? '' : 'none';
+}
+
+function setPostPlatformFilter(value) {
+    S.postPlatformFilter = value;
+    if (value === 'linkedin') S.postTypeFilter = 'all';
+    renderPosts();
+}
+
+function setPostTypeFilter(value) {
+    S.postTypeFilter = value;
+    if (value !== 'all' && S.postPlatformFilter === 'linkedin') {
+        S.postPlatformFilter = 'instagram';
+    }
+    renderPosts();
 }
 
 // ─── POST GENERATOR MODAL ──────────────────────────
@@ -2587,6 +2711,54 @@ function copyDetailPost() { copyTxt(document.getElementById('d-final').textConte
 function copyPost(postId) {
     const post = S.posts.find(p => String(p.id) === String(postId));
     copyTxt(post?.final_text || '');
+}
+
+async function openPostEditModal(postId) {
+    if (!postId) return;
+    S.postEditId = postId;
+    const post = await api('GET', `/posts/${postId}`);
+    if (post.error) { toast('Post not found', 'error'); return; }
+
+    document.getElementById('post-edit-hook').value = post.hook || '';
+    document.getElementById('post-edit-body').value = post.body || '';
+    document.getElementById('post-edit-cta').value = post.cta || '';
+    document.getElementById('post-edit-final').value = post.final_text || '';
+
+    openModal('modal-post-edit');
+}
+
+async function saveEditedPost() {
+    if (!S.postEditId) return;
+
+    const body = {
+        hook: val('post-edit-hook'),
+        body: val('post-edit-body'),
+        cta: val('post-edit-cta'),
+        final_text: val('post-edit-final'),
+    };
+
+    if (!body.hook || !body.final_text) {
+        toast('Hook and full post are required', 'error');
+        return;
+    }
+
+    try {
+        const res = await api('PUT', `/posts/${S.postEditId}`, body);
+        if (res.error) throw new Error(res.error);
+
+        const editedId = S.postEditId;
+        closeModal('modal-post-edit');
+        await refreshPosts();
+
+        const detailOpen = document.getElementById('modal-detail').classList.contains('active');
+        if (S.detailPostId === editedId && detailOpen) {
+            await openDetailModal(editedId);
+        }
+
+        toast('Post updated', 'success');
+    } catch (e) {
+        toast(e.message || 'Could not update post', 'error');
+    }
 }
 
 async function deleteDetailPost() {

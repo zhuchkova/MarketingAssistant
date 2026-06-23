@@ -685,6 +685,19 @@ Allowed `post_length` values are `short`, `medium`, and `long`.
 }
 ```
 
+### Update Post Manually
+
+`PUT /posts/{post_id}`
+
+```json
+{
+  "hook": "Updated hook",
+  "body": "Updated body copy.",
+  "cta": "Updated CTA.",
+  "final_text": "Updated hook\n\nUpdated body copy.\n\nUpdated CTA."
+}
+```
+
 ---
 
 ## Authorization and Security Notes

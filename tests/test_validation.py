@@ -4,7 +4,7 @@ from pydantic import ValidationError
 
 from schemas.auth import LoginRequest, RegisterRequest
 from schemas.content_idea import ContentIdeaRequest
-from schemas.post_generation import GeneratePostRequest
+from schemas.post_generation import GeneratePostRequest, UpdatePostRequest
 from schemas.user_profile import CreateUserProfileRequest
 
 
@@ -124,6 +124,26 @@ class ValidationTests(unittest.TestCase):
                 platform="linkedin",
                 post_goal="comment",
                 post_length="extra_long",
+            )
+
+    def test_update_post_trims_text(self):
+        request = UpdatePostRequest(
+            hook=" Useful hook ",
+            body=" Useful body ",
+            cta=" Comment YES ",
+            final_text=" Useful hook\n\nUseful body\n\nComment YES ",
+        )
+
+        self.assertEqual(request.hook, "Useful hook")
+        self.assertEqual(request.final_text, "Useful hook\n\nUseful body\n\nComment YES")
+
+    def test_update_post_requires_final_text(self):
+        with self.assertRaises(ValidationError):
+            UpdatePostRequest(
+                hook="Useful hook",
+                body="Useful body",
+                cta="Comment YES",
+                final_text="   ",
             )
 
     def test_custom_idea_rejects_unknown_style(self):

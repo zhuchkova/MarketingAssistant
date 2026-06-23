@@ -7,7 +7,7 @@ collections = client.list_collections()
 
 print("\n=== COLLECTIONS ===")
 for c in collections:
-    print(c.name)
+    print("Collection: ", c.name, "Number of documents: ", c.count())
 
 # open collection
 collection = client.get_collection("positioning_knowledge")
@@ -15,20 +15,20 @@ collection = client.get_collection("positioning_knowledge")
 # get everything
 data = collection.get()
 
-print("\n=== IDS ===")
-print(data["ids"])
+# print("\n=== IDS ===")
+# print(data["ids"])
 
-print("\n=== DOCUMENTS ===")
-for doc in data["documents"]:
-    print("-", doc)
-
-print("\n=== METADATA ===")
-for meta in data["metadatas"]:
-    print(meta)
-
-print('The number of documents', collection.count())
-data = collection.get(include=["metadatas"])
-print('Metadata:', data)
+# print("\n=== DOCUMENTS ===")
+# for doc in data["documents"]:
+#     print("-", doc)
+#
+# print("\n=== METADATA ===")
+# for meta in data["metadatas"]:
+#     print(meta)
+#
+# print('The number of documents', collection.count())
+# data = collection.get(include=["metadatas"])
+# print('Metadata:', data)
 
 results = collection.query(
     query_texts=["AI automation for founders"],
