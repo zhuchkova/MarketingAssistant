@@ -19,6 +19,19 @@ def save_audience_analysis(conn, profile_id, data):
                                                    positioning,
                                                    known_for)
                     VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                    ON CONFLICT (user_profile_id) DO UPDATE
+                    SET audience_profile = EXCLUDED.audience_profile,
+                        pains = EXCLUDED.pains,
+                        desires = EXCLUDED.desires,
+                        objections = EXCLUDED.objections,
+                        trigger_moments = EXCLUDED.trigger_moments,
+                        proof_points = EXCLUDED.proof_points,
+                        audience_language = EXCLUDED.audience_language,
+                        market_context = EXCLUDED.market_context,
+                        content_angles = EXCLUDED.content_angles,
+                        tone = EXCLUDED.tone,
+                        positioning = EXCLUDED.positioning,
+                        known_for = EXCLUDED.known_for
                     """, (
                         str(uuid.uuid4()),
                         profile_id,

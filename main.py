@@ -335,10 +335,17 @@ def get_content_ideas(
 
         with conn.cursor() as cur:
             cur.execute("""
-                SELECT id, title, hook, angle, topic, COALESCE(post_format, content_style) AS post_format
+                SELECT
+                    id,
+                    title,
+                    hook,
+                    angle,
+                    topic,
+                    COALESCE(post_format, content_style) AS post_format,
+                    COALESCE(is_favorite, FALSE) AS is_favorite
                 FROM content_ideas
                 WHERE user_profile_id = %s
-                ORDER BY title
+                ORDER BY is_favorite DESC, title
             """, (profile_id,))
             rows = cur.fetchall()
     finally:
@@ -352,6 +359,7 @@ def get_content_ideas(
             "angle": row[3],
             "topic": row[4],
             "post_format": row[5],
+            "is_favorite": row[6],
         }
         for row in rows
     ]
@@ -400,7 +408,11 @@ def regenerate_content_ideas(
             conn, profile_id, current_user["user_id"]
         )
         with conn.cursor() as cur:
-            cur.execute("DELETE FROM content_ideas WHERE user_profile_id = %s", (profile_id,))
+            cur.execute("""
+                DELETE FROM content_ideas
+                WHERE user_profile_id = %s
+                  AND COALESCE(is_favorite, FALSE) = FALSE
+            """, (profile_id,))
 
         ideas = run_idea_agent(profile, audience_analysis, number_of_ideas=request["count"])
         idea_ids = save_content_ideas(
@@ -491,6 +503,31 @@ def update_content_idea(
         conn.close()
 
 
+@app.put("/content-ideas/{idea_id}/favorite")
+def toggle_content_idea_favorite(
+    idea_id: str,
+    current_user: dict = Depends(get_current_user),
+):
+    conn = psycopg.connect(os.getenv("DATABASE_URL"))
+    try:
+        ensure_content_idea_owner(conn, idea_id, current_user["user_id"])
+        with conn.cursor() as cur:
+            cur.execute("""
+                UPDATE content_ideas
+                SET is_favorite = NOT COALESCE(is_favorite, FALSE)
+                WHERE id = %s
+                RETURNING is_favorite
+            """, (idea_id,))
+            row = cur.fetchone()
+        conn.commit()
+        return {"status": "idea favorite updated", "idea_id": idea_id, "is_favorite": row[0]}
+    except Exception:
+        conn.rollback()
+        raise
+    finally:
+        conn.close()
+
+
 @app.delete("/content-ideas/{idea_id}")
 def delete_content_idea(
     idea_id: str,
@@ -522,6 +559,8 @@ def get_posts_for_profile(
                     p.id, p.hook, p.cta, p.final_text,
                     p.instagram_content_type,
                     p.post_length,
+                    COALESCE(p.is_favorite, FALSE) AS is_favorite,
+                    COALESCE(p.is_published, FALSE) AS is_published,
                     pl.name AS platform,
                     pf.name AS post_format,
                     pg.name AS post_goal
@@ -539,7 +578,8 @@ def get_posts_for_profile(
         {
             "id": row[0], "hook": row[1], "cta": row[2], "final_text": row[3],
             "instagram_content_type": row[4], "post_length": row[5],
-            "platform": row[6], "post_format": row[7], "post_goal": row[8],
+            "is_favorite": row[6], "is_published": row[7],
+            "platform": row[8], "post_format": row[9], "post_goal": row[10],
         }
         for row in rows
     ]
@@ -559,9 +599,11 @@ def update_user_profile(
         check_profile_owner(conn, profile_id, current_user["user_id"])
 
         with conn.cursor() as cur:
-            cur.execute("DELETE FROM posts WHERE user_profile_id = %s", (profile_id,))
-            cur.execute("DELETE FROM content_ideas WHERE user_profile_id = %s", (profile_id,))
-            cur.execute("DELETE FROM audience_analyses WHERE user_profile_id = %s", (profile_id,))
+            cur.execute("""
+                DELETE FROM content_ideas
+                WHERE user_profile_id = %s
+                  AND COALESCE(is_favorite, FALSE) = FALSE
+            """, (profile_id,))
             cur.execute("""
                 UPDATE user_profiles
                 SET profile_name=%s, niche=%s, offer=%s, target_audience=%s, expertise=%s, personal_touch=%s,
@@ -655,6 +697,8 @@ def get_post(
                     p.id, p.hook, p.body, p.cta, p.final_text,
                     p.instagram_content_type,
                     p.post_length,
+                    COALESCE(p.is_favorite, FALSE) AS is_favorite,
+                    COALESCE(p.is_published, FALSE) AS is_published,
                     pl.name AS platform,
                     pf.name AS post_format,
                     pg.name AS post_goal
@@ -674,7 +718,8 @@ def get_post(
     return {
         "id": row[0], "hook": row[1], "body": row[2], "cta": row[3],
         "final_text": row[4], "instagram_content_type": row[5], "post_length": row[6],
-        "platform": row[7], "post_format": row[8], "post_goal": row[9],
+        "is_favorite": row[7], "is_published": row[8],
+        "platform": row[9], "post_format": row[10], "post_goal": row[11],
     }
 
 
@@ -691,6 +736,60 @@ def update_post(
         update_post_content(conn, post_id, data)
         conn.commit()
         return {"status": "post updated", "post_id": post_id}
+    except Exception:
+        conn.rollback()
+        raise
+    finally:
+        conn.close()
+
+
+@app.put("/posts/{post_id}/favorite")
+def toggle_post_favorite(
+    post_id: str,
+    current_user: dict = Depends(get_current_user),
+):
+    conn = psycopg.connect(os.getenv("DATABASE_URL"))
+    try:
+        check_post_owner(conn, post_id, current_user["user_id"])
+        with conn.cursor() as cur:
+            cur.execute("""
+                UPDATE posts
+                SET is_favorite = NOT COALESCE(is_favorite, FALSE)
+                WHERE id = %s
+                RETURNING is_favorite
+            """, (post_id,))
+            row = cur.fetchone()
+        conn.commit()
+        return {"status": "post favorite updated", "post_id": post_id, "is_favorite": row[0]}
+    except Exception:
+        conn.rollback()
+        raise
+    finally:
+        conn.close()
+
+
+@app.put("/posts/{post_id}/published")
+def toggle_post_published(
+    post_id: str,
+    current_user: dict = Depends(get_current_user),
+):
+    conn = psycopg.connect(os.getenv("DATABASE_URL"))
+    try:
+        check_post_owner(conn, post_id, current_user["user_id"])
+        with conn.cursor() as cur:
+            cur.execute("""
+                UPDATE posts
+                SET is_published = NOT COALESCE(is_published, FALSE),
+                    published_at = CASE
+                        WHEN COALESCE(is_published, FALSE) = FALSE THEN NOW()
+                        ELSE NULL
+                    END
+                WHERE id = %s
+                RETURNING is_published
+            """, (post_id,))
+            row = cur.fetchone()
+        conn.commit()
+        return {"status": "post published updated", "post_id": post_id, "is_published": row[0]}
     except Exception:
         conn.rollback()
         raise

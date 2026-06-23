@@ -13,11 +13,15 @@ ALTER TABLE audience_analyses
 
 ALTER TABLE content_ideas
     ADD COLUMN IF NOT EXISTS post_format TEXT,
-    ADD COLUMN IF NOT EXISTS content_style TEXT;
+    ADD COLUMN IF NOT EXISTS content_style TEXT,
+    ADD COLUMN IF NOT EXISTS is_favorite BOOLEAN DEFAULT FALSE;
 
 ALTER TABLE posts
     ADD COLUMN IF NOT EXISTS instagram_content_type TEXT,
-    ADD COLUMN IF NOT EXISTS post_length TEXT DEFAULT 'medium';
+    ADD COLUMN IF NOT EXISTS post_length TEXT DEFAULT 'medium',
+    ADD COLUMN IF NOT EXISTS is_favorite BOOLEAN DEFAULT FALSE,
+    ADD COLUMN IF NOT EXISTS is_published BOOLEAN DEFAULT FALSE,
+    ADD COLUMN IF NOT EXISTS published_at TIMESTAMP;
 
 INSERT INTO users (id, name, email) VALUES
 ('11111111-1111-1111-1111-111111111111', 'Ekaterina', 'katya@example.com')
