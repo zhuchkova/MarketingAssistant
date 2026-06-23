@@ -1679,20 +1679,15 @@
         <div class="modal-body">
             <div class="form-group">
                 <label>Hook</label>
-                <textarea id="post-edit-hook"></textarea>
+                <textarea id="post-edit-hook" oninput="syncPostFullFromParts()"></textarea>
             </div>
             <div class="form-group">
                 <label>Body</label>
-                <textarea id="post-edit-body" style="min-height:150px"></textarea>
+                <textarea id="post-edit-body" style="min-height:150px" oninput="syncPostFullFromParts()"></textarea>
             </div>
             <div class="form-group">
                 <label>Call to Action</label>
-                <textarea id="post-edit-cta"></textarea>
-            </div>
-            <div class="form-group">
-                <label>Full Post</label>
-                <textarea id="post-edit-final" style="min-height:190px"></textarea>
-                <span class="form-hint">Edit this final version directly if you want it to differ from the sections above.</span>
+                <textarea id="post-edit-cta" oninput="syncPostFullFromParts()"></textarea>
             </div>
         </div>
         <div class="modal-foot">
@@ -1900,6 +1895,7 @@ const S = {
     postPlatformFilter: 'all',
     postTypeFilter: 'all',
     postEditId: null,
+    postEditSyncing: false,
     detailPostId: null,
     flowPostId:   null,
 };
@@ -2716,15 +2712,33 @@ function copyPost(postId) {
 async function openPostEditModal(postId) {
     if (!postId) return;
     S.postEditId = postId;
+    S.postEditSyncing = true;
     const post = await api('GET', `/posts/${postId}`);
-    if (post.error) { toast('Post not found', 'error'); return; }
+    if (post.error) {
+        S.postEditSyncing = false;
+        toast('Post not found', 'error');
+        return;
+    }
 
     document.getElementById('post-edit-hook').value = post.hook || '';
     document.getElementById('post-edit-body').value = post.body || '';
     document.getElementById('post-edit-cta').value = post.cta || '';
-    document.getElementById('post-edit-final').value = post.final_text || '';
+    S.postEditSyncing = false;
 
     openModal('modal-post-edit');
+}
+
+function syncPostFullFromParts() {
+    if (S.postEditSyncing) return;
+    return composeEditedPostText();
+}
+
+function composeEditedPostText() {
+    return [
+        rawVal('post-edit-hook'),
+        rawVal('post-edit-body'),
+        rawVal('post-edit-cta'),
+    ].map(part => part.trim()).filter(Boolean).join('\n\n');
 }
 
 async function saveEditedPost() {
@@ -2734,11 +2748,11 @@ async function saveEditedPost() {
         hook: val('post-edit-hook'),
         body: val('post-edit-body'),
         cta: val('post-edit-cta'),
-        final_text: val('post-edit-final'),
+        final_text: composeEditedPostText(),
     };
 
     if (!body.hook || !body.final_text) {
-        toast('Hook and full post are required', 'error');
+        toast('Hook is required', 'error');
         return;
     }
 
@@ -3194,7 +3208,8 @@ function parseJwt(token) {
     return JSON.parse(atob(b64));
 }
 
-function val(id) { return (document.getElementById(id)?.value || '').trim(); }
+function val(id) { return rawVal(id).trim(); }
+function rawVal(id) { return document.getElementById(id)?.value || ''; }
 
 function esc(s) {
     return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
