@@ -8,10 +8,15 @@ EMPTY_LEAD_MAGNET_CONTEXT = {
     "lead_magnet_url": None,
     "lead_magnet_description": None,
     "lead_magnet_keyword": None,
+    "lead_magnet_trigger_type": None,
     "lead_magnet_public_comment_reply": None,
     "lead_magnet_delivery_message": None,
+    "lead_magnet_opening_dm_button_label": None,
+    "lead_magnet_link_button_label": None,
+    "lead_magnet_qualification_question": None,
     "lead_magnet_follow_up_cta": None,
     "lead_magnet_preferred_post_goal": None,
+    "lead_magnet_manychat_setup": {},
 }
 
 
@@ -47,6 +52,7 @@ def get_conversion_context(conn, post_id: str) -> dict:
                 p.cta,
                 p.final_text,
                 p.lead_magnet_id,
+                p.instagram_content_type,
                 pl.name AS platform,
                 pg.name AS post_goal
 
@@ -96,8 +102,9 @@ def get_conversion_context(conn, post_id: str) -> dict:
             "cta": row[25],
             "final_text": row[26],
             "post_lead_magnet_id": row[27],
-            "platform": row[28],
-            "post_goal": row[29],
+            "instagram_content_type": row[28],
+            "platform": row[29],
+            "post_goal": row[30],
             **EMPTY_LEAD_MAGNET_CONTEXT,
         }
 
@@ -112,10 +119,15 @@ def attach_lead_magnet_context(context: dict, lead_magnet: dict = None, custom_o
             "lead_magnet_url": lead_magnet.get("url"),
             "lead_magnet_description": lead_magnet.get("description"),
             "lead_magnet_keyword": lead_magnet.get("suggested_keyword"),
+            "lead_magnet_trigger_type": lead_magnet.get("trigger_type"),
             "lead_magnet_public_comment_reply": lead_magnet.get("public_comment_reply"),
             "lead_magnet_delivery_message": lead_magnet.get("delivery_message"),
+            "lead_magnet_opening_dm_button_label": lead_magnet.get("opening_dm_button_label"),
+            "lead_magnet_link_button_label": lead_magnet.get("link_button_label"),
+            "lead_magnet_qualification_question": lead_magnet.get("qualification_question"),
             "lead_magnet_follow_up_cta": lead_magnet.get("follow_up_cta"),
             "lead_magnet_preferred_post_goal": lead_magnet.get("preferred_post_goal"),
+            "lead_magnet_manychat_setup": lead_magnet.get("manychat_setup") or {},
         })
         return context
 
@@ -124,6 +136,14 @@ def attach_lead_magnet_context(context: dict, lead_magnet: dict = None, custom_o
             "lead_magnet_title": custom_offer.get("custom_offer_title"),
             "lead_magnet_url": custom_offer.get("custom_offer_url"),
             "lead_magnet_description": custom_offer.get("custom_offer_description"),
+            "lead_magnet_trigger_type": custom_offer.get("custom_trigger_type"),
+            "lead_magnet_keyword": custom_offer.get("custom_keyword"),
+            "lead_magnet_public_comment_reply": custom_offer.get("custom_public_comment_reply"),
+            "lead_magnet_delivery_message": custom_offer.get("custom_first_message"),
+            "lead_magnet_opening_dm_button_label": custom_offer.get("custom_opening_dm_button_label"),
+            "lead_magnet_link_button_label": custom_offer.get("custom_link_button_label"),
+            "lead_magnet_qualification_question": custom_offer.get("custom_qualification_question"),
+            "lead_magnet_follow_up_cta": custom_offer.get("custom_follow_up"),
         })
 
     return context
@@ -159,3 +179,50 @@ def save_manychat_flow(conn, post_id: str, flow: dict, lead_magnet_id: str = Non
         ))
 
     return flow_id
+
+
+def flow_from_lead_magnet(lead_magnet: dict) -> dict:
+    setup = lead_magnet.get("manychat_setup") or {}
+    trigger_keyword = lead_magnet.get("suggested_keyword") or setup.get("trigger_keyword") or "INFO"
+    public_reply = lead_magnet.get("public_comment_reply") or setup.get("public_comment_reply") or "Sent it to you. Check your DMs."
+    opening_button = lead_magnet.get("opening_dm_button_label") or setup.get("opening_dm_button_label") or "Send me the link"
+    link_button = lead_magnet.get("link_button_label") or setup.get("link_button_label") or "Open"
+    url = lead_magnet.get("url") or setup.get("lead_magnet_url") or ""
+    if not setup:
+        setup = {
+            "manual_required": True,
+            "comment_trigger_mode": lead_magnet.get("trigger_type") or "specific_word",
+            "public_comment_reply": public_reply,
+            "public_comment_reply_options": [public_reply],
+            "trigger_keyword": trigger_keyword,
+            "opening_dm_button_label": opening_button,
+            "link_button_label": link_button,
+            "flow_type": "instagram_comment_to_dm",
+            "lead_magnet_used": bool(url),
+            "lead_magnet_url": url,
+            "setup_steps": [
+                "Create an Instagram Comments automation in ManyChat.",
+                f"Set the comment trigger to {lead_magnet.get('trigger_type') or 'specific_word'}.",
+                f"Use the trigger keyword '{trigger_keyword}' when specific words are required.",
+                f"Enable public comment reply and use: {public_reply}",
+                f"Add the opening DM with button label: {opening_button}",
+                f"Add the resource/action message with button label: {link_button}",
+                "Preview the Comments and DM tabs before going live.",
+                "Click Go Live in ManyChat when ready.",
+            ],
+            "api_supported_parts": [
+                "Account metadata",
+                "Tags and custom fields",
+                "Sending content or flows to existing contacts",
+            ],
+        }
+    return {
+        "trigger_keyword": trigger_keyword,
+        "public_comment_reply": public_reply,
+        "first_message": lead_magnet.get("delivery_message") or "",
+        "opening_dm_button_label": opening_button,
+        "link_button_label": link_button,
+        "qualification_question": lead_magnet.get("qualification_question") or "",
+        "follow_up": lead_magnet.get("follow_up_cta") or "",
+        "manychat_setup": setup,
+    }

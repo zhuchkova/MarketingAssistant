@@ -580,24 +580,34 @@ DELETE /posts/{post_id}
 
 Lead flow setup is optional and happens after the main profile workflow. A user can create a profile, review audience analysis, generate ideas, and draft posts without adding any lead magnet or ManyChat resource.
 
-In the frontend, reusable flow resources are managed from the **Lead Flows** dashboard tab. These resources are prepared before drafting Instagram posts. When a resource is selected in Draft Post, the Content Agent writes the Instagram CTA around that resource and keyword. LinkedIn posts can still be drafted without conversion flows.
+In the frontend, reusable flow resources are managed from the **Lead Flows** dashboard tab. The intended workflow is:
+
+1. Add one or more resources, such as a guide, booking page, product page, class details, or a conversation offer.
+2. Generate one flow or regenerate all flows. The app prepares the keyword mode, keyword, public reply, opening DM, button labels, optional qualification question, follow-up, and ManyChat setup JSON.
+3. Draft Instagram reels/carousels and optionally select one prepared flow so the Content Agent writes the CTA around the real keyword and promise.
+
+LinkedIn posts and Instagram Stories do not use comment-to-DM automation selectors.
 
 #### Profile Lead Magnets
 
 ```http
 GET /user-profiles/{profile_id}/lead-magnets
 POST /user-profiles/{profile_id}/lead-magnets
+POST /user-profiles/{profile_id}/lead-magnets/{lead_magnet_id}/generate-flow
+POST /user-profiles/{profile_id}/lead-magnets/generate-flows
 PUT /user-profiles/{profile_id}/lead-magnets/{lead_magnet_id}
 DELETE /user-profiles/{profile_id}/lead-magnets/{lead_magnet_id}
 ```
 
-Lead magnets are optional reusable guides/resources for Instagram comment-to-DM flows. They can store a title, URL, trigger keyword, public reply, first DM, follow-up, and preferred post goal. If no lead magnet exists, the app can still generate a goal-based flow such as booking details, order details, or a simple first-step conversation.
+Lead magnets are optional reusable resources for Instagram comment-to-DM flows. The URL is optional so a flow can send a link, booking details, order instructions, or simply start a conversation. A generated flow can store trigger mode, keyword, public reply, first DM, opening button label, link button label, optional qualification question, optional follow-up, preferred post goal, and setup JSON.
 
-#### Generate Conversion Flow
+#### Generate Post-Linked Conversion Flow
 
 ```http
 POST /posts/{post_id}/conversion
 ```
+
+This endpoint is mainly for connecting or previewing a flow from an Instagram reel/carousel post. If the post already has a prepared `lead_magnet_id`, the app reuses that prepared flow instead of inventing a new one. If a custom one-time automation is sent in the request body, the Conversion Agent uses those custom fields.
 
 Triggers:
 
@@ -750,7 +760,15 @@ Optional request body:
   "lead_magnet_id": "55555555-5555-5555-5555-555555555555",
   "custom_offer_title": null,
   "custom_offer_url": null,
-  "custom_offer_description": null
+  "custom_offer_description": null,
+  "custom_trigger_type": "specific_word",
+  "custom_keyword": "SYSTEM",
+  "custom_public_comment_reply": "Sent it to you. Check your DMs.",
+  "custom_first_message": "Hey! Thanks for your interest. Click below and I’ll send the workflow.",
+  "custom_opening_dm_button_label": "Send me the link",
+  "custom_link_button_label": "Open",
+  "custom_qualification_question": "Are you building this for yourself or for clients?",
+  "custom_follow_up": "Start with the simple version first, then automate the repeatable parts."
 }
 ```
 
@@ -761,23 +779,42 @@ Optional request body:
   "post_id": "33333333-3333-3333-3333-333333333333",
   "flow": {
     "trigger_keyword": "SYSTEM",
+    "public_comment_reply_options": [
+      "Sent it to you. Check your DMs.",
+      "Just sent it your way.",
+      "Thanks for commenting — I sent the workflow."
+    ],
     "public_comment_reply": "Sent it to you.",
     "first_message": "Here is the workflow I mentioned.",
+    "opening_dm_button_label": "Send me the link",
+    "link_button_label": "Open",
     "qualification_question": "Are you building this for yourself or for clients?",
     "follow_up": "Start with the simple version first, then automate the repeatable parts.",
     "manychat_setup": {
       "manual_required": true,
+      "comment_trigger_mode": "specific_word",
       "trigger_keyword": "SYSTEM",
       "public_comment_reply": "Sent it to you.",
+      "public_comment_reply_options": [
+        "Sent it to you. Check your DMs.",
+        "Just sent it your way.",
+        "Thanks for commenting — I sent the workflow."
+      ],
+      "opening_dm_button_label": "Send me the link",
+      "link_button_label": "Open",
       "flow_type": "instagram_comment_to_dm",
       "lead_magnet_used": true,
       "lead_magnet_url": "https://example.com/guide",
       "setup_steps": [
         "Create an Instagram Comments automation in ManyChat.",
+        "Set comments to a specific word or reaction.",
         "Use SYSTEM as the trigger keyword.",
-        "Add the public reply and DM messages from this flow."
+        "Enable public comment reply and use the selected reply.",
+        "Add the opening DM and button label.",
+        "Add the link delivery message and Open button.",
+        "Preview Comments and DM before going live."
       ],
-      "api_supported_parts": ["tags", "custom_fields", "sendContent", "sendFlow"]
+      "api_supported_parts": ["account metadata", "tags", "custom fields", "sendContent", "sendFlow"]
     }
   }
 }

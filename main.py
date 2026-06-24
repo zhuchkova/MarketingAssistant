@@ -27,13 +27,14 @@ from db.content_repository import (get_content_generation_context,
     get_lookup_id, save_post, update_post_content)
 from agents.conversion_agent import run_conversion_agent
 from db.conversion_repository import (get_conversion_context,
-    attach_lead_magnet_context, save_manychat_flow)
+    attach_lead_magnet_context, flow_from_lead_magnet, save_manychat_flow)
 from db.lead_magnet_repository import (
     delete_lead_magnet,
     get_lead_magnet,
     list_lead_magnets,
     save_lead_magnet,
     update_lead_magnet,
+    update_lead_magnet_flow,
 )
 
 
@@ -333,6 +334,30 @@ def get_audience_analysis(
     }
 
 
+def get_flow_resource_generation_context(conn, profile_id: str, lead_magnet: dict) -> dict:
+    profile, audience_analysis = get_profile_with_audience_analysis(conn, profile_id)
+    if not profile or not audience_analysis:
+        raise ValueError("Profile or audience analysis not found")
+
+    context = {
+        **profile,
+        **audience_analysis,
+        "audience_analysis_id": audience_analysis.get("id"),
+        "post_id": None,
+        "platform": "instagram",
+        "post_goal": lead_magnet.get("preferred_post_goal") or "dm_keyword",
+        "hook": "",
+        "body": "",
+        "cta": "",
+        "final_text": (
+            "Reusable Instagram comment-to-DM flow resource. "
+            "Generate keyword, public reply, opening DM, button labels, "
+            "optional qualification question, follow-up, and setup JSON."
+        ),
+    }
+    return attach_lead_magnet_context(context, lead_magnet=lead_magnet)
+
+
 @app.get("/user-profiles/{profile_id}/lead-magnets")
 def get_profile_lead_magnets(
     profile_id: str,
@@ -390,6 +415,72 @@ def update_profile_lead_magnet(
     except ValueError:
         conn.rollback()
         raise HTTPException(status_code=404, detail="Lead magnet not found")
+    except Exception:
+        conn.rollback()
+        raise
+    finally:
+        conn.close()
+
+
+@app.post("/user-profiles/{profile_id}/lead-magnets/{lead_magnet_id}/generate-flow")
+def generate_profile_lead_magnet_flow(
+    profile_id: str,
+    lead_magnet_id: str,
+    current_user: dict = Depends(get_current_user),
+):
+    conn = psycopg.connect(os.getenv("DATABASE_URL"))
+    try:
+        check_profile_owner(conn, profile_id, current_user["user_id"])
+        try:
+            lead_magnet = get_lead_magnet(conn, lead_magnet_id, profile_id)
+            context = get_flow_resource_generation_context(conn, profile_id, lead_magnet)
+        except ValueError as exc:
+            raise HTTPException(status_code=404, detail=str(exc))
+
+        flow = run_conversion_agent(context)
+        update_lead_magnet_flow(conn, lead_magnet_id, profile_id, flow)
+        conn.commit()
+        return {
+            "status": "lead flow generated",
+            "lead_magnet_id": lead_magnet_id,
+            "flow": flow,
+        }
+    except HTTPException:
+        conn.rollback()
+        raise
+    except Exception:
+        conn.rollback()
+        raise
+    finally:
+        conn.close()
+
+
+@app.post("/user-profiles/{profile_id}/lead-magnets/generate-flows")
+def generate_profile_lead_magnet_flows(
+    profile_id: str,
+    current_user: dict = Depends(get_current_user),
+):
+    conn = psycopg.connect(os.getenv("DATABASE_URL"))
+    generated = []
+    try:
+        check_profile_owner(conn, profile_id, current_user["user_id"])
+        lead_magnets = list_lead_magnets(conn, profile_id)
+        for lead_magnet in lead_magnets:
+            context = get_flow_resource_generation_context(conn, profile_id, lead_magnet)
+            flow = run_conversion_agent(context)
+            update_lead_magnet_flow(conn, lead_magnet["id"], profile_id, flow)
+            generated.append({
+                "lead_magnet_id": lead_magnet["id"],
+                "title": lead_magnet["title"],
+                "flow": flow,
+            })
+
+        conn.commit()
+        return {
+            "status": "lead flows generated",
+            "count": len(generated),
+            "flows": generated,
+        }
     except Exception:
         conn.rollback()
         raise
@@ -761,6 +852,11 @@ def generate_post(
                     status_code=400,
                     detail="Flow resources can only be attached to Instagram posts",
                 )
+            if request.get("instagram_content_type") == "story":
+                raise HTTPException(
+                    status_code=400,
+                    detail="Comment-to-DM flow resources are only available for Instagram reels and carousels",
+                )
             try:
                 lead_magnet = get_lead_magnet(
                     conn,
@@ -782,8 +878,12 @@ def generate_post(
             "lead_magnet_url": lead_magnet["url"] if lead_magnet else None,
             "lead_magnet_description": lead_magnet["description"] if lead_magnet else None,
             "lead_magnet_keyword": lead_magnet["suggested_keyword"] if lead_magnet else None,
+            "lead_magnet_trigger_type": lead_magnet.get("trigger_type") if lead_magnet else None,
             "lead_magnet_public_comment_reply": lead_magnet.get("public_comment_reply") if lead_magnet else None,
             "lead_magnet_delivery_message": lead_magnet["delivery_message"] if lead_magnet else None,
+            "lead_magnet_opening_dm_button_label": lead_magnet.get("opening_dm_button_label") if lead_magnet else None,
+            "lead_magnet_link_button_label": lead_magnet.get("link_button_label") if lead_magnet else None,
+            "lead_magnet_qualification_question": lead_magnet.get("qualification_question") if lead_magnet else None,
             "lead_magnet_follow_up_cta": lead_magnet["follow_up_cta"] if lead_magnet else None,
             "lead_magnet_preferred_post_goal": lead_magnet.get("preferred_post_goal") if lead_magnet else None,
         }
@@ -810,6 +910,11 @@ def generate_post(
             "post": {
                 **generated_post,
                 "lead_magnet_id": agent_input["lead_magnet_id"],
+                "lead_magnet_title": lead_magnet["title"] if lead_magnet else None,
+                "platform": request["platform"],
+                "instagram_content_type": agent_input["instagram_content_type"],
+                "post_goal": request["post_goal"],
+                "post_length": agent_input["post_length"],
             },
         }
     finally:
@@ -971,6 +1076,11 @@ def create_conversion_flow(
                 status_code=400,
                 detail="Lead flows are only available for Instagram posts",
             )
+        if context.get("instagram_content_type") == "story":
+            raise HTTPException(
+                status_code=400,
+                detail="Comment-to-DM lead flows are only available for Instagram reels and carousels",
+            )
 
         lead_magnet = None
         selected_lead_magnet_id = request.get("lead_magnet_id") or context.get("post_lead_magnet_id")
@@ -989,7 +1099,7 @@ def create_conversion_flow(
             lead_magnet=lead_magnet,
             custom_offer=request,
         )
-        flow = run_conversion_agent(context)
+        flow = flow_from_lead_magnet(lead_magnet) if lead_magnet else run_conversion_agent(context)
         flow_id = save_manychat_flow(
             conn,
             post_id,
@@ -1027,6 +1137,11 @@ def get_conversion_flow(
                 status_code=400,
                 detail="Lead flows are only available for Instagram posts",
             )
+        if context.get("instagram_content_type") == "story":
+            raise HTTPException(
+                status_code=400,
+                detail="Comment-to-DM lead flows are only available for Instagram reels and carousels",
+            )
 
         with conn.cursor() as cur:
             cur.execute("""
@@ -1054,6 +1169,8 @@ def get_conversion_flow(
         "trigger_keyword": row[1],
         "public_comment_reply": row[2],
         "first_message": row[3],
+        "opening_dm_button_label": (row[6] or {}).get("opening_dm_button_label") if row[6] else None,
+        "link_button_label": (row[6] or {}).get("link_button_label") if row[6] else None,
         "qualification_question": row[4],
         "follow_up": row[5],
         "manychat_setup": row[6] or {},

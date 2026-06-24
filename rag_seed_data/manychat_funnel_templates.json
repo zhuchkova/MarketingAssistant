@@ -178,5 +178,59 @@
       "goal": "comment",
       "includes": "no_url conversation qualification follow_up"
     }
+  },
+  {
+    "id": "manychat_comment_trigger_modes",
+    "document": "ManyChat comment trigger setup: Prefer a specific word or reaction when the post CTA says “Comment GUIDE” or “Comment PRICE.” Use any word or reaction only for broad campaigns where every commenter should receive a DM. When using a specific word, keep the keyword short, memorable, uppercase, and directly tied to the promise.",
+    "metadata": {
+      "type": "setup_step",
+      "goal": "comment_to_dm",
+      "includes": "specific_word any_word keyword"
+    }
+  },
+  {
+    "id": "manychat_public_reply_options",
+    "document": "Public reply options should be short and natural because they appear under the Instagram post. Good patterns: “Sent it to you. Check your DMs.” “Just sent it your way.” “Thanks for commenting — I sent the details.” “I sent the link in your DMs.” Avoid overexplaining or putting the full URL in the public reply.",
+    "metadata": {
+      "type": "message_template",
+      "goal": "public_comment_reply",
+      "includes": "reply_options"
+    }
+  },
+  {
+    "id": "manychat_opening_dm_with_button",
+    "document": "Opening DM pattern: Thank the person for commenting, confirm what they asked for, and invite them to click a simple button. Example: “Hey! Thanks for your interest. Click below and I’ll send the guide in just a sec.” Button labels should be action-focused: “Send me the link,” “Show me,” “Start,” “Send details,” or “Tell me more.”",
+    "metadata": {
+      "type": "message_template",
+      "goal": "opening_dm",
+      "includes": "button_label first_message"
+    }
+  },
+  {
+    "id": "manychat_link_delivery_message",
+    "document": "Link delivery message pattern: If a URL exists, send a short message plus a button. Message: “Here’s the guide I mentioned.” Button label: “Open,” “Read,” “Book,” “View,” or “Shop.” If no URL exists, do not invent one; deliver practical details or ask a simple next-step question instead.",
+    "metadata": {
+      "type": "message_template",
+      "goal": "link_delivery",
+      "includes": "link_button no_url"
+    }
+  },
+  {
+    "id": "manychat_preview_go_live_steps",
+    "document": "ManyChat setup notes should mirror the real UI steps: set the comment trigger mode, enter the keyword if using a specific word, enable public comment reply, choose a reply option, write the opening DM, add the opening button label, add the link/message step, add optional qualification or follow-up, preview the Comments and DM tabs, then click Go Live when ready.",
+    "metadata": {
+      "type": "setup_json",
+      "goal": "manual_setup",
+      "includes": "preview go_live setup_steps"
+    }
+  },
+  {
+    "id": "manychat_api_manual_boundary",
+    "document": "ManyChat API planning: API keys come from Settings -> API. The API can help with account metadata, tags, custom fields, contact/subscriber operations, and sending content or flows once a subscriber/contact exists. The app should treat Instagram comment automation setup as prepared manual ManyChat setup notes unless a later verified API integration supports publishing that automation directly.",
+    "metadata": {
+      "type": "api_boundary",
+      "goal": "manychat_api",
+      "includes": "api_key manual_required"
+    }
   }
 ]

@@ -164,15 +164,29 @@ class ValidationTests(unittest.TestCase):
             title=" Bouquet Guide ",
             url=" https://example.com/guide ",
             suggested_keyword=" GUIDE ",
+            trigger_type=" SPECIFIC_WORD ",
             public_comment_reply=" Sent it to you now. ",
             delivery_message=" Here is the guide. ",
+            opening_dm_button_label=" Send me the link ",
+            link_button_label=" Open ",
+            qualification_question=" What are you trying to solve? ",
             follow_up_cta=" Book a bouquet consult. ",
             preferred_post_goal=" DOWNLOAD ",
         )
 
         self.assertEqual(request.title, "Bouquet Guide")
         self.assertEqual(request.suggested_keyword, "GUIDE")
+        self.assertEqual(request.trigger_type, "specific_word")
+        self.assertEqual(request.opening_dm_button_label, "Send me the link")
+        self.assertEqual(request.link_button_label, "Open")
         self.assertEqual(request.preferred_post_goal, "download")
+
+    def test_lead_magnet_rejects_unknown_trigger_type(self):
+        with self.assertRaises(ValidationError):
+            LeadMagnetRequest(
+                title="Guide",
+                trigger_type="everyone",
+            )
 
     def test_lead_magnet_rejects_unknown_preferred_goal(self):
         with self.assertRaises(ValidationError):

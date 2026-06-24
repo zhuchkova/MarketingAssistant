@@ -99,10 +99,15 @@ CREATE TABLE lead_magnets (
     url TEXT,
     description TEXT,
     suggested_keyword TEXT,
+    trigger_type TEXT DEFAULT 'specific_word',
     public_comment_reply TEXT,
     delivery_message TEXT,
+    opening_dm_button_label TEXT,
+    link_button_label TEXT,
+    qualification_question TEXT,
     follow_up_cta TEXT,
     preferred_post_goal TEXT,
+    manychat_setup JSONB DEFAULT '{}'::jsonb,
     is_primary BOOLEAN DEFAULT FALSE,
     created_at TIMESTAMP DEFAULT NOW()
 );

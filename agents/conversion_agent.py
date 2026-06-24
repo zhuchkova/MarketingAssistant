@@ -11,8 +11,12 @@ load_dotenv()
 
 class ManyChatSetup(BaseModel):
     manual_required: bool = Field(description="Always true until full ManyChat automation setup is supported")
+    comment_trigger_mode: str = Field(description="specific_word or any_word")
     public_comment_reply: str = Field(description="Public reply to configure in the Instagram comments automation")
     trigger_keyword: str = Field(description="Keyword users should comment")
+    public_comment_reply_options: List[str] = Field(description="Alternative short public replies")
+    opening_dm_button_label: str = Field(description="Button label in the opening DM, for example Send me the link")
+    link_button_label: str = Field(description="Button label for the delivered link, for example Open")
     flow_type: str = Field(description="Type of flow, for example instagram_comment_to_dm")
     lead_magnet_used: bool = Field(description="Whether a saved lead magnet or custom URL was used")
     lead_magnet_url: str = Field(description="Lead magnet or offer URL, or an empty string if none exists")
@@ -24,8 +28,11 @@ class ManyChatSetup(BaseModel):
 
 class ManyChatFlowResult(BaseModel):
     trigger_keyword: str = Field(description="Short keyword users should comment or DM")
+    public_comment_reply_options: List[str] = Field(description="Three short public comment reply options")
     public_comment_reply: str = Field(description="Short public reply to the user's Instagram comment")
     first_message: str = Field(description="First ManyChat DM message")
+    opening_dm_button_label: str = Field(description="Opening DM button label")
+    link_button_label: str = Field(description="Link button label")
     qualification_question: str = Field(description="One question to qualify the lead")
     follow_up: str = Field(description="Follow-up message after qualification")
     manychat_setup: ManyChatSetup = Field(
@@ -85,8 +92,12 @@ Selected lead magnet or offer:
 - Lead magnet URL: {lead_magnet_url}
 - Lead magnet description: {lead_magnet_description}
 - Suggested keyword: {lead_magnet_keyword}
+- Comment trigger mode: {lead_magnet_trigger_type}
 - Public comment reply: {lead_magnet_public_comment_reply}
 - Delivery message: {lead_magnet_delivery_message}
+- Opening DM button label: {lead_magnet_opening_dm_button_label}
+- Link button label: {lead_magnet_link_button_label}
+- Qualification question: {lead_magnet_qualification_question}
 - Follow-up CTA: {lead_magnet_follow_up_cta}
 - Preferred post goal: {lead_magnet_preferred_post_goal}
 
@@ -97,23 +108,36 @@ Relevant ManyChat funnel templates:
 {manychat_knowledge}
 
 Rules:
-- Use a short uppercase trigger keyword
+- Use a short uppercase trigger keyword unless the selected trigger mode is any_word
+- comment_trigger_mode must be specific_word unless the user explicitly wants any word or reaction
 - Public comment reply should be short and acknowledge that the DM/resource is coming
+- Return exactly 3 public_comment_reply_options. The selected public_comment_reply must be one of them unless a saved public reply exists.
 - If a saved public comment reply exists, use it unless it is clearly unsafe or irrelevant
+- If a saved first DM/delivery message exists, use it as the first_message unless it is clearly unsafe or irrelevant
+- If saved button labels exist, use them exactly unless they are too long or unclear
+- If a saved qualification question or follow-up exists, use it unless it is clearly unsafe or irrelevant
 - If a lead magnet URL exists, the first message must include that URL
-- If no lead magnet URL exists, create a useful goal-based flow: booking details for book_visit, order details for buy_order, or a simple next-step conversation for comment/save/share/follow
-- Qualification question should be easy to answer
-- Follow-up should gently move the user toward the creator's offer
+- If no lead magnet URL exists, create a useful goal-based flow: booking details for book_visit, order details for buy_order, or a simple next-step conversation for comment/save/share/follow. Do not pretend a link exists.
+- opening_dm_button_label should be direct, for example “Send me the link”, “Show me”, “Start”, “Tell me more”, or “Send details”.
+- link_button_label should be short, for example “Open”, “Book”, “View”, “Shop”, or “Read”.
+- Qualification question is optional in real setup, but output one useful easy-to-answer question for users who want it.
+- Follow-up is optional in real setup, but output a gentle follow-up that moves the user toward the creator's offer.
 - Keep messages short and natural
 - manychat_setup must be JSON-serializable and include:
   - manual_required: true
+  - comment_trigger_mode
   - public_comment_reply
+  - public_comment_reply_options
   - trigger_keyword
+  - opening_dm_button_label
+  - link_button_label
   - flow_type
   - lead_magnet_used
   - lead_magnet_url as a URL string or an empty string if no URL exists
   - setup_steps
   - api_supported_parts
+- setup_steps must reflect the real choices made for this flow: keyword mode, selected keyword or any-word trigger, public reply, opening DM, button label, link button label, optional qualification question, optional follow-up, preview, and go live.
+- api_supported_parts should say the API can help with account metadata, tags, fields, and sending content/flows once a subscriber/contact exists, but Instagram comment automation setup itself is prepared as manual ManyChat setup notes for now.
 - Do not add extra keys to manychat_setup.
 """)
 
