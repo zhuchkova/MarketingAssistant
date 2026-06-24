@@ -10,8 +10,10 @@ def list_lead_magnets(conn, profile_id: str) -> list:
                 url,
                 description,
                 suggested_keyword,
+                public_comment_reply,
                 delivery_message,
                 follow_up_cta,
+                preferred_post_goal,
                 is_primary
             FROM lead_magnets
             WHERE user_profile_id = %s
@@ -26,9 +28,11 @@ def list_lead_magnets(conn, profile_id: str) -> list:
             "url": row[2],
             "description": row[3],
             "suggested_keyword": row[4],
-            "delivery_message": row[5],
-            "follow_up_cta": row[6],
-            "is_primary": row[7],
+            "public_comment_reply": row[5],
+            "delivery_message": row[6],
+            "follow_up_cta": row[7],
+            "preferred_post_goal": row[8],
+            "is_primary": row[9],
         }
         for row in rows
     ]
@@ -43,8 +47,10 @@ def get_lead_magnet(conn, lead_magnet_id: str, profile_id: str) -> dict:
                 url,
                 description,
                 suggested_keyword,
+                public_comment_reply,
                 delivery_message,
                 follow_up_cta,
+                preferred_post_goal,
                 is_primary
             FROM lead_magnets
             WHERE id = %s AND user_profile_id = %s
@@ -60,9 +66,11 @@ def get_lead_magnet(conn, lead_magnet_id: str, profile_id: str) -> dict:
         "url": row[2],
         "description": row[3],
         "suggested_keyword": row[4],
-        "delivery_message": row[5],
-        "follow_up_cta": row[6],
-        "is_primary": row[7],
+        "public_comment_reply": row[5],
+        "delivery_message": row[6],
+        "follow_up_cta": row[7],
+        "preferred_post_goal": row[8],
+        "is_primary": row[9],
     }
 
 
@@ -84,11 +92,13 @@ def save_lead_magnet(conn, profile_id: str, data: dict, is_primary: bool = False
                 url,
                 description,
                 suggested_keyword,
+                public_comment_reply,
                 delivery_message,
                 follow_up_cta,
+                preferred_post_goal,
                 is_primary
             )
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
         """, (
             lead_magnet_id,
             profile_id,
@@ -96,8 +106,10 @@ def save_lead_magnet(conn, profile_id: str, data: dict, is_primary: bool = False
             data.get("url"),
             data.get("description"),
             data.get("suggested_keyword"),
+            data.get("public_comment_reply"),
             data.get("delivery_message"),
             data.get("follow_up_cta"),
+            data.get("preferred_post_goal"),
             is_primary,
         ))
 
@@ -112,16 +124,20 @@ def update_lead_magnet(conn, lead_magnet_id: str, profile_id: str, data: dict) -
                 url = %s,
                 description = %s,
                 suggested_keyword = %s,
+                public_comment_reply = %s,
                 delivery_message = %s,
-                follow_up_cta = %s
+                follow_up_cta = %s,
+                preferred_post_goal = %s
             WHERE id = %s AND user_profile_id = %s
         """, (
             data["title"],
             data.get("url"),
             data.get("description"),
             data.get("suggested_keyword"),
+            data.get("public_comment_reply"),
             data.get("delivery_message"),
             data.get("follow_up_cta"),
+            data.get("preferred_post_goal"),
             lead_magnet_id,
             profile_id,
         ))

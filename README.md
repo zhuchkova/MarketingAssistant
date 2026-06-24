@@ -130,6 +130,7 @@ Draft controls:
 * `instagram_content_type`: `carousel`, `story`, or `reel` when platform is Instagram
 * `post_length`: `short`, `medium`, or `long`
 * `post_goal`: comment, DM keyword, save, follow, download, share, book/visit, or buy/order
+* optional `lead_magnet_id`: a saved Instagram flow resource that the CTA should use
 
 Generates complete LinkedIn or Instagram posts.
 
@@ -139,6 +140,7 @@ Generates complete LinkedIn or Instagram posts.
 * Platform
 * Format
 * Goal
+* Optional saved flow resource for Instagram CTA alignment
 
 #### Output
 
@@ -276,6 +278,7 @@ content_ideas
   ├── post_format
   └── is_favorite
 posts
+  ├── lead_magnet_id
   ├── instagram_content_type
   ├── post_length
   ├── is_favorite
@@ -290,8 +293,10 @@ lead_magnets
   ├── url
   ├── description
   ├── suggested_keyword
+  ├── public_comment_reply
   ├── delivery_message
   ├── follow_up_cta
+  ├── preferred_post_goal
   └── is_primary
 manychat_flows
   ├── lead_magnet_id
@@ -575,7 +580,7 @@ DELETE /posts/{post_id}
 
 Lead flow setup is optional and happens after the main profile workflow. A user can create a profile, review audience analysis, generate ideas, and draft posts without adding any lead magnet or ManyChat resource.
 
-In the frontend, reusable flow resources are managed from the **Lead Flows** dashboard tab. These resources are used only for Instagram comment-to-DM flows. LinkedIn posts and Instagram stories can still be drafted without conversion flows.
+In the frontend, reusable flow resources are managed from the **Lead Flows** dashboard tab. These resources are prepared before drafting Instagram posts. When a resource is selected in Draft Post, the Content Agent writes the Instagram CTA around that resource and keyword. LinkedIn posts can still be drafted without conversion flows.
 
 #### Profile Lead Magnets
 
@@ -586,7 +591,7 @@ PUT /user-profiles/{profile_id}/lead-magnets/{lead_magnet_id}
 DELETE /user-profiles/{profile_id}/lead-magnets/{lead_magnet_id}
 ```
 
-Lead magnets are optional reusable guides/resources for Instagram comment-to-DM flows. If no lead magnet exists, the app can still generate a goal-based flow such as booking details, order details, or a simple first-step conversation.
+Lead magnets are optional reusable guides/resources for Instagram comment-to-DM flows. They can store a title, URL, trigger keyword, public reply, first DM, follow-up, and preferred post goal. If no lead magnet exists, the app can still generate a goal-based flow such as booking details, order details, or a simple first-step conversation.
 
 #### Generate Conversion Flow
 
@@ -707,6 +712,7 @@ Post format is inferred from the selected content idea's `post_format`.
 Use `instagram_content_type` only when `platform` is `instagram`.
 Allowed `post_goal` values are `comment`, `dm_keyword`, `follow`, `download`, `share`, `save`, `book_visit`, and `buy_order`.
 Allowed `post_length` values are `short`, `medium`, and `long`.
+Use `lead_magnet_id` only for Instagram posts when the CTA should reuse a saved flow resource.
 
 ```json
 {
@@ -714,7 +720,8 @@ Allowed `post_length` values are `short`, `medium`, and `long`.
   "platform": "instagram",
   "instagram_content_type": "carousel",
   "post_goal": "share",
-  "post_length": "medium"
+  "post_length": "medium",
+  "lead_magnet_id": "55555555-5555-5555-5555-555555555555"
 }
 ```
 
@@ -728,7 +735,8 @@ Allowed `post_length` values are `short`, `medium`, and `long`.
     "hook": "Most founders do not need more content ideas.",
     "body": "They need a repeatable system for turning expertise into useful posts.",
     "cta": "Comment SYSTEM and I will send you the workflow.",
-    "final_text": "Most founders do not need more content ideas.\n\nThey need a repeatable system for turning expertise into useful posts.\n\nComment SYSTEM and I will send you the workflow."
+    "final_text": "Most founders do not need more content ideas.\n\nThey need a repeatable system for turning expertise into useful posts.\n\nComment SYSTEM and I will send you the workflow.",
+    "lead_magnet_id": "55555555-5555-5555-5555-555555555555"
   }
 }
 ```

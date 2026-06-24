@@ -1770,6 +1770,14 @@
                 </div>
             </div>
 
+            <div class="form-group" id="instagram-flow-resource-group">
+                <label>Instagram Automation</label>
+                <select id="gen-lead-magnet" onchange="pickGenerationLeadMagnet(this.value)">
+                    <option value="">No automation</option>
+                </select>
+                <span class="form-hint">Optional: choose a saved flow resource so the CTA uses its keyword and promise.</span>
+            </div>
+
             <div class="form-group">
                 <label>Length</label>
                 <div class="option-grid">
@@ -2131,7 +2139,7 @@ const S = {
     profiles:  [],
     leadMagnets: [],
     userEmail: null,
-    genOpts:   { platform: 'instagram', instagram_content_type: 'carousel', goal: 'comment', post_length: 'medium' },
+    genOpts:   { platform: 'instagram', instagram_content_type: 'carousel', goal: 'comment', post_length: 'medium', lead_magnet_id: null },
     genIdeaIdx: null,
     genPostId:  null,
     genPost:    null,
@@ -2609,10 +2617,31 @@ function renderLeadFlows() {
                     <span class="form-hint">The word people should comment on Instagram.</span>
                 </div>
                 <div class="form-group">
-                    <label>Delivery Message</label>
+                    <label>Preferred Goal</label>
+                    <select id="flow-resource-goal">
+                        ${['comment', 'dm_keyword', 'download', 'save', 'share', 'follow', 'book_visit', 'buy_order'].map(goal => `
+                            <option value="${goal}" ${editing?.preferred_post_goal === goal ? 'selected' : ''}>${esc(goal.replace(/_/g, ' '))}</option>
+                        `).join('')}
+                    </select>
+                    <span class="form-hint">Helps match this flow to the right kind of Instagram post.</span>
+                </div>
+            </div>
+            <div class="grid-2">
+                <div class="form-group">
+                    <label>Public Reply</label>
+                    <input type="text" id="flow-resource-public-reply" placeholder="Sent it to you now." value="${esc(editing?.public_comment_reply || '')}">
+                    <span class="form-hint">Short comment reply after someone uses the keyword.</span>
+                </div>
+                <div class="form-group">
+                    <label>First DM</label>
                     <input type="text" id="flow-resource-message" placeholder="Here is the guide I mentioned." value="${esc(editing?.delivery_message || '')}">
                     <span class="form-hint">A short first DM after the comment.</span>
                 </div>
+            </div>
+            <div class="form-group">
+                <label>Follow-Up</label>
+                <input type="text" id="flow-resource-follow-up" placeholder="Want help choosing the right option? Here is the next step." value="${esc(editing?.follow_up_cta || '')}">
+                <span class="form-hint">A gentle next step after the resource is delivered.</span>
             </div>
             <div class="form-group">
                 <label>Description</label>
@@ -2629,6 +2658,7 @@ function renderLeadFlows() {
                         <div class="idea-topic-badge">${esc(item.suggested_keyword || 'RESOURCE')}</div>
                         <div class="idea-title">${esc(item.title || 'Untitled resource')}</div>
                         <div class="idea-hook">${esc(item.description || item.delivery_message || 'Use this as an optional Instagram DM resource.')}</div>
+                        ${item.preferred_post_goal ? `<div class="idea-angle">${esc(item.preferred_post_goal.replace(/_/g, ' '))}</div>` : ''}
                         ${item.url ? `<div class="lead-resource-url">${esc(item.url)}</div>` : ''}
                         <div class="idea-card-actions">
                             <button class="btn btn-secondary btn-sm" onclick="editLeadMagnet('${esc(item.id)}')">Edit</button>
@@ -2651,9 +2681,11 @@ function leadMagnetPayloadFromForm() {
         title: val('flow-resource-title'),
         url: val('flow-resource-url'),
         suggested_keyword: val('flow-resource-keyword'),
+        public_comment_reply: val('flow-resource-public-reply'),
         delivery_message: val('flow-resource-message'),
         description: val('flow-resource-description'),
-        follow_up_cta: '',
+        follow_up_cta: val('flow-resource-follow-up'),
+        preferred_post_goal: val('flow-resource-goal'),
     };
 }
 
@@ -2661,6 +2693,7 @@ async function refreshLeadMagnets() {
     S.leadMagnets = await api('GET', `/user-profiles/${S.profileId}/lead-magnets`);
     if (!Array.isArray(S.leadMagnets)) S.leadMagnets = [];
     renderLeadFlows();
+    renderGenerationLeadMagnetSelect();
 }
 
 async function saveLeadMagnet() {
@@ -2956,6 +2989,7 @@ function renderPosts() {
                 ${p.post_length ? `<span class="tag tag-format">${esc(p.post_length)}</span>` : ''}
                 <span class="tag tag-format">${esc(p.post_format||'')}</span>
                 <span class="tag tag-goal">${esc(p.post_goal||'')}</span>
+                ${p.lead_magnet_title ? `<span class="tag tag-goal">${esc(p.lead_magnet_title)}</span>` : ''}
             </div>
             <div class="post-row-hook">${esc(p.hook || (p.final_text||'').slice(0,80))}</div>
             <div class="post-row-preview">${esc(p.final_text||'')}</div>
@@ -3029,7 +3063,7 @@ function openGenModal(idx) {
     document.getElementById('gen-result').style.display = 'none';
 
     // Reset options to defaults
-    S.genOpts = { platform: 'instagram', instagram_content_type: 'carousel', goal: 'comment', post_length: 'medium' };
+    S.genOpts = { platform: 'instagram', instagram_content_type: 'carousel', goal: 'comment', post_length: 'medium', lead_magnet_id: null };
     document.querySelectorAll('#modal-generate .opt-btn').forEach(b => {
         const isDefault = (
             (b.dataset.group === 'platform' && b.dataset.val === 'instagram') ||
@@ -3040,6 +3074,7 @@ function openGenModal(idx) {
     });
     const instagramType = document.getElementById('instagram-content-type');
     if (instagramType) instagramType.value = 'carousel';
+    renderGenerationLeadMagnetSelect();
     updateInstagramTypeVisibility();
 
     const btn = document.getElementById('btn-gen');
@@ -3062,13 +3097,42 @@ function pickInstagramType(value) {
     S.genOpts.instagram_content_type = value;
 }
 
+function pickGenerationLeadMagnet(value) {
+    S.genOpts.lead_magnet_id = value || null;
+    const flow = S.leadMagnets.find(item => String(item.id) === String(value));
+    if (flow?.preferred_post_goal) {
+        S.genOpts.goal = flow.preferred_post_goal;
+        document.querySelectorAll('#modal-generate .opt-btn[data-group="goal"]').forEach(button => {
+            button.classList.toggle('sel', button.dataset.val === flow.preferred_post_goal);
+        });
+    }
+}
+
+function renderGenerationLeadMagnetSelect() {
+    const select = document.getElementById('gen-lead-magnet');
+    if (!select) return;
+    select.innerHTML = `
+        <option value="">No automation</option>
+        ${S.leadMagnets.map(flow => `
+            <option value="${esc(flow.id)}">${esc(flow.title)}${flow.suggested_keyword ? ` - ${esc(flow.suggested_keyword)}` : ''}</option>
+        `).join('')}`;
+    select.value = S.genOpts.lead_magnet_id || '';
+}
+
 function updateInstagramTypeVisibility() {
     const group = document.getElementById('instagram-type-group');
+    const flowGroup = document.getElementById('instagram-flow-resource-group');
     if (!group) return;
     const isInstagram = S.genOpts.platform === 'instagram';
     group.style.display = isInstagram ? '' : 'none';
+    if (flowGroup) flowGroup.style.display = isInstagram ? '' : 'none';
     if (isInstagram && !S.genOpts.instagram_content_type) {
         S.genOpts.instagram_content_type = 'carousel';
+    }
+    if (!isInstagram) {
+        S.genOpts.lead_magnet_id = null;
+        const select = document.getElementById('gen-lead-magnet');
+        if (select) select.value = '';
     }
 }
 
@@ -3092,6 +3156,7 @@ async function generatePost() {
             post_goal:   S.genOpts.goal,
             instagram_content_type: S.genOpts.platform === 'instagram' ? S.genOpts.instagram_content_type : null,
             post_length: S.genOpts.post_length,
+            lead_magnet_id: S.genOpts.platform === 'instagram' ? S.genOpts.lead_magnet_id : null,
         });
 
         S.genPost   = data.post;
@@ -3147,7 +3212,8 @@ async function openDetailModal(postId) {
         ${p.instagram_content_type ? `<span class="tag tag-format">${esc(p.instagram_content_type)}</span>` : ''}
         ${p.post_length ? `<span class="tag tag-format">${esc(p.post_length)}</span>` : ''}
         <span class="tag tag-format">${esc(p.post_format||'')}</span>
-        <span class="tag tag-goal">${esc(p.post_goal||'')}</span>`;
+        <span class="tag tag-goal">${esc(p.post_goal||'')}</span>
+        ${p.lead_magnet_title ? `<span class="tag tag-goal">${esc(p.lead_magnet_title)}</span>` : ''}`;
 
     document.getElementById('d-hook').textContent  = p.hook       || '';
     document.getElementById('d-body').textContent  = p.body       || '';
@@ -3336,7 +3402,8 @@ function renderFlowSetup() {
         ${S.leadMagnets.map(guide => `
             <option value="${esc(guide.id)}">${esc(guide.title)}</option>
         `).join('')}`;
-    if (S.leadMagnets[0]) select.value = S.leadMagnets[0].id;
+    const post = flowPost();
+    select.value = post?.lead_magnet_id || '';
     document.getElementById('flow-custom-title').value = '';
     document.getElementById('flow-custom-url').value = '';
     document.getElementById('flow-custom-description').value = '';
@@ -3405,8 +3472,10 @@ function renderSelectedLeadMagnetPreview() {
         <div class="flow-resource-preview-title">${esc(guide.title || 'Saved resource')}</div>
         <div class="flow-resource-preview-text">
             ${guide.suggested_keyword ? `<strong>Keyword:</strong> ${esc(guide.suggested_keyword)}<br>` : ''}
+            ${guide.public_comment_reply ? `<strong>Public reply:</strong> ${esc(guide.public_comment_reply)}<br>` : ''}
             ${guide.url ? `<strong>URL:</strong> ${esc(guide.url)}<br>` : ''}
             ${guide.delivery_message ? `<strong>DM:</strong> ${esc(guide.delivery_message)}<br>` : ''}
+            ${guide.follow_up_cta ? `<strong>Follow-up:</strong> ${esc(guide.follow_up_cta)}<br>` : ''}
             ${esc(guide.description || 'This saved resource will shape the keyword, DM, and follow-up.')}
         </div>`;
     if (customFields) customFields.style.display = 'none';

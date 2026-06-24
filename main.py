@@ -661,11 +661,14 @@ def get_posts_for_profile(
                     COALESCE(p.is_published, FALSE) AS is_published,
                     pl.name AS platform,
                     pf.name AS post_format,
-                    pg.name AS post_goal
+                    pg.name AS post_goal,
+                    p.lead_magnet_id,
+                    lm.title AS lead_magnet_title
                 FROM posts p
                 JOIN platforms pl ON p.platform_id = pl.id
                 LEFT JOIN post_formats pf ON p.post_format_id = pf.id
                 LEFT JOIN post_goals pg ON p.post_goal_id = pg.id
+                LEFT JOIN lead_magnets lm ON p.lead_magnet_id = lm.id
                 WHERE p.user_profile_id = %s
             """, (profile_id,))
             rows = cur.fetchall()
@@ -678,6 +681,7 @@ def get_posts_for_profile(
             "instagram_content_type": row[4], "post_length": row[5],
             "is_favorite": row[6], "is_published": row[7],
             "platform": row[8], "post_format": row[9], "post_goal": row[10],
+            "lead_magnet_id": row[11], "lead_magnet_title": row[12],
         }
         for row in rows
     ]
@@ -750,6 +754,21 @@ def generate_post(
         post_format = context.get("idea_post_format") or "how_to"
         post_format_id = get_lookup_id(conn, "post_formats", post_format)
         post_goal_id = get_lookup_id(conn, "post_goals", request["post_goal"])
+        lead_magnet = None
+        if request.get("lead_magnet_id"):
+            if request["platform"] != "instagram":
+                raise HTTPException(
+                    status_code=400,
+                    detail="Flow resources can only be attached to Instagram posts",
+                )
+            try:
+                lead_magnet = get_lead_magnet(
+                    conn,
+                    request["lead_magnet_id"],
+                    context["user_profile_id"],
+                )
+            except ValueError:
+                raise HTTPException(status_code=404, detail="Flow resource not found")
 
         agent_input = {
             **context,
@@ -758,6 +777,15 @@ def generate_post(
             "post_length": request.get("post_length", "medium"),
             "post_format": post_format,
             "post_goal": request["post_goal"],
+            "lead_magnet_id": lead_magnet["id"] if lead_magnet else None,
+            "lead_magnet_title": lead_magnet["title"] if lead_magnet else None,
+            "lead_magnet_url": lead_magnet["url"] if lead_magnet else None,
+            "lead_magnet_description": lead_magnet["description"] if lead_magnet else None,
+            "lead_magnet_keyword": lead_magnet["suggested_keyword"] if lead_magnet else None,
+            "lead_magnet_public_comment_reply": lead_magnet.get("public_comment_reply") if lead_magnet else None,
+            "lead_magnet_delivery_message": lead_magnet["delivery_message"] if lead_magnet else None,
+            "lead_magnet_follow_up_cta": lead_magnet["follow_up_cta"] if lead_magnet else None,
+            "lead_magnet_preferred_post_goal": lead_magnet.get("preferred_post_goal") if lead_magnet else None,
         }
 
         generated_post = run_content_agent(agent_input)
@@ -768,6 +796,7 @@ def generate_post(
             "platform_id": platform_id,
             "post_format_id": post_format_id,
             "post_goal_id": post_goal_id,
+            "lead_magnet_id": agent_input["lead_magnet_id"],
             "instagram_content_type": agent_input["instagram_content_type"],
             "post_length": agent_input["post_length"],
         }
@@ -775,7 +804,14 @@ def generate_post(
         post_id = save_post(conn, post_data)
         conn.commit()
 
-        return {"status": "post generated", "post_id": post_id, "post": generated_post}
+        return {
+            "status": "post generated",
+            "post_id": post_id,
+            "post": {
+                **generated_post,
+                "lead_magnet_id": agent_input["lead_magnet_id"],
+            },
+        }
     finally:
         conn.close()
 
@@ -799,11 +835,14 @@ def get_post(
                     COALESCE(p.is_published, FALSE) AS is_published,
                     pl.name AS platform,
                     pf.name AS post_format,
-                    pg.name AS post_goal
+                    pg.name AS post_goal,
+                    p.lead_magnet_id,
+                    lm.title AS lead_magnet_title
                 FROM posts p
                 JOIN platforms pl ON p.platform_id = pl.id
                 LEFT JOIN post_formats pf ON p.post_format_id = pf.id
                 LEFT JOIN post_goals pg ON p.post_goal_id = pg.id
+                LEFT JOIN lead_magnets lm ON p.lead_magnet_id = lm.id
                 WHERE p.id = %s
             """, (post_id,))
             row = cur.fetchone()
@@ -818,6 +857,7 @@ def get_post(
         "final_text": row[4], "instagram_content_type": row[5], "post_length": row[6],
         "is_favorite": row[7], "is_published": row[8],
         "platform": row[9], "post_format": row[10], "post_goal": row[11],
+        "lead_magnet_id": row[12], "lead_magnet_title": row[13],
     }
 
 
@@ -933,11 +973,12 @@ def create_conversion_flow(
             )
 
         lead_magnet = None
-        if request.get("lead_magnet_id"):
+        selected_lead_magnet_id = request.get("lead_magnet_id") or context.get("post_lead_magnet_id")
+        if selected_lead_magnet_id:
             try:
                 lead_magnet = get_lead_magnet(
                     conn,
-                    request["lead_magnet_id"],
+                    selected_lead_magnet_id,
                     context["user_profile_id"],
                 )
             except ValueError:

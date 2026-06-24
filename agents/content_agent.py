@@ -68,6 +68,16 @@ Post requirements:
 - Goal / CTA type: {post_goal}
 - Length: {post_length}
 
+Selected reusable Instagram flow resource:
+- Flow resource title: {lead_magnet_title}
+- Flow resource URL: {lead_magnet_url}
+- Flow resource description: {lead_magnet_description}
+- Trigger keyword: {lead_magnet_keyword}
+- Public reply: {lead_magnet_public_comment_reply}
+- First DM / delivery message: {lead_magnet_delivery_message}
+- Follow-up CTA: {lead_magnet_follow_up_cta}
+- Preferred post goal: {lead_magnet_preferred_post_goal}
+
 Rules:
 - Make it specific, not generic
 - Use the creator's tone
@@ -86,6 +96,10 @@ Rules:
 - Weave in the creator's personal touch only when it strengthens trust, relatability, or story
 - Follow the selected idea's post format. Do not change a personal story into a list or a mistakes post into a generic how-to.
 - End with a CTA matching the post goal
+- If platform is Instagram and a flow resource title or trigger keyword exists, the post CTA must clearly use that flow resource.
+- If a trigger keyword exists, use it exactly in the CTA, for example: "Comment GUIDE and I'll send you the checklist."
+- If a flow resource URL exists, do not put the URL directly in the public post unless the format naturally needs it; tell the reader to comment or DM the keyword so the resource can be sent privately.
+- If no flow resource is selected, use a normal CTA matching the post goal and do not pretend that a download or automation exists.
 """)
 
 
@@ -102,6 +116,9 @@ def run_content_agent(data: dict) -> dict:
             "platform": data.get("platform"),
             "instagram_content_type": data.get("instagram_content_type"),
             "post_length": data.get("post_length"),
+            "lead_magnet_title": data.get("lead_magnet_title"),
+            "lead_magnet_keyword": data.get("lead_magnet_keyword"),
+            "lead_magnet_preferred_post_goal": data.get("lead_magnet_preferred_post_goal"),
         }
     )
 

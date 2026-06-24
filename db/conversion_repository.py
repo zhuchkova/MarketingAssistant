@@ -8,8 +8,10 @@ EMPTY_LEAD_MAGNET_CONTEXT = {
     "lead_magnet_url": None,
     "lead_magnet_description": None,
     "lead_magnet_keyword": None,
+    "lead_magnet_public_comment_reply": None,
     "lead_magnet_delivery_message": None,
     "lead_magnet_follow_up_cta": None,
+    "lead_magnet_preferred_post_goal": None,
 }
 
 
@@ -44,6 +46,7 @@ def get_conversion_context(conn, post_id: str) -> dict:
                 p.body,
                 p.cta,
                 p.final_text,
+                p.lead_magnet_id,
                 pl.name AS platform,
                 pg.name AS post_goal
 
@@ -92,8 +95,9 @@ def get_conversion_context(conn, post_id: str) -> dict:
             "body": row[24],
             "cta": row[25],
             "final_text": row[26],
-            "platform": row[27],
-            "post_goal": row[28],
+            "post_lead_magnet_id": row[27],
+            "platform": row[28],
+            "post_goal": row[29],
             **EMPTY_LEAD_MAGNET_CONTEXT,
         }
 
@@ -108,8 +112,10 @@ def attach_lead_magnet_context(context: dict, lead_magnet: dict = None, custom_o
             "lead_magnet_url": lead_magnet.get("url"),
             "lead_magnet_description": lead_magnet.get("description"),
             "lead_magnet_keyword": lead_magnet.get("suggested_keyword"),
+            "lead_magnet_public_comment_reply": lead_magnet.get("public_comment_reply"),
             "lead_magnet_delivery_message": lead_magnet.get("delivery_message"),
             "lead_magnet_follow_up_cta": lead_magnet.get("follow_up_cta"),
+            "lead_magnet_preferred_post_goal": lead_magnet.get("preferred_post_goal"),
         })
         return context
 

@@ -114,6 +114,7 @@ def save_post(conn, data: dict) -> str:
                 platform_id,
                 post_format_id,
                 post_goal_id,
+                lead_magnet_id,
                 instagram_content_type,
                 post_length,
                 hook,
@@ -121,7 +122,7 @@ def save_post(conn, data: dict) -> str:
                 cta,
                 final_text
             )
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
         """, (
             post_id,
             data["user_profile_id"],
@@ -129,6 +130,7 @@ def save_post(conn, data: dict) -> str:
             data["platform_id"],
             data["post_format_id"],
             data["post_goal_id"],
+            data.get("lead_magnet_id"),
             data.get("instagram_content_type"),
             data.get("post_length", "medium"),
             data["hook"],

@@ -442,5 +442,32 @@
       "type": "length_rule",
       "length": "long"
     }
+  },
+  {
+    "id": "instagram_selected_flow_cta_framework",
+    "document": "Instagram selected flow CTA framework: If a reusable flow resource is selected before drafting, the post must end with a CTA using that exact keyword and promise. Structure: name the resource or outcome -> tell the reader to comment the keyword -> say what they will receive. Example: “Comment GUIDE and I’ll send you the bouquet care checklist.”",
+    "metadata": {
+      "type": "cta_framework",
+      "platform": "instagram",
+      "uses": "selected_flow_resource"
+    }
+  },
+  {
+    "id": "instagram_selected_flow_caption_rule",
+    "document": "Instagram selected flow caption rule: The caption should warm up the selected flow before the CTA. If the flow sends a guide, the post should explain why the guide is useful. If the flow sends booking details, the post should build intent to book or visit. If the flow sends order details, the post should reduce purchase uncertainty.",
+    "metadata": {
+      "type": "cta_framework",
+      "platform": "instagram",
+      "uses": "selected_flow_resource"
+    }
+  },
+  {
+    "id": "instagram_no_flow_cta_framework",
+    "document": "Instagram no-flow CTA framework: If no reusable flow resource is selected, use a normal CTA matching the selected goal. Do not invent a keyword, download, guide, DM automation, or URL that the user has not prepared.",
+    "metadata": {
+      "type": "cta_framework",
+      "platform": "instagram",
+      "uses": "no_selected_flow"
+    }
   }
 ]

@@ -85,8 +85,10 @@ Selected lead magnet or offer:
 - Lead magnet URL: {lead_magnet_url}
 - Lead magnet description: {lead_magnet_description}
 - Suggested keyword: {lead_magnet_keyword}
+- Public comment reply: {lead_magnet_public_comment_reply}
 - Delivery message: {lead_magnet_delivery_message}
 - Follow-up CTA: {lead_magnet_follow_up_cta}
+- Preferred post goal: {lead_magnet_preferred_post_goal}
 
 Relevant CTA knowledge:
 {cta_knowledge}
@@ -97,6 +99,7 @@ Relevant ManyChat funnel templates:
 Rules:
 - Use a short uppercase trigger keyword
 - Public comment reply should be short and acknowledge that the DM/resource is coming
+- If a saved public comment reply exists, use it unless it is clearly unsafe or irrelevant
 - If a lead magnet URL exists, the first message must include that URL
 - If no lead magnet URL exists, create a useful goal-based flow: booking details for book_visit, order details for buy_order, or a simple next-step conversation for comment/save/share/follow
 - Qualification question should be easy to answer

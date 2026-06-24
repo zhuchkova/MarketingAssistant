@@ -99,11 +99,17 @@ CREATE TABLE lead_magnets (
     url TEXT,
     description TEXT,
     suggested_keyword TEXT,
+    public_comment_reply TEXT,
     delivery_message TEXT,
     follow_up_cta TEXT,
+    preferred_post_goal TEXT,
     is_primary BOOLEAN DEFAULT FALSE,
     created_at TIMESTAMP DEFAULT NOW()
 );
+
+ALTER TABLE posts
+    ADD COLUMN IF NOT EXISTS lead_magnet_id UUID
+        REFERENCES lead_magnets(id) ON DELETE SET NULL;
 
 CREATE TABLE manychat_flows (
     id UUID PRIMARY KEY,

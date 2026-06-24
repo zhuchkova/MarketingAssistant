@@ -133,5 +133,50 @@
       "goal": "manychat_setup",
       "includes": "manual_required setup_steps api_supported_parts"
     }
+  },
+  {
+    "id": "manychat_reusable_flow_prepare_first",
+    "document": "Reusable flow architecture: Prepare the flow resource before drafting Instagram posts. A reusable flow should include a clear name, trigger keyword, public reply, first DM, follow-up, optional URL, and preferred goal. Posts can then reuse that flow so their CTA matches the actual keyword and promise.",
+    "metadata": {
+      "type": "principle",
+      "goal": "workflow",
+      "includes": "keyword public_reply first_dm follow_up preferred_goal"
+    }
+  },
+  {
+    "id": "manychat_reusable_flow_guide_template",
+    "document": "Reusable guide flow: Use when the creator has a checklist, guide, template, menu, price list, or class details. Public reply: “Sent it to you now.” First DM: “Here’s the [resource title]: [URL]. Start with [specific section/step].” Qualification question: “What are you trying to solve first?” Follow-up: “If you want help applying this, here’s the next step.”",
+    "metadata": {
+      "type": "flow_template",
+      "goal": "download",
+      "includes": "public_reply first_message qualification follow_up"
+    }
+  },
+  {
+    "id": "manychat_reusable_flow_booking_template",
+    "document": "Reusable booking flow: Use when the creator wants visits, appointments, consultations, classes, or reservations. Trigger keyword can be BOOK, VISIT, CLASS, TOUR, or CALL. First DM should send the booking or visit details. Qualification question should ask timing or intent. Follow-up should reduce friction and point to the booking step.",
+    "metadata": {
+      "type": "flow_template",
+      "goal": "book_visit",
+      "includes": "keyword booking_details qualification follow_up"
+    }
+  },
+  {
+    "id": "manychat_reusable_flow_order_template",
+    "document": "Reusable order flow: Use when the creator wants people to buy, order, request a quote, or choose a product. Trigger keyword can be ORDER, SHOP, MENU, PRICE, or QUOTE. First DM should send the product/order link or explain how to order. Qualification question should ask who/what occasion/use case it is for. Follow-up should recommend the simplest matching option.",
+    "metadata": {
+      "type": "flow_template",
+      "goal": "buy_order",
+      "includes": "keyword order_link qualification recommendation"
+    }
+  },
+  {
+    "id": "manychat_reusable_flow_conversation_template",
+    "document": "Reusable conversation flow: Use when there is no download or link yet. Trigger keyword can be START, HELP, IDEA, PLAN, or NEXT. First DM gives one useful next step. Qualification question asks what the person is struggling with or trying to achieve. Follow-up points to the creator's offer without pretending a resource exists.",
+    "metadata": {
+      "type": "flow_template",
+      "goal": "comment",
+      "includes": "no_url conversation qualification follow_up"
+    }
   }
 ]
