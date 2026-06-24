@@ -1,2 +1,2 @@
 ALTER TABLE manychat_flows
-ADD COLUMN qualification_question TEXT;
+ADD COLUMN IF NOT EXISTS qualification_question TEXT;

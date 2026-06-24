@@ -158,5 +158,29 @@
       "type": "principle",
       "goal": "conversion"
     }
+  },
+  {
+    "id": "cta_lead_magnet_keyword_rule",
+    "document": "Lead magnet CTA rule: If a saved guide exists, the CTA should name the guide and keyword clearly, for example: “Comment GUIDE and I’ll send you the free checklist.” Do not use vague CTAs when a specific resource exists.",
+    "metadata": {
+      "type": "principle",
+      "goal": "download"
+    }
+  },
+  {
+    "id": "cta_no_guide_fallback_rule",
+    "document": "No-guide CTA rule: If no guide or URL exists, avoid promising a download. Use a goal-based CTA such as “Comment START and I’ll send you the first step,” “Comment BOOK and I’ll send the details,” or “Comment ORDER and I’ll send the link.”",
+    "metadata": {
+      "type": "principle",
+      "goal": "conversion"
+    }
+  },
+  {
+    "id": "cta_public_reply_rule",
+    "document": "Public comment reply rule: Keep the public reply short and natural: “Sent it,” “I’ll DM it now,” “Sending the details,” or “Check your DMs.” The real value should be in the private message.",
+    "metadata": {
+      "type": "principle",
+      "goal": "comment"
+    }
   }
 ]

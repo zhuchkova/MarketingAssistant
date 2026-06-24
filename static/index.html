@@ -864,6 +864,24 @@
         }
         .chat-bubble-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--primary-light); margin-bottom: 5px; }
         .chat-bubble-text { font-size: 15px; color: var(--text-2); line-height: 1.65; }
+        .flow-setup-card {
+            background: var(--surface-2);
+            border: 1px solid var(--border);
+            border-radius: var(--r-sm);
+            padding: 14px;
+            margin-bottom: 18px;
+        }
+        .flow-json {
+            background: #f8fbf3;
+            border: 1px solid var(--border);
+            border-radius: var(--r-sm);
+            padding: 12px;
+            color: var(--text-2);
+            font-size: 13px;
+            line-height: 1.45;
+            white-space: pre-wrap;
+            overflow-x: auto;
+        }
 
         /* Warning banner */
         .warn-banner {
@@ -1435,6 +1453,33 @@
                     </div>
                 </div>
 
+                <div class="form-section-head">
+                    <h2>Optional Guide</h2>
+                    <p>Add a lead magnet if this profile already has one. You can also add it later while creating a lead flow.</p>
+                </div>
+
+                <div class="grid-2">
+                    <div class="form-group">
+                        <label>Guide Title</label>
+                        <input type="text" id="f-guide-title" placeholder="e.g. Free flower care checklist" />
+                    </div>
+                    <div class="form-group">
+                        <label>Guide URL</label>
+                        <input type="text" id="f-guide-url" placeholder="https://..." />
+                    </div>
+                </div>
+
+                <div class="grid-2">
+                    <div class="form-group">
+                        <label>Suggested Keyword</label>
+                        <input type="text" id="f-guide-keyword" placeholder="e.g. GUIDE" />
+                    </div>
+                    <div class="form-group">
+                        <label>Delivery Message</label>
+                        <input type="text" id="f-guide-message" placeholder="Here is the guide I mentioned." />
+                    </div>
+                </div>
+
                 <button class="btn btn-primary btn-lg btn-full" onclick="createProfile()">
                     Create Profile
                 </button>
@@ -1646,7 +1691,7 @@
                 <div class="divider"></div>
                 <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:14px;">
                     <h3 style="font-size:16px; font-weight:700;">Draft Post</h3>
-                    <button class="btn btn-primary btn-sm" onclick="genConversionFlow()">Create Lead Flow</button>
+                    <button id="btn-gen-flow" class="btn btn-primary btn-sm" onclick="genConversionFlow()">Create Lead Flow</button>
                 </div>
                 <div class="copy-row">
                     <span class="copy-row-text">✓ Post ready</span>
@@ -1721,7 +1766,7 @@
             <button class="btn btn-danger btn-sm" onclick="deleteDetailPost()">Delete</button>
             <button class="btn btn-secondary btn-sm" onclick="openPostEditModal(S.detailPostId)">Edit</button>
             <button class="btn btn-ghost" onclick="closeModal('modal-detail')">Close</button>
-            <button class="btn btn-primary btn-sm" onclick="detailConversionFlow()">Lead Flow</button>
+            <button id="btn-detail-flow" class="btn btn-primary btn-sm" onclick="detailConversionFlow()">Lead Flow</button>
         </div>
     </div>
 </div>
@@ -1773,34 +1818,69 @@
             <p style="font-size:13px; color:var(--text-3); margin-bottom:18px;">
                 Use this as a simple comment-to-message flow for the selected post.
             </p>
-            <div class="kw-badge">
-                Trigger keyword: <strong id="flow-kw"></strong>
-            </div>
-            <div class="chat-msg">
-                <div class="chat-avatar">1</div>
-                <div class="chat-bubble">
-                    <div class="chat-bubble-label">First Message</div>
-                    <div class="chat-bubble-text" id="flow-first"></div>
+            <div id="flow-setup">
+                <div class="flow-setup-card">
+                    <div class="form-group">
+                        <label>Lead Magnet</label>
+                        <select id="flow-lead-magnet">
+                            <option value="">No saved guide</option>
+                        </select>
+                        <span class="form-hint">Choose a saved guide, or leave empty for a goal-based flow.</span>
+                    </div>
+                    <div class="grid-2">
+                        <div class="form-group">
+                            <label>One-Time Offer Title</label>
+                            <input type="text" id="flow-custom-title" placeholder="e.g. booking details, product link, checklist" />
+                        </div>
+                        <div class="form-group">
+                            <label>One-Time URL</label>
+                            <input type="text" id="flow-custom-url" placeholder="https://..." />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Offer Notes</label>
+                        <textarea id="flow-custom-description" placeholder="What should this flow send or invite people to do?"></textarea>
+                    </div>
                 </div>
             </div>
-            <div class="chat-msg">
-                <div class="chat-avatar">2</div>
-                <div class="chat-bubble">
-                    <div class="chat-bubble-label">Qualification Question</div>
-                    <div class="chat-bubble-text" id="flow-qual"></div>
+            <div id="flow-result">
+                <div class="kw-badge">
+                    Trigger keyword: <strong id="flow-kw"></strong>
                 </div>
-            </div>
-            <div class="chat-msg">
-                <div class="chat-avatar">3</div>
-                <div class="chat-bubble">
-                    <div class="chat-bubble-label">Follow-Up Message</div>
-                    <div class="chat-bubble-text" id="flow-followup"></div>
+                <div class="kw-badge">
+                    Public reply: <strong id="flow-public"></strong>
+                </div>
+                <div class="chat-msg">
+                    <div class="chat-avatar">1</div>
+                    <div class="chat-bubble">
+                        <div class="chat-bubble-label">First Message</div>
+                        <div class="chat-bubble-text" id="flow-first"></div>
+                    </div>
+                </div>
+                <div class="chat-msg">
+                    <div class="chat-avatar">2</div>
+                    <div class="chat-bubble">
+                        <div class="chat-bubble-label">Qualification Question</div>
+                        <div class="chat-bubble-text" id="flow-qual"></div>
+                    </div>
+                </div>
+                <div class="chat-msg">
+                    <div class="chat-avatar">3</div>
+                    <div class="chat-bubble">
+                        <div class="chat-bubble-label">Follow-Up Message</div>
+                        <div class="chat-bubble-text" id="flow-followup"></div>
+                    </div>
+                </div>
+                <div class="result-section">
+                    <div class="result-label">ManyChat Setup JSON</div>
+                    <pre class="flow-json" id="flow-json"></pre>
                 </div>
             </div>
         </div>
         <div class="modal-foot">
             <button class="btn btn-ghost" onclick="closeModal('modal-flow')">Close</button>
-            <button class="btn btn-secondary btn-sm" onclick="copyFlow()">
+            <button id="btn-flow-create" class="btn btn-primary btn-sm" onclick="createFlowFromSetup()">Prepare Flow</button>
+            <button id="btn-flow-copy" class="btn btn-secondary btn-sm" onclick="copyFlow()">
                 <svg class="flat-icon"><use href="#icon-copy"></use></svg>
                 Copy Flow
             </button>
@@ -1922,6 +2002,30 @@
                     <input type="text" id="e-goal" />
                 </div>
             </div>
+            <div class="form-section-head">
+                <h2>Primary Guide</h2>
+                <p>Optional: a reusable guide or resource for Instagram lead flows.</p>
+            </div>
+            <div class="grid-2">
+                <div class="form-group">
+                    <label>Guide Title</label>
+                    <input type="text" id="e-guide-title" />
+                </div>
+                <div class="form-group">
+                    <label>Guide URL</label>
+                    <input type="text" id="e-guide-url" />
+                </div>
+            </div>
+            <div class="grid-2">
+                <div class="form-group">
+                    <label>Suggested Keyword</label>
+                    <input type="text" id="e-guide-keyword" />
+                </div>
+                <div class="form-group">
+                    <label>Delivery Message</label>
+                    <input type="text" id="e-guide-message" />
+                </div>
+            </div>
         </div>
         <div class="modal-foot">
             <button class="btn btn-ghost" onclick="closeModal('modal-edit')">Cancel</button>
@@ -1946,11 +2050,13 @@ const S = {
     ideas:     [],
     posts:     [],
     profiles:  [],
+    leadMagnets: [],
     userEmail: null,
     genOpts:   { platform: 'instagram', instagram_content_type: 'carousel', goal: 'comment', post_length: 'medium' },
     genIdeaIdx: null,
     genPostId:  null,
     genPost:    null,
+    genPostPlatform: null,
     ideaFilter: 'all',
     ideaFavoriteFilter: 'all',
     ideaEditId: null,
@@ -1960,7 +2066,9 @@ const S = {
     postEditId: null,
     postEditSyncing: false,
     detailPostId: null,
+    detailPost:   null,
     flowPostId:   null,
+    flowData:     null,
 };
 
 const POST_FORMATS = [
@@ -2216,6 +2324,7 @@ async function createProfile() {
 
         S.profileId = res.profile_id || profileId;
         localStorage.setItem('ma_pid', S.profileId);
+        await savePrimaryLeadMagnetFromCreateForm(S.profileId);
 
         await Promise.all([fetchAllData(S.profileId), fetchUserProfiles()]);
         renderDash();
@@ -2227,6 +2336,46 @@ async function createProfile() {
         hideLoading();
         toast(e.message || 'Something went wrong', 'error');
     }
+}
+
+function guidePayload(prefix) {
+    const title = val(`${prefix}-guide-title`);
+    if (!title) return null;
+    return {
+        title,
+        url: val(`${prefix}-guide-url`),
+        suggested_keyword: val(`${prefix}-guide-keyword`),
+        delivery_message: val(`${prefix}-guide-message`),
+        description: '',
+        follow_up_cta: '',
+    };
+}
+
+async function savePrimaryLeadMagnetFromCreateForm(profileId) {
+    const payload = guidePayload('f');
+    if (!payload) return;
+    const res = await api('POST', `/user-profiles/${profileId}/lead-magnets`, payload);
+    if (res.error) throw new Error(res.error);
+}
+
+async function savePrimaryLeadMagnetFromEditForm(profileId) {
+    const payload = guidePayload('e');
+    const primary = S.leadMagnets[0];
+
+    if (!payload) {
+        if (primary) {
+            const res = await api('DELETE', `/user-profiles/${profileId}/lead-magnets/${primary.id}`);
+            if (res.error) throw new Error(res.error);
+        }
+        return;
+    }
+
+    const path = primary
+        ? `/user-profiles/${profileId}/lead-magnets/${primary.id}`
+        : `/user-profiles/${profileId}/lead-magnets`;
+    const method = primary ? 'PUT' : 'POST';
+    const res = await api(method, path, payload);
+    if (res.error) throw new Error(res.error);
 }
 
 function renderLoadPanel() {
@@ -2273,17 +2422,19 @@ async function loadProfile(profileId) {
 
 // ─── DATA FETCHING ─────────────────────────────────
 async function fetchAllData(pid) {
-    const [profile, audience, ideas, posts] = await Promise.all([
+    const [profile, audience, ideas, posts, leadMagnets] = await Promise.all([
         api('GET', `/user-profiles/${pid}`),
         api('GET', `/user-profiles/${pid}/audience-analysis`),
         api('GET', `/user-profiles/${pid}/content-ideas`),
         api('GET', `/user-profiles/${pid}/posts`),
+        api('GET', `/user-profiles/${pid}/lead-magnets`),
     ]);
     if (profile.error) throw new Error(profile.error);
     S.profile  = profile;
     S.audience = audience.error ? null : audience;
     S.ideas    = Array.isArray(ideas) ? ideas : [];
     S.posts    = Array.isArray(posts) ? posts : [];
+    S.leadMagnets = Array.isArray(leadMagnets) ? leadMagnets : [];
 }
 
 async function refreshPosts() {
@@ -2357,6 +2508,7 @@ function iconSvg(id) {
 function renderProfileGrid() {
     const p = S.profile;
     if (!p) return;
+    const guide = S.leadMagnets[0];
     const fields = [
         { label:'Profile Name',    val: p.profile_name },
         { label:'Niche',           val: p.niche },
@@ -2370,6 +2522,7 @@ function renderProfileGrid() {
         { label:'Locale Notes',    val: p.locale_notes },
         { label:'Tone',            val: p.tone },
         { label:'Goal',            val: p.goal },
+        { label:'Primary Guide',   val: guide ? [guide.title, guide.url].filter(Boolean).join(' · ') : '' },
     ];
     document.getElementById('profile-grid').innerHTML = fields.map(f => `
         <div class="profile-field">
@@ -2689,6 +2842,7 @@ function openGenModal(idx) {
     S.genIdeaIdx = idx;
     S.genPostId  = null;
     S.genPost    = null;
+    S.genPostPlatform = null;
 
     const idea = S.ideas[idx];
     document.getElementById('gen-title').textContent = idea.title;
@@ -2764,11 +2918,15 @@ async function generatePost() {
 
         S.genPost   = data.post;
         S.genPostId = data.post_id;
+        S.genPostPlatform = S.genOpts.platform;
 
         document.getElementById('r-hook').textContent  = data.post.hook       || '';
         document.getElementById('r-body').textContent  = data.post.body       || '';
         document.getElementById('r-cta').textContent   = data.post.cta        || '';
         document.getElementById('r-final').textContent = data.post.final_text || '';
+
+        const flowButton = document.getElementById('btn-gen-flow');
+        if (flowButton) flowButton.style.display = S.genPostPlatform === 'instagram' ? '' : 'none';
 
         document.getElementById('gen-result').style.display = 'block';
         document.getElementById('gen-result').scrollIntoView({ behavior:'smooth', block:'nearest' });
@@ -2792,6 +2950,10 @@ function copyGenPost() {
 }
 
 async function genConversionFlow() {
+    if (S.genPostPlatform !== 'instagram') {
+        toast('Lead flows are available for Instagram posts only', 'error');
+        return;
+    }
     if (S.genPostId) await showFlow(S.genPostId);
 }
 
@@ -2800,6 +2962,7 @@ async function openDetailModal(postId) {
     S.detailPostId = postId;
     const p = await api('GET', `/posts/${postId}`);
     if (p.error) { toast('Post not found', 'error'); return; }
+    S.detailPost = p;
 
     document.getElementById('detail-meta').innerHTML = `
         <span class="tag tag-platform">${esc(p.platform||'')}</span>
@@ -2812,6 +2975,9 @@ async function openDetailModal(postId) {
     document.getElementById('d-body').textContent  = p.body       || '';
     document.getElementById('d-cta').textContent   = p.cta        || '';
     document.getElementById('d-final').textContent = p.final_text || '';
+
+    const flowButton = document.getElementById('btn-detail-flow');
+    if (flowButton) flowButton.style.display = p.platform === 'instagram' ? '' : 'none';
 
     openModal('modal-detail');
 }
@@ -2948,36 +3114,105 @@ async function deleteDetailPost() {
 }
 
 async function detailConversionFlow() {
+    if (S.detailPost && S.detailPost.platform !== 'instagram') {
+        toast('Lead flows are available for Instagram posts only', 'error');
+        return;
+    }
     if (S.detailPostId) await showFlow(S.detailPostId);
 }
 
 // ─── CONVERSION FLOW ───────────────────────────────
 async function showFlow(postId) {
-    S.flowPostId = postId;
-
-    // Try GET first, then POST if not found
-    let flow = await api('GET', `/posts/${postId}/conversion`);
-    if (flow.error) {
-        toast('Preparing lead flow…', 'success');
-        const res = await api('POST', `/posts/${postId}/conversion`);
-        if (res.error) { toast('Failed to prepare flow', 'error'); return; }
-        flow = res.flow || res;
+    const post = S.posts.find(p => String(p.id) === String(postId))
+        || (S.detailPost && String(S.detailPost.id) === String(postId) ? S.detailPost : null);
+    if (post && post.platform !== 'instagram') {
+        toast('Lead flows are available for Instagram posts only', 'error');
+        return;
     }
 
-    document.getElementById('flow-kw').textContent      = flow.trigger_keyword || '';
-    document.getElementById('flow-first').textContent   = flow.first_message   || '';
-    document.getElementById('flow-qual').textContent    = flow.qualification_question || '—';
-    document.getElementById('flow-followup').textContent = flow.follow_up      || '';
+    S.flowPostId = postId;
+    S.flowData = null;
 
+    let flow = await api('GET', `/posts/${postId}/conversion`);
+    if (flow.error) {
+        renderFlowSetup();
+        openModal('modal-flow');
+        return;
+    }
+
+    renderFlowResult(flow);
     openModal('modal-flow');
 }
 
+function renderFlowSetup() {
+    document.getElementById('flow-setup').style.display = '';
+    document.getElementById('flow-result').style.display = 'none';
+    document.getElementById('btn-flow-create').style.display = '';
+    document.getElementById('btn-flow-copy').style.display = 'none';
+
+    const select = document.getElementById('flow-lead-magnet');
+    select.innerHTML = `
+        <option value="">No saved guide</option>
+        ${S.leadMagnets.map(guide => `
+            <option value="${esc(guide.id)}">${esc(guide.title)}</option>
+        `).join('')}`;
+    if (S.leadMagnets[0]) select.value = S.leadMagnets[0].id;
+    document.getElementById('flow-custom-title').value = '';
+    document.getElementById('flow-custom-url').value = '';
+    document.getElementById('flow-custom-description').value = '';
+}
+
+function renderFlowResult(flow) {
+    S.flowData = flow;
+    document.getElementById('flow-setup').style.display = 'none';
+    document.getElementById('flow-result').style.display = '';
+    document.getElementById('btn-flow-create').style.display = 'none';
+    document.getElementById('btn-flow-copy').style.display = '';
+
+    document.getElementById('flow-kw').textContent      = flow.trigger_keyword || '';
+    document.getElementById('flow-public').textContent  = flow.public_comment_reply || 'I’ll send it to you now.';
+    document.getElementById('flow-first').textContent   = flow.first_message   || '';
+    document.getElementById('flow-qual').textContent    = flow.qualification_question || '—';
+    document.getElementById('flow-followup').textContent = flow.follow_up      || '';
+    document.getElementById('flow-json').textContent = JSON.stringify(flow.manychat_setup || {}, null, 2);
+}
+
+async function createFlowFromSetup() {
+    if (!S.flowPostId) return;
+
+    const body = {
+        lead_magnet_id: val('flow-lead-magnet') || null,
+        custom_offer_title: val('flow-custom-title') || null,
+        custom_offer_url: val('flow-custom-url') || null,
+        custom_offer_description: val('flow-custom-description') || null,
+    };
+
+    const btn = document.getElementById('btn-flow-create');
+    btn.disabled = true;
+    btn.textContent = 'Preparing…';
+
+    try {
+        const res = await api('POST', `/posts/${S.flowPostId}/conversion`, body);
+        if (res.error) throw new Error(res.error);
+        renderFlowResult(res.flow || res);
+        toast('Lead flow prepared', 'success');
+    } catch (e) {
+        toast(e.message || 'Failed to prepare flow', 'error');
+    } finally {
+        btn.disabled = false;
+        btn.textContent = 'Prepare Flow';
+    }
+}
+
 function copyFlow() {
+    const json = document.getElementById('flow-json').textContent || '{}';
     const text = [
         `Trigger Keyword: ${document.getElementById('flow-kw').textContent}`,
+        `\nPublic Reply:\n${document.getElementById('flow-public').textContent}`,
         `\nFirst Message:\n${document.getElementById('flow-first').textContent}`,
         `\nQualification Question:\n${document.getElementById('flow-qual').textContent}`,
         `\nFollow-Up:\n${document.getElementById('flow-followup').textContent}`,
+        `\n\nManyChat Setup JSON:\n${json}`,
     ].join('');
     copyTxt(text);
 }
@@ -2998,6 +3233,12 @@ function openEditModalFill() {
     document.getElementById('e-locale-notes').value  = p.locale_notes    || '';
     document.getElementById('e-tone').value          = p.tone            || '';
     document.getElementById('e-goal').value          = p.goal            || '';
+
+    const guide = S.leadMagnets[0] || {};
+    document.getElementById('e-guide-title').value   = guide.title || '';
+    document.getElementById('e-guide-url').value     = guide.url || '';
+    document.getElementById('e-guide-keyword').value = guide.suggested_keyword || '';
+    document.getElementById('e-guide-message').value = guide.delivery_message || '';
 }
 
 document.getElementById('modal-edit').addEventListener('transitionend', () => {});
@@ -3029,6 +3270,7 @@ async function updateProfile() {
     showLoading('Updating your profile…', loadSteps('update'), { logo: true, kind: 'update' });
 
     try {
+        await savePrimaryLeadMagnetFromEditForm(S.profileId);
         await api('PUT', `/user-profiles/${S.profileId}`, body);
         await fetchAllData(S.profileId);
         renderDash();

@@ -88,5 +88,50 @@
       "goal": "objection_handling",
       "includes": "first_message qualification_question follow_up"
     }
+  },
+  {
+    "id": "manychat_flow_saved_guide_delivery",
+    "document": "ManyChat flow with saved lead magnet: Use the saved guide title and URL directly. Public reply: “Sent it to you.” First message: “Here’s the [guide title] I mentioned: [URL]. Start with the section that matches your situation.” Qualification question: “What are you trying to solve first?” Follow-up: “If you want help applying it, here is the next step: [offer or follow-up CTA].”",
+    "metadata": {
+      "type": "flow_template",
+      "goal": "download",
+      "includes": "public_comment_reply lead_magnet_url setup_json"
+    }
+  },
+  {
+    "id": "manychat_flow_no_guide_goal_fallback",
+    "document": "ManyChat flow when no guide exists: Do not pretend there is a downloadable resource. Use a conversation-first flow. Public reply: “I’ll send you a quick next step.” First message: “Here’s the short version I mentioned.” Qualification question: “Which part feels most relevant to you right now?” Follow-up: “Based on that, your best next step is [specific action tied to the creator offer].”",
+    "metadata": {
+      "type": "flow_template",
+      "goal": "comment",
+      "includes": "no_guide fallback first_message qualification_question follow_up"
+    }
+  },
+  {
+    "id": "manychat_flow_booking_or_visit",
+    "document": "ManyChat flow for booking, visiting, or appointment goals: Trigger keyword VISIT or BOOK. Public reply: “I’ll send the details.” First message should send booking/location/class details, not a generic guide. Qualification question: “Are you looking for a time this week, comparing options, or just checking details?” Follow-up should point to the booking link, visit details, or next practical step.",
+    "metadata": {
+      "type": "flow_template",
+      "goal": "book_visit",
+      "includes": "public_comment_reply booking fallback"
+    }
+  },
+  {
+    "id": "manychat_flow_order_or_buy",
+    "document": "ManyChat flow for order or purchase goals: Trigger keyword ORDER or SHOP. Public reply: “I’ll send the link.” First message should send product/order details or the chosen offer URL. Qualification question: “Is this for you, a gift, an event, or your business?” Follow-up should recommend the simplest matching product or next order step.",
+    "metadata": {
+      "type": "flow_template",
+      "goal": "buy_order",
+      "includes": "public_comment_reply order fallback"
+    }
+  },
+  {
+    "id": "manychat_setup_json_manual",
+    "document": "ManyChat setup JSON should be honest about automation limits. Include manual_required true, trigger_keyword, public_comment_reply, flow_type, lead_magnet_used, lead_magnet_url, setup_steps, and api_supported_parts. setup_steps should tell the user to create an Instagram Comments automation in ManyChat, use the keyword, add the public comment reply, then add the first DM, qualification question, and follow-up.",
+    "metadata": {
+      "type": "setup_json",
+      "goal": "manychat_setup",
+      "includes": "manual_required setup_steps api_supported_parts"
+    }
   }
 ]

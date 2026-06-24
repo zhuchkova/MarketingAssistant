@@ -15,11 +15,11 @@ The system combines **LLMs, RAG (Retrieval-Augmented Generation), LangChain, Chr
 * Analyze a creator's positioning and audience
 * Generate content ideas and hooks
 * Create platform-specific posts for LinkedIn and Instagram
-* Generate conversion funnels and ManyChat automations
+* Generate Instagram conversion funnels and ManyChat-style automations
 
 The goal is to provide highly relevant, engaging, and conversion-oriented content rather than generic AI-generated posts.
 
-Each signed-in user can manage multiple marketing profiles (for example: LinkedIn Personal Brand, AI Consulting Business, Fitness Coaching Brand), each with its own audience analysis, content ideas, posts, and conversion funnels.
+Each signed-in user can manage multiple marketing profiles (for example: LinkedIn Personal Brand, AI Consulting Business, Fitness Coaching Brand), each with its own audience analysis, content ideas, posts, and Instagram conversion funnels.
 
 ---
 
@@ -147,7 +147,7 @@ Generates complete LinkedIn or Instagram posts.
 
 ### 4. Conversion Agent
 
-Creates ManyChat conversion flows from generated posts.
+Creates ManyChat-style conversion flows from generated Instagram posts.
 
 #### Output
 
@@ -281,7 +281,22 @@ posts
   ├── body
   ├── cta
   └── final_text
+lead_magnets
+  ├── title
+  ├── url
+  ├── description
+  ├── suggested_keyword
+  ├── delivery_message
+  ├── follow_up_cta
+  └── is_primary
 manychat_flows
+  ├── lead_magnet_id
+  ├── trigger_keyword
+  ├── public_comment_reply
+  ├── first_message
+  ├── qualification_question
+  ├── follow_up
+  └── manychat_setup
 ```
 
 ### ChromaDB
@@ -345,8 +360,8 @@ The seed script uses `upsert`, so rerunning it updates existing cards with the s
 * `positioning_knowledge/` for audience research, positioning, pains, desires, objections, and voice-of-customer patterns. This collection is split into smaller JSON files so editors can open them comfortably.
 * `idea_knowledge.json` for hook patterns, content angles, belief shifts, and audience-specific idea triggers.
 * `content_frameworks.json` for LinkedIn structures, Instagram carousel/story/Reel structures, and length rules.
-* `cta_conversion_knowledge.json` for comment, DM, save, follow, download, share, book/visit, and buy/order CTA patterns.
-* `manychat_funnel_templates.json` for keyword flows, first messages, qualifying questions, and follow-ups.
+* `cta_conversion_knowledge.json` for comment, DM, save, follow, download, share, book/visit, buy/order, public reply, and no-guide fallback CTA patterns.
+* `manychat_funnel_templates.json` for keyword flows, public comment replies, first messages, qualifying questions, follow-ups, lead magnet delivery, no-guide fallbacks, and manual ManyChat setup JSON.
 
 To inspect the current Chroma collections:
 
@@ -554,6 +569,17 @@ DELETE /posts/{post_id}
 
 ### Conversion
 
+#### Profile Lead Magnets
+
+```http
+GET /user-profiles/{profile_id}/lead-magnets
+POST /user-profiles/{profile_id}/lead-magnets
+PUT /user-profiles/{profile_id}/lead-magnets/{lead_magnet_id}
+DELETE /user-profiles/{profile_id}/lead-magnets/{lead_magnet_id}
+```
+
+Lead magnets are optional reusable guides/resources for Instagram comment-to-DM flows. If no lead magnet exists, the app can still generate a goal-based flow such as booking details, order details, or a simple first-step conversation.
+
 #### Generate Conversion Flow
 
 ```http
@@ -701,6 +727,17 @@ Allowed `post_length` values are `short`, `medium`, and `long`.
 
 ### Generate Conversion Flow Response
 
+Optional request body:
+
+```json
+{
+  "lead_magnet_id": "55555555-5555-5555-5555-555555555555",
+  "custom_offer_title": null,
+  "custom_offer_url": null,
+  "custom_offer_description": null
+}
+```
+
 ```json
 {
   "status": "conversion flow created",
@@ -708,9 +745,24 @@ Allowed `post_length` values are `short`, `medium`, and `long`.
   "post_id": "33333333-3333-3333-3333-333333333333",
   "flow": {
     "trigger_keyword": "SYSTEM",
+    "public_comment_reply": "Sent it to you.",
     "first_message": "Here is the workflow I mentioned.",
     "qualification_question": "Are you building this for yourself or for clients?",
-    "follow_up": "Start with the simple version first, then automate the repeatable parts."
+    "follow_up": "Start with the simple version first, then automate the repeatable parts.",
+    "manychat_setup": {
+      "manual_required": true,
+      "trigger_keyword": "SYSTEM",
+      "public_comment_reply": "Sent it to you.",
+      "flow_type": "instagram_comment_to_dm",
+      "lead_magnet_used": true,
+      "lead_magnet_url": "https://example.com/guide",
+      "setup_steps": [
+        "Create an Instagram Comments automation in ManyChat.",
+        "Use SYSTEM as the trigger keyword.",
+        "Add the public reply and DM messages from this flow."
+      ],
+      "api_supported_parts": ["tags", "custom_fields", "sendContent", "sendFlow"]
+    }
   }
 }
 ```
@@ -738,7 +790,7 @@ Passwords are hashed with bcrypt before storage. The app never returns password 
 
 Profile ownership is enforced on profile-level endpoints. A signed-in user can only load, update, list posts for, or read generated audience/content data for profiles owned by their user account.
 
-Post ownership is enforced through the post's parent marketing profile. A signed-in user cannot generate a post from another user's content idea, read another user's post, delete another user's post, or create/read conversion flows for another user's post.
+Post ownership is enforced through the post's parent marketing profile. A signed-in user cannot generate a post from another user's content idea, read another user's post, delete another user's post, or create/read conversion flows for another user's post. Conversion flows are limited to Instagram posts.
 
 Sign out is client-side because JWTs are stateless. The frontend removes the saved token and profile id from browser storage. Tokens expire after 7 days.
 

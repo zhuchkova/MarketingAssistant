@@ -1,7 +1,7 @@
 # uvicorn main:app --reload
 import os
 import uuid
-from typing import List
+from typing import List, Optional
 from dotenv import load_dotenv
 load_dotenv()
 from fastapi import FastAPI, HTTPException, Depends
@@ -12,6 +12,8 @@ import psycopg
 from schemas.user_profile import CreateUserProfileRequest, UpdateUserProfileRequest
 from schemas.post_generation import GeneratePostRequest, UpdatePostRequest
 from schemas.content_idea import ContentIdeaRequest, GenerateIdeasRequest
+from schemas.lead_magnet import LeadMagnetRequest
+from schemas.conversion import CreateConversionFlowRequest
 from schemas.auth import RegisterRequest, LoginRequest
 from auth import get_current_user, hash_password, verify_password, create_token
 from authorization import check_profile_owner, check_post_owner
@@ -25,7 +27,14 @@ from db.content_repository import (get_content_generation_context,
     get_lookup_id, save_post, update_post_content)
 from agents.conversion_agent import run_conversion_agent
 from db.conversion_repository import (get_conversion_context,
-    save_manychat_flow)
+    attach_lead_magnet_context, save_manychat_flow)
+from db.lead_magnet_repository import (
+    delete_lead_magnet,
+    get_lead_magnet,
+    list_lead_magnets,
+    save_lead_magnet,
+    update_lead_magnet,
+)
 
 
 def get_allowed_origins() -> List[str]:
@@ -322,6 +331,95 @@ def get_audience_analysis(
         "positioning": row[11],
         "known_for": row[12],
     }
+
+
+@app.get("/user-profiles/{profile_id}/lead-magnets")
+def get_profile_lead_magnets(
+    profile_id: str,
+    current_user: dict = Depends(get_current_user),
+):
+    conn = psycopg.connect(os.getenv("DATABASE_URL"))
+    try:
+        check_profile_owner(conn, profile_id, current_user["user_id"])
+        return list_lead_magnets(conn, profile_id)
+    finally:
+        conn.close()
+
+
+@app.post("/user-profiles/{profile_id}/lead-magnets")
+def create_profile_lead_magnet(
+    profile_id: str,
+    request: LeadMagnetRequest,
+    current_user: dict = Depends(get_current_user),
+):
+    data = request.model_dump()
+    conn = psycopg.connect(os.getenv("DATABASE_URL"))
+    try:
+        check_profile_owner(conn, profile_id, current_user["user_id"])
+        is_primary = len(list_lead_magnets(conn, profile_id)) == 0
+        lead_magnet_id = save_lead_magnet(conn, profile_id, data, is_primary=is_primary)
+        conn.commit()
+        return {
+            "status": "lead magnet created",
+            "lead_magnet_id": lead_magnet_id,
+        }
+    except Exception:
+        conn.rollback()
+        raise
+    finally:
+        conn.close()
+
+
+@app.put("/user-profiles/{profile_id}/lead-magnets/{lead_magnet_id}")
+def update_profile_lead_magnet(
+    profile_id: str,
+    lead_magnet_id: str,
+    request: LeadMagnetRequest,
+    current_user: dict = Depends(get_current_user),
+):
+    data = request.model_dump()
+    conn = psycopg.connect(os.getenv("DATABASE_URL"))
+    try:
+        check_profile_owner(conn, profile_id, current_user["user_id"])
+        update_lead_magnet(conn, lead_magnet_id, profile_id, data)
+        conn.commit()
+        return {
+            "status": "lead magnet updated",
+            "lead_magnet_id": lead_magnet_id,
+        }
+    except ValueError:
+        conn.rollback()
+        raise HTTPException(status_code=404, detail="Lead magnet not found")
+    except Exception:
+        conn.rollback()
+        raise
+    finally:
+        conn.close()
+
+
+@app.delete("/user-profiles/{profile_id}/lead-magnets/{lead_magnet_id}")
+def delete_profile_lead_magnet(
+    profile_id: str,
+    lead_magnet_id: str,
+    current_user: dict = Depends(get_current_user),
+):
+    conn = psycopg.connect(os.getenv("DATABASE_URL"))
+    try:
+        check_profile_owner(conn, profile_id, current_user["user_id"])
+        delete_lead_magnet(conn, lead_magnet_id, profile_id)
+        conn.commit()
+        return {
+            "status": "lead magnet deleted",
+            "lead_magnet_id": lead_magnet_id,
+        }
+    except ValueError:
+        conn.rollback()
+        raise HTTPException(status_code=404, detail="Lead magnet not found")
+    except Exception:
+        conn.rollback()
+        raise
+    finally:
+        conn.close()
 
 
 @app.get("/user-profiles/{profile_id}/content-ideas")
@@ -819,15 +917,44 @@ def delete_post(
 @app.post("/posts/{post_id}/conversion")
 def create_conversion_flow(
     post_id: str,
+    request: Optional[CreateConversionFlowRequest] = None,
     current_user: dict = Depends(get_current_user),
 ):
+    request = request.model_dump() if request else {}
     conn = psycopg.connect(os.getenv("DATABASE_URL"))
 
     try:
         check_post_owner(conn, post_id, current_user["user_id"])
         context = get_conversion_context(conn, post_id)
+        if context.get("platform") != "instagram":
+            raise HTTPException(
+                status_code=400,
+                detail="Lead flows are only available for Instagram posts",
+            )
+
+        lead_magnet = None
+        if request.get("lead_magnet_id"):
+            try:
+                lead_magnet = get_lead_magnet(
+                    conn,
+                    request["lead_magnet_id"],
+                    context["user_profile_id"],
+                )
+            except ValueError:
+                raise HTTPException(status_code=404, detail="Lead magnet not found")
+
+        context = attach_lead_magnet_context(
+            context,
+            lead_magnet=lead_magnet,
+            custom_offer=request,
+        )
         flow = run_conversion_agent(context)
-        flow_id = save_manychat_flow(conn, post_id, flow)
+        flow_id = save_manychat_flow(
+            conn,
+            post_id,
+            flow,
+            lead_magnet_id=lead_magnet["id"] if lead_magnet else None,
+        )
         conn.commit()
 
         return {
@@ -853,10 +980,24 @@ def get_conversion_flow(
     conn = psycopg.connect(os.getenv("DATABASE_URL"))
     try:
         check_post_owner(conn, post_id, current_user["user_id"])
+        context = get_conversion_context(conn, post_id)
+        if context.get("platform") != "instagram":
+            raise HTTPException(
+                status_code=400,
+                detail="Lead flows are only available for Instagram posts",
+            )
 
         with conn.cursor() as cur:
             cur.execute("""
-                SELECT id, trigger_keyword, first_message, qualification_question, follow_up
+                SELECT
+                    id,
+                    trigger_keyword,
+                    public_comment_reply,
+                    first_message,
+                    qualification_question,
+                    follow_up,
+                    manychat_setup,
+                    lead_magnet_id
                 FROM manychat_flows
                 WHERE post_id = %s
             """, (post_id,))
@@ -870,9 +1011,12 @@ def get_conversion_flow(
     return {
         "id": row[0],
         "trigger_keyword": row[1],
-        "first_message": row[2],
-        "qualification_question": row[3],
-        "follow_up": row[4],
+        "public_comment_reply": row[2],
+        "first_message": row[3],
+        "qualification_question": row[4],
+        "follow_up": row[5],
+        "manychat_setup": row[6] or {},
+        "lead_magnet_id": row[7],
     }
 
 

@@ -91,11 +91,30 @@ CREATE TABLE posts (
     final_text TEXT
 );
 
+CREATE TABLE lead_magnets (
+    id UUID PRIMARY KEY,
+    user_profile_id UUID NOT NULL
+        REFERENCES user_profiles(id) ON DELETE CASCADE,
+    title TEXT NOT NULL,
+    url TEXT,
+    description TEXT,
+    suggested_keyword TEXT,
+    delivery_message TEXT,
+    follow_up_cta TEXT,
+    is_primary BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP DEFAULT NOW()
+);
+
 CREATE TABLE manychat_flows (
     id UUID PRIMARY KEY,
     post_id UUID UNIQUE NOT NULL
         REFERENCES posts(id) ON DELETE CASCADE,
+    lead_magnet_id UUID
+        REFERENCES lead_magnets(id) ON DELETE SET NULL,
     trigger_keyword TEXT,
+    public_comment_reply TEXT,
     first_message TEXT,
-    follow_up TEXT
+    qualification_question TEXT,
+    follow_up TEXT,
+    manychat_setup JSONB DEFAULT '{}'::jsonb
 );

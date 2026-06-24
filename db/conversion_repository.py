@@ -1,4 +1,16 @@
 import uuid
+from psycopg.types.json import Jsonb
+
+
+EMPTY_LEAD_MAGNET_CONTEXT = {
+    "lead_magnet_id": None,
+    "lead_magnet_title": None,
+    "lead_magnet_url": None,
+    "lead_magnet_description": None,
+    "lead_magnet_keyword": None,
+    "lead_magnet_delivery_message": None,
+    "lead_magnet_follow_up_cta": None,
+}
 
 
 def get_conversion_context(conn, post_id: str) -> dict:
@@ -82,10 +94,36 @@ def get_conversion_context(conn, post_id: str) -> dict:
             "final_text": row[26],
             "platform": row[27],
             "post_goal": row[28],
+            **EMPTY_LEAD_MAGNET_CONTEXT,
         }
 
 
-def save_manychat_flow(conn, post_id: str, flow: dict) -> str:
+def attach_lead_magnet_context(context: dict, lead_magnet: dict = None, custom_offer: dict = None) -> dict:
+    context = {**context, **EMPTY_LEAD_MAGNET_CONTEXT}
+
+    if lead_magnet:
+        context.update({
+            "lead_magnet_id": lead_magnet.get("id"),
+            "lead_magnet_title": lead_magnet.get("title"),
+            "lead_magnet_url": lead_magnet.get("url"),
+            "lead_magnet_description": lead_magnet.get("description"),
+            "lead_magnet_keyword": lead_magnet.get("suggested_keyword"),
+            "lead_magnet_delivery_message": lead_magnet.get("delivery_message"),
+            "lead_magnet_follow_up_cta": lead_magnet.get("follow_up_cta"),
+        })
+        return context
+
+    if custom_offer:
+        context.update({
+            "lead_magnet_title": custom_offer.get("custom_offer_title"),
+            "lead_magnet_url": custom_offer.get("custom_offer_url"),
+            "lead_magnet_description": custom_offer.get("custom_offer_description"),
+        })
+
+    return context
+
+
+def save_manychat_flow(conn, post_id: str, flow: dict, lead_magnet_id: str = None) -> str:
     flow_id = str(uuid.uuid4())
 
     with conn.cursor() as cur:
@@ -93,19 +131,25 @@ def save_manychat_flow(conn, post_id: str, flow: dict) -> str:
             INSERT INTO manychat_flows (
                 id,
                 post_id,
+                lead_magnet_id,
                 trigger_keyword,
+                public_comment_reply,
                 first_message,
                 qualification_question,
-                follow_up
+                follow_up,
+                manychat_setup
             )
-            VALUES (%s, %s, %s, %s, %s, %s)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
         """, (
             flow_id,
             post_id,
+            lead_magnet_id,
             flow["trigger_keyword"],
+            flow.get("public_comment_reply"),
             flow["first_message"],
             flow["qualification_question"],
             flow["follow_up"],
+            Jsonb(flow.get("manychat_setup") or {}),
         ))
 
     return flow_id
