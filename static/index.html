@@ -993,6 +993,101 @@
             white-space: pre-wrap;
             overflow-x: auto;
         }
+        .flow-advanced {
+            border: 1px solid var(--border);
+            border-radius: var(--r-sm);
+            padding: 12px 14px;
+            background: #fbfdf8;
+            margin: 8px 0 14px;
+        }
+        .flow-advanced summary {
+            cursor: pointer;
+            font-weight: 800;
+            color: var(--primary);
+            letter-spacing: .03em;
+            text-transform: uppercase;
+            font-size: 12px;
+        }
+        .flow-preview-layout {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) minmax(280px, 420px);
+            gap: 18px;
+            align-items: start;
+        }
+        .flow-preview-panel {
+            background: #f8fbf3;
+            border: 1px solid var(--border);
+            border-radius: var(--r-sm);
+            padding: 18px;
+        }
+        .flow-preview-title {
+            font-size: 18px;
+            font-weight: 800;
+            color: var(--text);
+            margin-bottom: 8px;
+        }
+        .flow-preview-desc {
+            font-size: 14px;
+            color: var(--text-3);
+            line-height: 1.5;
+            margin-bottom: 14px;
+        }
+        .dm-phone {
+            background: #111611;
+            border: 8px solid #1d261f;
+            border-radius: 34px;
+            padding: 18px 12px 20px;
+            color: #fff;
+            min-height: 420px;
+            box-shadow: 0 20px 40px rgba(36,64,52,.18);
+        }
+        .dm-phone-head {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            padding: 4px 8px 18px;
+            border-bottom: 1px solid rgba(255,255,255,.12);
+            margin-bottom: 18px;
+            font-weight: 800;
+            font-size: 13px;
+        }
+        .dm-avatar {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--pink), var(--matcha));
+        }
+        .dm-bubble {
+            background: #2b2f2b;
+            color: #f7f7f0;
+            border-radius: 18px;
+            padding: 12px 14px;
+            margin: 0 18px 12px 34px;
+            font-size: 14px;
+            line-height: 1.45;
+        }
+        .dm-button {
+            background: #3d423d;
+            border-radius: 10px;
+            padding: 9px 12px;
+            text-align: center;
+            margin-top: 10px;
+            color: #fff;
+            font-weight: 700;
+        }
+        .dm-user-reply {
+            background: #7b4df3;
+            color: #fff;
+            border-radius: 18px;
+            padding: 9px 13px;
+            margin: 0 12px 12px auto;
+            max-width: 62%;
+            text-align: center;
+            font-size: 14px;
+        }
+        @media (max-width: 900px) {
+            .flow-preview-layout { grid-template-columns: 1fr; }
+        }
 
         /* Warning banner */
         .warn-banner {
@@ -1798,7 +1893,7 @@
                 <div class="divider"></div>
                 <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:14px;">
                     <h3 style="font-size:16px; font-weight:700;">Draft Post</h3>
-                    <button id="btn-gen-flow" class="btn btn-primary btn-sm" onclick="genConversionFlow()">Create Lead Flow</button>
+                    <button id="btn-gen-flow" class="btn btn-primary btn-sm" onclick="genConversionFlow()">View Lead Flow</button>
                 </div>
                 <div class="copy-row">
                     <span class="copy-row-text">✓ Post ready</span>
@@ -1923,121 +2018,16 @@
         </div>
         <div class="modal-body">
             <p style="font-size:15px; color:var(--text-3); margin-bottom:18px;">
-                Prepare the Instagram comment keyword, public reply, DM text, and ManyChat setup notes.
+                View the prepared Instagram comment-to-DM flow attached to this post.
             </p>
             <div id="flow-post-context" class="flow-context-card"></div>
-            <div id="flow-setup">
-                <div class="flow-setup-card">
-                    <div class="form-group">
-                        <label>Flow Resource</label>
-                        <select id="flow-lead-magnet" onchange="renderSelectedLeadMagnetPreview()">
-                            <option value="">No saved guide</option>
-                        </select>
-                        <span class="form-hint">Choose a saved guide/resource, or use the fields below for a simple one-time next step.</span>
-                    </div>
-                    <div id="flow-resource-preview" class="flow-resource-preview"></div>
-                    <div id="flow-custom-fields" class="flow-custom-fields">
-                        <div class="grid-2">
-                            <div class="form-group">
-                                <label>One-Time Offer Title</label>
-                                <input type="text" id="flow-custom-title" placeholder="e.g. booking details, product link, checklist" />
-                            </div>
-                            <div class="form-group">
-                                <label>One-Time URL</label>
-                                <input type="text" id="flow-custom-url" placeholder="https://..." />
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label>Offer Notes</label>
-                            <textarea id="flow-custom-description" placeholder="What should this flow send or invite people to do?"></textarea>
-                        </div>
-                        <div class="grid-2">
-                            <div class="form-group">
-                                <label>Trigger Mode</label>
-                                <select id="flow-custom-trigger-type">
-                                    <option value="specific_word">Specific word or reaction</option>
-                                    <option value="any_word">Any word or reaction</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label>Keyword</label>
-                                <input type="text" id="flow-custom-keyword" placeholder="e.g. GUIDE" />
-                            </div>
-                        </div>
-                        <div class="grid-2">
-                            <div class="form-group">
-                                <label>Public Reply</label>
-                                <input type="text" id="flow-custom-public" placeholder="Sent it to you. Check your DMs." />
-                            </div>
-                            <div class="form-group">
-                                <label>Opening Button</label>
-                                <input type="text" id="flow-custom-open-button" placeholder="Send me the link" />
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label>Opening DM</label>
-                            <textarea id="flow-custom-first-message" placeholder="Hey there! Thanks for your interest. Click below and I’ll send it in just a sec."></textarea>
-                        </div>
-                        <div class="grid-2">
-                            <div class="form-group">
-                                <label>Link Button</label>
-                                <input type="text" id="flow-custom-link-button" placeholder="Open" />
-                            </div>
-                            <div class="form-group">
-                                <label>Qualification Question</label>
-                                <input type="text" id="flow-custom-qualification" placeholder="What are you most interested in right now?" />
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label>Follow-Up</label>
-                            <textarea id="flow-custom-follow-up" placeholder="If this was helpful, here is the next step."></textarea>
-                        </div>
-                    </div>
-                </div>
-            </div>
             <div id="flow-result">
-                <div class="kw-badge">
-                    Trigger keyword: <strong id="flow-kw"></strong>
-                </div>
-                <div class="kw-badge">
-                    Public reply: <strong id="flow-public"></strong>
-                </div>
-                <div class="kw-badge">
-                    Opening button: <strong id="flow-open-button"></strong>
-                </div>
-                <div class="kw-badge">
-                    Link button: <strong id="flow-link-button"></strong>
-                </div>
-                <div class="chat-msg">
-                    <div class="chat-avatar">1</div>
-                    <div class="chat-bubble">
-                        <div class="chat-bubble-label">First Message</div>
-                        <div class="chat-bubble-text" id="flow-first"></div>
-                    </div>
-                </div>
-                <div class="chat-msg">
-                    <div class="chat-avatar">2</div>
-                    <div class="chat-bubble">
-                        <div class="chat-bubble-label">Qualification Question</div>
-                        <div class="chat-bubble-text" id="flow-qual"></div>
-                    </div>
-                </div>
-                <div class="chat-msg">
-                    <div class="chat-avatar">3</div>
-                    <div class="chat-bubble">
-                        <div class="chat-bubble-label">Follow-Up Message</div>
-                        <div class="chat-bubble-text" id="flow-followup"></div>
-                    </div>
-                </div>
-                <div class="result-section">
-                    <div class="result-label">ManyChat Setup JSON</div>
-                    <pre class="flow-json" id="flow-json"></pre>
-                </div>
+                <div id="flow-preview"></div>
+                <pre class="flow-json" id="flow-json" style="margin-top:16px"></pre>
             </div>
         </div>
         <div class="modal-foot">
             <button class="btn btn-ghost" onclick="closeModal('modal-flow')">Close</button>
-            <button id="btn-flow-create" class="btn btn-primary btn-sm" onclick="createFlowFromSetup()">Prepare Flow</button>
             <button id="btn-flow-copy" class="btn btn-secondary btn-sm" onclick="copyFlow()">
                 <svg class="flat-icon"><use href="#icon-copy"></use></svg>
                 Copy Flow
@@ -2647,9 +2637,9 @@ function renderLeadFlows() {
             </div>
             <div class="grid-2">
                 <div class="form-group">
-                    <label>Resource Title</label>
+                    <label>Resource Title <span style="font-weight:500; color:var(--primary);">(required)</span></label>
                     <input type="text" id="flow-resource-title" placeholder="e.g. Free bouquet care guide" value="${esc(editing?.title || '')}">
-                    <span class="form-hint">What the user receives after commenting.</span>
+                    <span class="form-hint">What people should receive or start after commenting.</span>
                 </div>
                 <div class="form-group">
                     <label>URL <span style="font-weight:500; color:var(--text-4);">(optional)</span></label>
@@ -2659,18 +2649,29 @@ function renderLeadFlows() {
             </div>
             <div class="grid-2">
                 <div class="form-group">
-                    <label>Keyword</label>
-                    <input type="text" id="flow-resource-keyword" placeholder="e.g. GUIDE" value="${esc(editing?.suggested_keyword || '')}">
-                    <span class="form-hint">Optional before generation. The app can suggest it.</span>
+                    <label>Description <span style="font-weight:500; color:var(--text-4);">(recommended)</span></label>
+                    <textarea id="flow-resource-description" rows="3" placeholder="What should this flow help people do?">${esc(editing?.description || '')}</textarea>
+                    <span class="form-hint">This helps the app generate a better keyword, opening DM, and setup notes.</span>
                 </div>
                 <div class="form-group">
-                    <label>Preferred Goal</label>
+                    <label>Preferred Goal <span style="font-weight:500; color:var(--text-4);">(optional)</span></label>
                     <select id="flow-resource-goal">
+                        <option value="">Let the app decide</option>
                         ${['comment', 'dm_keyword', 'download', 'save', 'share', 'follow', 'book_visit', 'buy_order'].map(goal => `
                             <option value="${goal}" ${editing?.preferred_post_goal === goal ? 'selected' : ''}>${esc(goal.replace(/_/g, ' '))}</option>
                         `).join('')}
                     </select>
                     <span class="form-hint">Helps match this flow to the right kind of Instagram post.</span>
+                </div>
+            </div>
+            <details class="flow-advanced" ${editing?.suggested_keyword || editing?.delivery_message ? 'open' : ''}>
+                <summary>Optional generated flow fields</summary>
+                <p class="form-hint" style="margin:8px 0 14px">You can leave these empty. Generate Flow will fill them, and you can edit later.</p>
+            <div class="grid-2">
+                <div class="form-group">
+                    <label>Keyword</label>
+                    <input type="text" id="flow-resource-keyword" placeholder="e.g. GUIDE" value="${esc(editing?.suggested_keyword || '')}">
+                    <span class="form-hint">Optional before generation. The app can suggest it.</span>
                 </div>
             </div>
             <div class="grid-2">
@@ -2695,7 +2696,7 @@ function renderLeadFlows() {
                     <span class="form-hint">Can be generated. Similar to ManyChat’s public reply options.</span>
                 </div>
                 <div class="form-group">
-                    <label>First DM</label>
+                    <label>Opening DM</label>
                     <input type="text" id="flow-resource-message" placeholder="Here is the guide I mentioned." value="${esc(editing?.delivery_message || '')}">
                     <span class="form-hint">Can be generated. This is the opening DM text.</span>
                 </div>
@@ -2717,11 +2718,7 @@ function renderLeadFlows() {
                 <input type="text" id="flow-resource-follow-up" placeholder="Want help choosing the right option? Here is the next step." value="${esc(editing?.follow_up_cta || '')}">
                 <span class="form-hint">Optional gentle next step after the first DM.</span>
             </div>
-            <div class="form-group">
-                <label>Description</label>
-                <textarea id="flow-resource-description" rows="3" placeholder="What this resource helps people do">${esc(editing?.description || '')}</textarea>
-                <span class="form-hint">A little context helps the flow agent write a better reply and follow-up.</span>
-            </div>
+            </details>
             <div class="flow-form-actions">
                 <button class="btn btn-primary btn-lg" onclick="saveLeadMagnet()">${editing ? 'Save Resource' : 'Add Resource'}</button>
                 ${S.leadMagnets.length ? `<button class="btn btn-secondary btn-lg" onclick="generateAllLeadFlows()">Generate All Flows</button>` : ''}
@@ -2741,6 +2738,7 @@ function renderLeadFlows() {
                         ${item.delivery_message ? `<div class="idea-hook"><strong>Opening DM:</strong> ${esc(item.delivery_message)}</div>` : ''}
                         ${item.opening_dm_button_label ? `<div class="idea-angle">${esc(item.opening_dm_button_label)}</div>` : ''}
                         <div class="idea-card-actions">
+                            <button class="btn btn-secondary btn-sm" onclick="viewLeadFlowResource('${esc(item.id)}')">View</button>
                             <button class="btn btn-secondary btn-sm" onclick="editLeadMagnet('${esc(item.id)}')">Edit</button>
                             <button class="btn btn-primary btn-sm" onclick="generateLeadFlow('${esc(item.id)}')">${item.suggested_keyword && item.delivery_message ? 'Regenerate' : 'Generate Flow'}</button>
                             <button class="btn btn-danger btn-sm" onclick="deleteLeadMagnet('${esc(item.id)}')">Delete</button>
@@ -2855,6 +2853,18 @@ async function generateAllLeadFlows() {
     } finally {
         hideLoading();
     }
+}
+
+function viewLeadFlowResource(id) {
+    const resource = S.leadMagnets.find(item => String(item.id) === String(id));
+    if (!resource) {
+        toast('Flow resource not found', 'error');
+        return;
+    }
+    S.flowPostId = null;
+    const flow = leadFlowFromResource(resource);
+    renderFlowResult(flow);
+    openModal('modal-flow');
 }
 
 function editLeadMagnet(id) {
@@ -3310,7 +3320,7 @@ async function generatePost() {
         document.getElementById('r-final').textContent = data.post.final_text || '';
 
         const flowButton = document.getElementById('btn-gen-flow');
-        if (flowButton) flowButton.style.display = S.genPostPlatform === 'instagram' && data.post.instagram_content_type !== 'story' ? '' : 'none';
+        if (flowButton) flowButton.style.display = S.genPostPlatform === 'instagram' && data.post.instagram_content_type !== 'story' && data.post.lead_magnet_id ? '' : 'none';
 
         document.getElementById('gen-result').style.display = 'block';
         document.getElementById('gen-result').scrollIntoView({ behavior:'smooth', block:'nearest' });
@@ -3362,7 +3372,7 @@ async function openDetailModal(postId) {
     document.getElementById('d-final').textContent = p.final_text || '';
 
     const flowButton = document.getElementById('btn-detail-flow');
-    if (flowButton) flowButton.style.display = p.platform === 'instagram' && p.instagram_content_type !== 'story' ? '' : 'none';
+    if (flowButton) flowButton.style.display = p.platform === 'instagram' && p.instagram_content_type !== 'story' && p.lead_magnet_id ? '' : 'none';
 
     openModal('modal-detail');
 }
@@ -3520,8 +3530,7 @@ async function showFlow(postId) {
 
     let flow = await api('GET', `/posts/${postId}/conversion`);
     if (flow.error) {
-        renderFlowSetup();
-        openModal('modal-flow');
+        toast(flow.error || 'No prepared lead flow is attached to this post', 'error');
         return;
     }
 
@@ -3529,52 +3538,97 @@ async function showFlow(postId) {
     openModal('modal-flow');
 }
 
-function renderFlowSetup() {
-    document.getElementById('flow-setup').style.display = '';
-    document.getElementById('flow-result').style.display = 'none';
-    document.getElementById('btn-flow-create').style.display = '';
-    document.getElementById('btn-flow-copy').style.display = 'none';
-
-    renderFlowPostContext();
-
-    const select = document.getElementById('flow-lead-magnet');
-    select.innerHTML = `
-        <option value="">No saved resource - use custom next step</option>
-        ${S.leadMagnets.map(guide => `
-            <option value="${esc(guide.id)}">${esc(guide.title)}</option>
-        `).join('')}`;
-    const post = flowPost();
-    select.value = post?.lead_magnet_id || '';
-    document.getElementById('flow-custom-title').value = '';
-    document.getElementById('flow-custom-url').value = '';
-    document.getElementById('flow-custom-description').value = '';
-    document.getElementById('flow-custom-trigger-type').value = 'specific_word';
-    document.getElementById('flow-custom-keyword').value = '';
-    document.getElementById('flow-custom-public').value = '';
-    document.getElementById('flow-custom-first-message').value = '';
-    document.getElementById('flow-custom-open-button').value = '';
-    document.getElementById('flow-custom-link-button').value = '';
-    document.getElementById('flow-custom-qualification').value = '';
-    document.getElementById('flow-custom-follow-up').value = '';
-    renderSelectedLeadMagnetPreview();
-}
-
 function renderFlowResult(flow) {
     S.flowData = flow;
-    renderFlowPostContext();
-    document.getElementById('flow-setup').style.display = 'none';
+    renderFlowPostContext(flow);
     document.getElementById('flow-result').style.display = '';
-    document.getElementById('btn-flow-create').style.display = 'none';
     document.getElementById('btn-flow-copy').style.display = '';
 
-    document.getElementById('flow-kw').textContent      = flow.trigger_keyword || '';
-    document.getElementById('flow-public').textContent  = flow.public_comment_reply || 'I’ll send it to you now.';
-    document.getElementById('flow-open-button').textContent = flow.opening_dm_button_label || flow.manychat_setup?.opening_dm_button_label || 'Send me the link';
-    document.getElementById('flow-link-button').textContent = flow.link_button_label || flow.manychat_setup?.link_button_label || 'Open';
-    document.getElementById('flow-first').textContent   = flow.first_message   || '';
-    document.getElementById('flow-qual').textContent    = flow.qualification_question || '—';
-    document.getElementById('flow-followup').textContent = flow.follow_up      || '';
+    document.getElementById('flow-preview').innerHTML = leadFlowPreviewHtml(flow);
     document.getElementById('flow-json').textContent = JSON.stringify(flow.manychat_setup || {}, null, 2);
+}
+
+function leadFlowFromResource(resource) {
+    const setup = resource.manychat_setup || {};
+    const keyword = resource.suggested_keyword || setup.trigger_keyword || 'INFO';
+    const publicReply = resource.public_comment_reply || setup.public_comment_reply || 'Sent it to you. Check your DMs.';
+    const openingButton = resource.opening_dm_button_label || setup.opening_dm_button_label || 'Send me the link';
+    const linkButton = resource.link_button_label || setup.link_button_label || 'Open';
+    const firstMessage = resource.delivery_message || '';
+    const question = resource.qualification_question || '';
+    const followUp = resource.follow_up_cta || '';
+    const normalizedSetup = Object.keys(setup).length ? setup : {
+        manual_required: true,
+        comment_trigger_mode: resource.trigger_type || 'specific_word',
+        public_comment_reply: publicReply,
+        public_comment_reply_options: [publicReply],
+        trigger_keyword: keyword,
+        opening_dm_button_label: openingButton,
+        link_button_label: linkButton,
+        flow_type: 'instagram_comment_to_dm',
+        lead_magnet_used: Boolean(resource.url),
+        lead_magnet_url: resource.url || '',
+        setup_steps: [
+            'Create an Instagram Comments automation in ManyChat.',
+            `Set the comment trigger to ${resource.trigger_type === 'any_word' ? 'any word or reaction' : 'a specific word or reaction'}.`,
+            resource.trigger_type === 'any_word' ? 'No specific keyword is required.' : `Use the trigger keyword '${keyword}'.`,
+            `Turn on public comment reply and use: ${publicReply}`,
+            `Add an opening DM with button label: ${openingButton}`,
+            resource.url ? `Add a link step with URL ${resource.url} and button label: ${linkButton}` : 'Add the next-step message or details. No URL is required.',
+            'Preview the Comments and DM tabs before going live.',
+            'Click Go Live in ManyChat when ready.',
+        ],
+        api_supported_parts: ['Account metadata', 'Tags and custom fields', 'Sending content or flows to existing contacts'],
+    };
+    return {
+        trigger_keyword: keyword,
+        public_comment_reply: publicReply,
+        first_message: firstMessage,
+        opening_dm_button_label: openingButton,
+        link_button_label: linkButton,
+        qualification_question: question,
+        follow_up: followUp,
+        manychat_setup: normalizedSetup,
+        lead_magnet_id: resource.id,
+        lead_magnet_title: resource.title,
+    };
+}
+
+function leadFlowPreviewHtml(flow) {
+    const setup = flow.manychat_setup || {};
+    const keyword = flow.trigger_keyword || setup.trigger_keyword || 'INFO';
+    const publicReply = flow.public_comment_reply || setup.public_comment_reply || 'Sent it to you. Check your DMs.';
+    const openingButton = flow.opening_dm_button_label || setup.opening_dm_button_label || 'Send me the link';
+    const linkButton = flow.link_button_label || setup.link_button_label || 'Open';
+    const firstMessage = flow.first_message || '';
+    const question = flow.qualification_question || '';
+    const followUp = flow.follow_up || '';
+    const url = setup.lead_magnet_url || '';
+    return `
+        <div class="flow-preview-layout">
+            <div class="flow-preview-panel">
+                <div class="flow-preview-title">${esc(flow.lead_magnet_title || 'Prepared lead flow')}</div>
+                <div class="flow-preview-desc">Use this setup in ManyChat for Instagram comments. The post CTA should ask people to comment the keyword.</div>
+                <div class="kw-badge">Trigger keyword: <strong>${esc(keyword)}</strong></div>
+                <div class="kw-badge">Public reply: <strong>${esc(publicReply)}</strong></div>
+                <div class="kw-badge">Opening button: <strong>${esc(openingButton)}</strong></div>
+                ${url ? `<div class="kw-badge">Link button: <strong>${esc(linkButton)}</strong></div>` : ''}
+                ${question ? `<div class="chat-msg"><div class="chat-avatar">?</div><div class="chat-bubble"><div class="chat-bubble-label">Optional Question</div><div class="chat-bubble-text">${esc(question)}</div></div></div>` : ''}
+                ${followUp ? `<div class="chat-msg"><div class="chat-avatar">+</div><div class="chat-bubble"><div class="chat-bubble-label">Optional Follow-Up</div><div class="chat-bubble-text">${esc(followUp)}</div></div></div>` : ''}
+            </div>
+            <div class="dm-phone">
+                <div class="dm-phone-head"><span>‹</span><span class="dm-avatar"></span><span>instagram</span></div>
+                <div class="dm-bubble">
+                    ${esc(firstMessage || 'Hey! Thanks for your interest. Click below and I’ll send it in just a sec.')}
+                    <div class="dm-button">${esc(openingButton)}</div>
+                </div>
+                <div class="dm-user-reply">${esc(openingButton)}</div>
+                <div class="dm-bubble">
+                    ${url ? esc(`Here is the link: ${url}`) : esc('Here are the details I mentioned.')}
+                    ${url ? `<div class="dm-button">${esc(linkButton)}</div>` : ''}
+                </div>
+            </div>
+        </div>`;
 }
 
 function flowPost() {
@@ -3583,14 +3637,14 @@ function flowPost() {
         || S.genPost;
 }
 
-function renderFlowPostContext() {
+function renderFlowPostContext(flow = null) {
     const box = document.getElementById('flow-post-context');
     if (!box) return;
     const post = flowPost();
     if (!post) {
         box.innerHTML = `
-            <div class="flow-context-title">Selected Instagram post</div>
-            <div class="flow-context-text">The flow will be connected to the post you just opened.</div>`;
+            <div class="flow-context-title">${esc(flow?.lead_magnet_title || 'Prepared lead flow')}</div>
+            <div class="flow-context-text">This is a reusable Instagram comment-to-DM flow. Select it while drafting an Instagram reel or carousel so the post CTA matches this keyword and promise.</div>`;
         return;
     }
 
@@ -3672,15 +3726,17 @@ async function createFlowFromSetup() {
 }
 
 function copyFlow() {
+    const flow = S.flowData || {};
+    const setup = flow.manychat_setup || {};
     const json = document.getElementById('flow-json').textContent || '{}';
     const text = [
-        `Trigger Keyword: ${document.getElementById('flow-kw').textContent}`,
-        `\nPublic Reply:\n${document.getElementById('flow-public').textContent}`,
-        `\nOpening Button:\n${document.getElementById('flow-open-button').textContent}`,
-        `\nLink Button:\n${document.getElementById('flow-link-button').textContent}`,
-        `\nFirst Message:\n${document.getElementById('flow-first').textContent}`,
-        `\nQualification Question:\n${document.getElementById('flow-qual').textContent}`,
-        `\nFollow-Up:\n${document.getElementById('flow-followup').textContent}`,
+        `Trigger Keyword: ${flow.trigger_keyword || setup.trigger_keyword || ''}`,
+        `\nPublic Reply:\n${flow.public_comment_reply || setup.public_comment_reply || ''}`,
+        `\nOpening Button:\n${flow.opening_dm_button_label || setup.opening_dm_button_label || ''}`,
+        `\nLink Button:\n${flow.link_button_label || setup.link_button_label || ''}`,
+        `\nOpening DM:\n${flow.first_message || ''}`,
+        `\nQualification Question:\n${flow.qualification_question || ''}`,
+        `\nFollow-Up:\n${flow.follow_up || ''}`,
         `\n\nManyChat Setup JSON:\n${json}`,
     ].join('');
     copyTxt(text);

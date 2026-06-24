@@ -1084,6 +1084,11 @@ def create_conversion_flow(
 
         lead_magnet = None
         selected_lead_magnet_id = request.get("lead_magnet_id") or context.get("post_lead_magnet_id")
+        if not selected_lead_magnet_id:
+            raise HTTPException(
+                status_code=400,
+                detail="Prepare a lead flow resource first, then select it while drafting the post",
+            )
         if selected_lead_magnet_id:
             try:
                 lead_magnet = get_lead_magnet(
@@ -1094,12 +1099,8 @@ def create_conversion_flow(
             except ValueError:
                 raise HTTPException(status_code=404, detail="Lead magnet not found")
 
-        context = attach_lead_magnet_context(
-            context,
-            lead_magnet=lead_magnet,
-            custom_offer=request,
-        )
-        flow = flow_from_lead_magnet(lead_magnet) if lead_magnet else run_conversion_agent(context)
+        context = attach_lead_magnet_context(context, lead_magnet=lead_magnet)
+        flow = flow_from_lead_magnet(lead_magnet)
         flow_id = save_manychat_flow(
             conn,
             post_id,
@@ -1158,6 +1159,27 @@ def get_conversion_flow(
                 WHERE post_id = %s
             """, (post_id,))
             row = cur.fetchone()
+
+        if not row:
+            selected_lead_magnet_id = context.get("post_lead_magnet_id")
+            if not selected_lead_magnet_id:
+                return {"error": "No prepared lead flow is attached to this post"}
+
+            try:
+                lead_magnet = get_lead_magnet(
+                    conn,
+                    selected_lead_magnet_id,
+                    context["user_profile_id"],
+                )
+            except ValueError:
+                return {"error": "Attached lead flow resource was not found"}
+
+            return {
+                **flow_from_lead_magnet(lead_magnet),
+                "id": None,
+                "lead_magnet_id": lead_magnet["id"],
+                "lead_magnet_title": lead_magnet["title"],
+            }
     finally:
         conn.close()
 

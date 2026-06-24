@@ -1,6 +1,20 @@
 import uuid
 from psycopg.types.json import Jsonb
 
+from db.conversion_repository import build_manychat_setup
+
+
+def _has_flow_details(data: dict) -> bool:
+    return any(data.get(key) for key in (
+        "suggested_keyword",
+        "public_comment_reply",
+        "delivery_message",
+        "opening_dm_button_label",
+        "link_button_label",
+        "qualification_question",
+        "follow_up_cta",
+    ))
+
 
 def list_lead_magnets(conn, profile_id: str) -> list:
     with conn.cursor() as cur:
@@ -121,9 +135,10 @@ def save_lead_magnet(conn, profile_id: str, data: dict, is_primary: bool = False
                 qualification_question,
                 follow_up_cta,
                 preferred_post_goal,
+                manychat_setup,
                 is_primary
             )
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
         """, (
             lead_magnet_id,
             profile_id,
@@ -139,6 +154,7 @@ def save_lead_magnet(conn, profile_id: str, data: dict, is_primary: bool = False
             data.get("qualification_question"),
             data.get("follow_up_cta"),
             data.get("preferred_post_goal"),
+            Jsonb(build_manychat_setup(data) if _has_flow_details(data) else {}),
             is_primary,
         ))
 
@@ -160,7 +176,8 @@ def update_lead_magnet(conn, lead_magnet_id: str, profile_id: str, data: dict) -
                 link_button_label = %s,
                 qualification_question = %s,
                 follow_up_cta = %s,
-                preferred_post_goal = %s
+                preferred_post_goal = %s,
+                manychat_setup = %s
             WHERE id = %s AND user_profile_id = %s
         """, (
             data["title"],
@@ -175,6 +192,7 @@ def update_lead_magnet(conn, lead_magnet_id: str, profile_id: str, data: dict) -
             data.get("qualification_question"),
             data.get("follow_up_cta"),
             data.get("preferred_post_goal"),
+            Jsonb(build_manychat_setup(data) if _has_flow_details(data) else {}),
             lead_magnet_id,
             profile_id,
         ))
@@ -184,7 +202,33 @@ def update_lead_magnet(conn, lead_magnet_id: str, profile_id: str, data: dict) -
 
 
 def update_lead_magnet_flow(conn, lead_magnet_id: str, profile_id: str, flow: dict) -> None:
-    setup = flow.get("manychat_setup") or {}
+    with conn.cursor() as cur:
+        cur.execute("""
+            SELECT title, url, description, preferred_post_goal
+            FROM lead_magnets
+            WHERE id = %s AND user_profile_id = %s
+        """, (lead_magnet_id, profile_id))
+        existing = cur.fetchone()
+
+    if not existing:
+        raise ValueError("Lead magnet not found")
+
+    final_data = {
+        "title": existing[0],
+        "url": existing[1],
+        "description": existing[2],
+        "preferred_post_goal": existing[3],
+        "suggested_keyword": flow.get("trigger_keyword"),
+        "trigger_type": (flow.get("manychat_setup") or {}).get("comment_trigger_mode") or "specific_word",
+        "public_comment_reply": flow.get("public_comment_reply"),
+        "delivery_message": flow.get("first_message"),
+        "opening_dm_button_label": flow.get("opening_dm_button_label"),
+        "link_button_label": flow.get("link_button_label"),
+        "qualification_question": flow.get("qualification_question"),
+        "follow_up_cta": flow.get("follow_up"),
+    }
+    setup = build_manychat_setup(final_data)
+
     with conn.cursor() as cur:
         cur.execute("""
             UPDATE lead_magnets
@@ -199,14 +243,14 @@ def update_lead_magnet_flow(conn, lead_magnet_id: str, profile_id: str, flow: di
                 manychat_setup = %s
             WHERE id = %s AND user_profile_id = %s
         """, (
-            flow.get("trigger_keyword"),
-            setup.get("comment_trigger_mode") or "specific_word",
-            flow.get("public_comment_reply"),
-            flow.get("first_message"),
-            flow.get("opening_dm_button_label"),
-            flow.get("link_button_label"),
-            flow.get("qualification_question"),
-            flow.get("follow_up"),
+            final_data["suggested_keyword"],
+            final_data["trigger_type"],
+            final_data["public_comment_reply"],
+            final_data["delivery_message"],
+            final_data["opening_dm_button_label"],
+            final_data["link_button_label"],
+            final_data["qualification_question"],
+            final_data["follow_up_cta"],
             Jsonb(setup),
             lead_magnet_id,
             profile_id,
