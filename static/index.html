@@ -387,6 +387,52 @@
         .form-section-head { margin-bottom: 24px; }
         .form-section-head h2 { font-size: 24px; font-weight: 700; margin-bottom: 4px; }
         .form-section-head p { color: var(--text-3); font-size: 15px; }
+        .form-panel.standalone {
+            display: block;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--r);
+            padding: 28px;
+        }
+        .flow-form-head {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 18px;
+            margin-bottom: 24px;
+        }
+        .flow-form-heading {
+            display: flex;
+            gap: 14px;
+            align-items: flex-start;
+            min-width: 0;
+        }
+        .flow-form-icon {
+            width: 42px;
+            height: 42px;
+            border-radius: 16px;
+            display: grid;
+            place-items: center;
+            flex-shrink: 0;
+            background: var(--pink-soft);
+            color: var(--pink);
+        }
+        .flow-form-actions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+        }
+        .lead-resource-card {
+            min-height: 228px;
+        }
+        .lead-resource-url {
+            margin-top: auto;
+            padding-top: 10px;
+            font-size: 13px;
+            color: var(--text-4);
+            overflow-wrap: anywhere;
+        }
 
         /* ═══════════════════════════════════
              LOADING OVERLAY
@@ -569,6 +615,24 @@
             color: var(--text-4); margin-bottom: 3px;
         }
         .profile-field-val { font-size: 15px; color: var(--text-2); line-height: 1.5; }
+        .profile-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--r);
+            padding: 18px;
+        }
+        .profile-card-header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+        .profile-card-title {
+            font-size: 18px;
+            font-weight: 800;
+            color: var(--text);
+        }
 
 
         /* Content Ideas */
@@ -870,6 +934,53 @@
             border-radius: var(--r-sm);
             padding: 14px;
             margin-bottom: 18px;
+        }
+        .flow-context-card {
+            background: #fbfdf8;
+            border: 1px solid var(--border);
+            border-radius: var(--r-sm);
+            padding: 14px;
+            margin-bottom: 16px;
+        }
+        .flow-context-title {
+            font-size: 15px;
+            font-weight: 800;
+            line-height: 1.35;
+            color: var(--text);
+            margin-bottom: 6px;
+        }
+        .flow-context-meta {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+            margin-bottom: 8px;
+        }
+        .flow-context-text {
+            font-size: 14px;
+            color: var(--text-3);
+            line-height: 1.55;
+        }
+        .flow-resource-preview {
+            background: #ffffff;
+            border: 1px solid var(--border);
+            border-radius: var(--r-sm);
+            padding: 12px 14px;
+            margin: -4px 0 16px;
+        }
+        .flow-resource-preview-title {
+            font-size: 14px;
+            font-weight: 800;
+            color: var(--text);
+            margin-bottom: 4px;
+        }
+        .flow-resource-preview-text {
+            font-size: 14px;
+            color: var(--text-3);
+            line-height: 1.55;
+            overflow-wrap: anywhere;
+        }
+        .flow-custom-fields.is-muted {
+            opacity: 0.48;
         }
         .flow-json {
             background: #f8fbf3;
@@ -1453,33 +1564,6 @@
                     </div>
                 </div>
 
-                <div class="form-section-head">
-                    <h2>Optional Guide</h2>
-                    <p>Add a lead magnet if this profile already has one. You can also add it later while creating a lead flow.</p>
-                </div>
-
-                <div class="grid-2">
-                    <div class="form-group">
-                        <label>Guide Title</label>
-                        <input type="text" id="f-guide-title" placeholder="e.g. Free flower care checklist" />
-                    </div>
-                    <div class="form-group">
-                        <label>Guide URL</label>
-                        <input type="text" id="f-guide-url" placeholder="https://..." />
-                    </div>
-                </div>
-
-                <div class="grid-2">
-                    <div class="form-group">
-                        <label>Suggested Keyword</label>
-                        <input type="text" id="f-guide-keyword" placeholder="e.g. GUIDE" />
-                    </div>
-                    <div class="form-group">
-                        <label>Delivery Message</label>
-                        <input type="text" id="f-guide-message" placeholder="Here is the guide I mentioned." />
-                    </div>
-                </div>
-
                 <button class="btn btn-primary btn-lg btn-full" onclick="createProfile()">
                     Create Profile
                 </button>
@@ -1523,6 +1607,7 @@
             <button class="tab-btn active" onclick="switchTab('pane-analysis', this)">Audience Notes</button>
             <button class="tab-btn" onclick="switchTab('pane-ideas', this)">Content Ideas</button>
             <button class="tab-btn" onclick="switchTab('pane-posts', this)">My Posts</button>
+            <button class="tab-btn" onclick="switchTab('pane-flows', this)">Lead Flows</button>
         </div>
 
         <!-- AUDIENCE ANALYSIS -->
@@ -1596,6 +1681,20 @@
                 </div>
             </div>
             <div id="posts-container"></div>
+        </div>
+
+        <!-- LEAD FLOWS -->
+        <div class="tab-pane" id="pane-flows">
+            <div class="ideas-toolbar">
+                <div class="ideas-toolbar-left">
+                    <h3>Lead Flows</h3>
+                    <p>Optional Instagram comment-to-DM setup. Add a guide, booking link, or offer link when you are ready.</p>
+                </div>
+                <div class="ideas-toolbar-right">
+                    <span class="count-pill" id="lead-magnets-count">0 resources</span>
+                </div>
+            </div>
+            <div id="lead-flows-panel"></div>
         </div>
     </section>
 
@@ -1815,31 +1914,35 @@
             </button>
         </div>
         <div class="modal-body">
-            <p style="font-size:13px; color:var(--text-3); margin-bottom:18px;">
-                Use this as a simple comment-to-message flow for the selected post.
+            <p style="font-size:15px; color:var(--text-3); margin-bottom:18px;">
+                Prepare the Instagram comment keyword, public reply, DM text, and ManyChat setup notes.
             </p>
+            <div id="flow-post-context" class="flow-context-card"></div>
             <div id="flow-setup">
                 <div class="flow-setup-card">
                     <div class="form-group">
-                        <label>Lead Magnet</label>
-                        <select id="flow-lead-magnet">
+                        <label>Flow Resource</label>
+                        <select id="flow-lead-magnet" onchange="renderSelectedLeadMagnetPreview()">
                             <option value="">No saved guide</option>
                         </select>
-                        <span class="form-hint">Choose a saved guide, or leave empty for a goal-based flow.</span>
+                        <span class="form-hint">Choose a saved guide/resource, or use the fields below for a simple one-time next step.</span>
                     </div>
-                    <div class="grid-2">
-                        <div class="form-group">
-                            <label>One-Time Offer Title</label>
-                            <input type="text" id="flow-custom-title" placeholder="e.g. booking details, product link, checklist" />
+                    <div id="flow-resource-preview" class="flow-resource-preview"></div>
+                    <div id="flow-custom-fields" class="flow-custom-fields">
+                        <div class="grid-2">
+                            <div class="form-group">
+                                <label>One-Time Offer Title</label>
+                                <input type="text" id="flow-custom-title" placeholder="e.g. booking details, product link, checklist" />
+                            </div>
+                            <div class="form-group">
+                                <label>One-Time URL</label>
+                                <input type="text" id="flow-custom-url" placeholder="https://..." />
+                            </div>
                         </div>
                         <div class="form-group">
-                            <label>One-Time URL</label>
-                            <input type="text" id="flow-custom-url" placeholder="https://..." />
+                            <label>Offer Notes</label>
+                            <textarea id="flow-custom-description" placeholder="What should this flow send or invite people to do?"></textarea>
                         </div>
-                    </div>
-                    <div class="form-group">
-                        <label>Offer Notes</label>
-                        <textarea id="flow-custom-description" placeholder="What should this flow send or invite people to do?"></textarea>
                     </div>
                 </div>
             </div>
@@ -2002,30 +2105,6 @@
                     <input type="text" id="e-goal" />
                 </div>
             </div>
-            <div class="form-section-head">
-                <h2>Primary Guide</h2>
-                <p>Optional: a reusable guide or resource for Instagram lead flows.</p>
-            </div>
-            <div class="grid-2">
-                <div class="form-group">
-                    <label>Guide Title</label>
-                    <input type="text" id="e-guide-title" />
-                </div>
-                <div class="form-group">
-                    <label>Guide URL</label>
-                    <input type="text" id="e-guide-url" />
-                </div>
-            </div>
-            <div class="grid-2">
-                <div class="form-group">
-                    <label>Suggested Keyword</label>
-                    <input type="text" id="e-guide-keyword" />
-                </div>
-                <div class="form-group">
-                    <label>Delivery Message</label>
-                    <input type="text" id="e-guide-message" />
-                </div>
-            </div>
         </div>
         <div class="modal-foot">
             <button class="btn btn-ghost" onclick="closeModal('modal-edit')">Cancel</button>
@@ -2065,6 +2144,7 @@ const S = {
     postStatusFilter: 'all',
     postEditId: null,
     postEditSyncing: false,
+    leadMagnetEditId: null,
     detailPostId: null,
     detailPost:   null,
     flowPostId:   null,
@@ -2324,7 +2404,6 @@ async function createProfile() {
 
         S.profileId = res.profile_id || profileId;
         localStorage.setItem('ma_pid', S.profileId);
-        await savePrimaryLeadMagnetFromCreateForm(S.profileId);
 
         await Promise.all([fetchAllData(S.profileId), fetchUserProfiles()]);
         renderDash();
@@ -2336,46 +2415,6 @@ async function createProfile() {
         hideLoading();
         toast(e.message || 'Something went wrong', 'error');
     }
-}
-
-function guidePayload(prefix) {
-    const title = val(`${prefix}-guide-title`);
-    if (!title) return null;
-    return {
-        title,
-        url: val(`${prefix}-guide-url`),
-        suggested_keyword: val(`${prefix}-guide-keyword`),
-        delivery_message: val(`${prefix}-guide-message`),
-        description: '',
-        follow_up_cta: '',
-    };
-}
-
-async function savePrimaryLeadMagnetFromCreateForm(profileId) {
-    const payload = guidePayload('f');
-    if (!payload) return;
-    const res = await api('POST', `/user-profiles/${profileId}/lead-magnets`, payload);
-    if (res.error) throw new Error(res.error);
-}
-
-async function savePrimaryLeadMagnetFromEditForm(profileId) {
-    const payload = guidePayload('e');
-    const primary = S.leadMagnets[0];
-
-    if (!payload) {
-        if (primary) {
-            const res = await api('DELETE', `/user-profiles/${profileId}/lead-magnets/${primary.id}`);
-            if (res.error) throw new Error(res.error);
-        }
-        return;
-    }
-
-    const path = primary
-        ? `/user-profiles/${profileId}/lead-magnets/${primary.id}`
-        : `/user-profiles/${profileId}/lead-magnets`;
-    const method = primary ? 'PUT' : 'POST';
-    const res = await api(method, path, payload);
-    if (res.error) throw new Error(res.error);
 }
 
 function renderLoadPanel() {
@@ -2462,6 +2501,7 @@ function renderDash() {
     renderProfileGrid();
     renderIdeas();
     renderPosts();
+    renderLeadFlows();
 
     document.getElementById('hdr-pill-text').textContent = p?.profile_name || p?.niche || 'Active Profile';
 }
@@ -2508,7 +2548,6 @@ function iconSvg(id) {
 function renderProfileGrid() {
     const p = S.profile;
     if (!p) return;
-    const guide = S.leadMagnets[0];
     const fields = [
         { label:'Profile Name',    val: p.profile_name },
         { label:'Niche',           val: p.niche },
@@ -2522,13 +2561,152 @@ function renderProfileGrid() {
         { label:'Locale Notes',    val: p.locale_notes },
         { label:'Tone',            val: p.tone },
         { label:'Goal',            val: p.goal },
-        { label:'Primary Guide',   val: guide ? [guide.title, guide.url].filter(Boolean).join(' · ') : '' },
     ];
     document.getElementById('profile-grid').innerHTML = fields.map(f => `
         <div class="profile-field">
             <div class="profile-field-label">${f.label}</div>
             <div class="profile-field-val">${esc(f.val || '—')}</div>
         </div>`).join('');
+}
+
+function renderLeadFlows() {
+    const panel = document.getElementById('lead-flows-panel');
+    if (!panel) return;
+
+    document.getElementById('lead-magnets-count').textContent = `${S.leadMagnets.length} ${S.leadMagnets.length === 1 ? 'resource' : 'resources'}`;
+    const editing = S.leadMagnetEditId ? S.leadMagnets.find(item => String(item.id) === String(S.leadMagnetEditId)) : null;
+
+    panel.innerHTML = `
+        <div class="form-panel standalone" style="margin-bottom:18px">
+            <div class="flow-form-head">
+                <div class="flow-form-heading">
+                    <div class="flow-form-icon">${iconSvg('icon-message')}</div>
+                    <div class="form-section-head" style="margin-bottom:0">
+                        <h2>${editing ? 'Edit Flow Resource' : 'Add Flow Resource'}</h2>
+                        <p>Optional. Save guides, booking links, or offer pages only when you want Instagram comment-to-DM automations.</p>
+                    </div>
+                </div>
+                <div class="flow-form-actions">
+                    ${editing ? `<button class="btn btn-ghost btn-sm" onclick="cancelLeadMagnetEdit()">Cancel Edit</button>` : ''}
+                </div>
+            </div>
+            <div class="grid-2">
+                <div class="form-group">
+                    <label>Resource Title</label>
+                    <input type="text" id="flow-resource-title" placeholder="e.g. Free bouquet care guide" value="${esc(editing?.title || '')}">
+                    <span class="form-hint">What the user receives after commenting.</span>
+                </div>
+                <div class="form-group">
+                    <label>URL</label>
+                    <input type="text" id="flow-resource-url" placeholder="https://..." value="${esc(editing?.url || '')}">
+                    <span class="form-hint">Guide, booking page, product page, or any useful destination.</span>
+                </div>
+            </div>
+            <div class="grid-2">
+                <div class="form-group">
+                    <label>Suggested Keyword</label>
+                    <input type="text" id="flow-resource-keyword" placeholder="e.g. GUIDE" value="${esc(editing?.suggested_keyword || '')}">
+                    <span class="form-hint">The word people should comment on Instagram.</span>
+                </div>
+                <div class="form-group">
+                    <label>Delivery Message</label>
+                    <input type="text" id="flow-resource-message" placeholder="Here is the guide I mentioned." value="${esc(editing?.delivery_message || '')}">
+                    <span class="form-hint">A short first DM after the comment.</span>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Description</label>
+                <textarea id="flow-resource-description" rows="3" placeholder="What this resource helps people do">${esc(editing?.description || '')}</textarea>
+                <span class="form-hint">A little context helps the flow agent write a better reply and follow-up.</span>
+            </div>
+            <button class="btn btn-primary btn-lg" onclick="saveLeadMagnet()">${editing ? 'Save Resource' : 'Add Resource'}</button>
+        </div>
+
+        ${S.leadMagnets.length ? `
+            <div class="ideas-grid">
+                ${S.leadMagnets.map(item => `
+                    <div class="idea-card lead-resource-card ${Number(item.is_primary) ? 'idea-green' : 'idea-pink'}">
+                        <div class="idea-topic-badge">${esc(item.suggested_keyword || 'RESOURCE')}</div>
+                        <div class="idea-title">${esc(item.title || 'Untitled resource')}</div>
+                        <div class="idea-hook">${esc(item.description || item.delivery_message || 'Use this as an optional Instagram DM resource.')}</div>
+                        ${item.url ? `<div class="lead-resource-url">${esc(item.url)}</div>` : ''}
+                        <div class="idea-card-actions">
+                            <button class="btn btn-secondary btn-sm" onclick="editLeadMagnet('${esc(item.id)}')">Edit</button>
+                            <button class="btn btn-danger btn-sm" onclick="deleteLeadMagnet('${esc(item.id)}')">Delete</button>
+                        </div>
+                    </div>
+                `).join('')}
+            </div>
+        ` : `
+            <div class="empty">
+                <div class="empty-title">No flow resources yet</div>
+                <div class="empty-desc">You can skip this. Draft posts still work normally, and LinkedIn posts do not need lead flows.</div>
+            </div>
+        `}
+    `;
+}
+
+function leadMagnetPayloadFromForm() {
+    return {
+        title: val('flow-resource-title'),
+        url: val('flow-resource-url'),
+        suggested_keyword: val('flow-resource-keyword'),
+        delivery_message: val('flow-resource-message'),
+        description: val('flow-resource-description'),
+        follow_up_cta: '',
+    };
+}
+
+async function refreshLeadMagnets() {
+    S.leadMagnets = await api('GET', `/user-profiles/${S.profileId}/lead-magnets`);
+    if (!Array.isArray(S.leadMagnets)) S.leadMagnets = [];
+    renderLeadFlows();
+}
+
+async function saveLeadMagnet() {
+    const payload = leadMagnetPayloadFromForm();
+    if (!payload.title) {
+        toast('Please add a resource title', 'error');
+        return;
+    }
+
+    const editingId = S.leadMagnetEditId;
+    const path = editingId
+        ? `/user-profiles/${S.profileId}/lead-magnets/${editingId}`
+        : `/user-profiles/${S.profileId}/lead-magnets`;
+    const method = editingId ? 'PUT' : 'POST';
+
+    try {
+        const res = await api(method, path, payload);
+        if (res.error) throw new Error(res.error);
+        S.leadMagnetEditId = null;
+        await refreshLeadMagnets();
+        toast(editingId ? 'Resource updated' : 'Resource added', 'success');
+    } catch (e) {
+        toast(e.message || 'Could not save resource', 'error');
+    }
+}
+
+function editLeadMagnet(id) {
+    S.leadMagnetEditId = id;
+    renderLeadFlows();
+}
+
+function cancelLeadMagnetEdit() {
+    S.leadMagnetEditId = null;
+    renderLeadFlows();
+}
+
+async function deleteLeadMagnet(id) {
+    if (!confirm('Delete this flow resource?')) return;
+    const res = await api('DELETE', `/user-profiles/${S.profileId}/lead-magnets/${id}`);
+    if (res.error) {
+        toast(res.error || 'Could not delete resource', 'error');
+        return;
+    }
+    if (String(S.leadMagnetEditId) === String(id)) S.leadMagnetEditId = null;
+    await refreshLeadMagnets();
+    toast('Resource deleted', 'success');
 }
 
 function renderIdeas() {
@@ -3150,9 +3328,11 @@ function renderFlowSetup() {
     document.getElementById('btn-flow-create').style.display = '';
     document.getElementById('btn-flow-copy').style.display = 'none';
 
+    renderFlowPostContext();
+
     const select = document.getElementById('flow-lead-magnet');
     select.innerHTML = `
-        <option value="">No saved guide</option>
+        <option value="">No saved resource - use custom next step</option>
         ${S.leadMagnets.map(guide => `
             <option value="${esc(guide.id)}">${esc(guide.title)}</option>
         `).join('')}`;
@@ -3160,10 +3340,12 @@ function renderFlowSetup() {
     document.getElementById('flow-custom-title').value = '';
     document.getElementById('flow-custom-url').value = '';
     document.getElementById('flow-custom-description').value = '';
+    renderSelectedLeadMagnetPreview();
 }
 
 function renderFlowResult(flow) {
     S.flowData = flow;
+    renderFlowPostContext();
     document.getElementById('flow-setup').style.display = 'none';
     document.getElementById('flow-result').style.display = '';
     document.getElementById('btn-flow-create').style.display = 'none';
@@ -3175,6 +3357,59 @@ function renderFlowResult(flow) {
     document.getElementById('flow-qual').textContent    = flow.qualification_question || '—';
     document.getElementById('flow-followup').textContent = flow.follow_up      || '';
     document.getElementById('flow-json').textContent = JSON.stringify(flow.manychat_setup || {}, null, 2);
+}
+
+function flowPost() {
+    return S.posts.find(p => String(p.id) === String(S.flowPostId))
+        || (S.detailPost && String(S.detailPost.id) === String(S.flowPostId) ? S.detailPost : null)
+        || S.genPost;
+}
+
+function renderFlowPostContext() {
+    const box = document.getElementById('flow-post-context');
+    if (!box) return;
+    const post = flowPost();
+    if (!post) {
+        box.innerHTML = `
+            <div class="flow-context-title">Selected Instagram post</div>
+            <div class="flow-context-text">The flow will be connected to the post you just opened.</div>`;
+        return;
+    }
+
+    box.innerHTML = `
+        <div class="flow-context-meta">
+            <span class="tag tag-platform">${esc(post.platform || 'instagram')}</span>
+            ${post.instagram_content_type ? `<span class="tag tag-format">${esc(post.instagram_content_type)}</span>` : ''}
+            ${post.post_goal ? `<span class="tag tag-goal">${esc(post.post_goal)}</span>` : ''}
+        </div>
+        <div class="flow-context-title">${esc(post.hook || 'Selected Instagram post')}</div>
+        <div class="flow-context-text">${esc((post.final_text || post.body || '').slice(0, 220))}${(post.final_text || post.body || '').length > 220 ? '...' : ''}</div>`;
+}
+
+function renderSelectedLeadMagnetPreview() {
+    const preview = document.getElementById('flow-resource-preview');
+    const customFields = document.getElementById('flow-custom-fields');
+    if (!preview) return;
+
+    const id = val('flow-lead-magnet');
+    const guide = S.leadMagnets.find(item => String(item.id) === String(id));
+    if (!guide) {
+        preview.innerHTML = `
+            <div class="flow-resource-preview-title">No saved resource selected</div>
+            <div class="flow-resource-preview-text">Use the fields below for a simple flow, such as booking details, a product link, or a first-step conversation.</div>`;
+        if (customFields) customFields.style.display = '';
+        return;
+    }
+
+    preview.innerHTML = `
+        <div class="flow-resource-preview-title">${esc(guide.title || 'Saved resource')}</div>
+        <div class="flow-resource-preview-text">
+            ${guide.suggested_keyword ? `<strong>Keyword:</strong> ${esc(guide.suggested_keyword)}<br>` : ''}
+            ${guide.url ? `<strong>URL:</strong> ${esc(guide.url)}<br>` : ''}
+            ${guide.delivery_message ? `<strong>DM:</strong> ${esc(guide.delivery_message)}<br>` : ''}
+            ${esc(guide.description || 'This saved resource will shape the keyword, DM, and follow-up.')}
+        </div>`;
+    if (customFields) customFields.style.display = 'none';
 }
 
 async function createFlowFromSetup() {
@@ -3233,12 +3468,6 @@ function openEditModalFill() {
     document.getElementById('e-locale-notes').value  = p.locale_notes    || '';
     document.getElementById('e-tone').value          = p.tone            || '';
     document.getElementById('e-goal').value          = p.goal            || '';
-
-    const guide = S.leadMagnets[0] || {};
-    document.getElementById('e-guide-title').value   = guide.title || '';
-    document.getElementById('e-guide-url').value     = guide.url || '';
-    document.getElementById('e-guide-keyword').value = guide.suggested_keyword || '';
-    document.getElementById('e-guide-message').value = guide.delivery_message || '';
 }
 
 document.getElementById('modal-edit').addEventListener('transitionend', () => {});
@@ -3270,7 +3499,6 @@ async function updateProfile() {
     showLoading('Updating your profile…', loadSteps('update'), { logo: true, kind: 'update' });
 
     try {
-        await savePrimaryLeadMagnetFromEditForm(S.profileId);
         await api('PUT', `/user-profiles/${S.profileId}`, body);
         await fetchAllData(S.profileId);
         renderDash();

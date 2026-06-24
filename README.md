@@ -83,6 +83,10 @@ Analyzes a creator profile and generates:
 * Offer
 * Target Audience
 * Expertise
+* Personal Touch
+* Market Scope
+* Primary Market
+* Currency
 * Tone
 * Goal
 
@@ -568,6 +572,10 @@ DELETE /posts/{post_id}
 ---
 
 ### Conversion
+
+Lead flow setup is optional and happens after the main profile workflow. A user can create a profile, review audience analysis, generate ideas, and draft posts without adding any lead magnet or ManyChat resource.
+
+In the frontend, reusable flow resources are managed from the **Lead Flows** dashboard tab. These resources are used only for Instagram comment-to-DM flows. LinkedIn posts and Instagram stories can still be drafted without conversion flows.
 
 #### Profile Lead Magnets
 
