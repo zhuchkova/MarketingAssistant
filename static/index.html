@@ -1088,6 +1088,50 @@
         @media (max-width: 900px) {
             .flow-preview-layout { grid-template-columns: 1fr; }
         }
+        .lead-resource-card {
+            position: relative;
+        }
+        .lead-keyword-badge {
+            position: absolute;
+            top: 18px;
+            right: 18px;
+            background: var(--pink-soft);
+            border: 1px solid #f7c8d9;
+            color: var(--warning);
+            border-radius: 999px;
+            padding: 5px 10px;
+            font-size: 11px;
+            font-weight: 900;
+            letter-spacing: .04em;
+            text-transform: uppercase;
+        }
+        .lead-card-hover-preview {
+            display: none;
+            margin-top: 14px;
+        }
+        .lead-resource-card:hover .lead-card-hover-preview {
+            display: block;
+        }
+        .lead-card-hover-preview .dm-phone {
+            min-height: 260px;
+            border-width: 5px;
+            border-radius: 22px;
+            padding: 12px 8px 14px;
+            box-shadow: none;
+        }
+        .lead-card-hover-preview .dm-phone-head {
+            padding-bottom: 10px;
+            margin-bottom: 12px;
+        }
+        .lead-card-hover-preview .dm-bubble {
+            margin-left: 18px;
+            font-size: 12px;
+            padding: 9px 10px;
+        }
+        .lead-card-hover-preview .dm-user-reply {
+            font-size: 12px;
+            max-width: 76%;
+        }
 
         /* Warning banner */
         .warn-banner {
@@ -2721,7 +2765,8 @@ function renderLeadFlows() {
             </details>
             <div class="flow-form-actions">
                 <button class="btn btn-primary btn-lg" onclick="saveLeadMagnet()">${editing ? 'Save Resource' : 'Add Resource'}</button>
-                ${S.leadMagnets.length ? `<button class="btn btn-secondary btn-lg" onclick="generateAllLeadFlows()">Generate All Flows</button>` : ''}
+                <button class="btn btn-secondary btn-lg" onclick="saveLeadMagnet(true)">${editing ? 'Save + Regenerate Flow' : 'Add + Generate Flow'}</button>
+                ${S.leadMagnets.length ? `<button class="btn btn-secondary btn-lg" onclick="generateAllLeadFlows()">Regenerate All Flows</button>` : ''}
             </div>
         </div>
 
@@ -2729,6 +2774,7 @@ function renderLeadFlows() {
             <div class="ideas-grid">
                 ${S.leadMagnets.map(item => `
                     <div class="idea-card lead-resource-card ${Number(item.is_primary) ? 'idea-green' : 'idea-pink'}">
+                        ${item.suggested_keyword ? `<div class="lead-keyword-badge">${esc(item.suggested_keyword)}</div>` : ''}
                         <div class="idea-topic-badge">${esc(item.suggested_keyword || 'RESOURCE')}</div>
                         <div class="idea-title">${esc(item.title || 'Untitled resource')}</div>
                         <div class="idea-hook">${esc(item.description || item.delivery_message || 'Use this as an optional Instagram DM resource.')}</div>
@@ -2737,6 +2783,7 @@ function renderLeadFlows() {
                         ${item.public_comment_reply ? `<div class="idea-hook"><strong>Public reply:</strong> ${esc(item.public_comment_reply)}</div>` : ''}
                         ${item.delivery_message ? `<div class="idea-hook"><strong>Opening DM:</strong> ${esc(item.delivery_message)}</div>` : ''}
                         ${item.opening_dm_button_label ? `<div class="idea-angle">${esc(item.opening_dm_button_label)}</div>` : ''}
+                        ${item.suggested_keyword && item.delivery_message ? `<div class="lead-card-hover-preview">${leadFlowCardPreviewHtml(item)}</div>` : ''}
                         <div class="idea-card-actions">
                             <button class="btn btn-secondary btn-sm" onclick="viewLeadFlowResource('${esc(item.id)}')">View</button>
                             <button class="btn btn-secondary btn-sm" onclick="editLeadMagnet('${esc(item.id)}')">Edit</button>
@@ -2779,7 +2826,7 @@ async function refreshLeadMagnets() {
     renderGenerationLeadMagnetSelect();
 }
 
-async function saveLeadMagnet() {
+async function saveLeadMagnet(generateAfterSave = false) {
     const payload = leadMagnetPayloadFromForm();
     if (!payload.title) {
         toast('Please add a resource title', 'error');
@@ -2795,9 +2842,13 @@ async function saveLeadMagnet() {
     try {
         const res = await api(method, path, payload);
         if (res.error) throw new Error(res.error);
+        const savedId = editingId || res.lead_magnet_id;
         S.leadMagnetEditId = null;
         await refreshLeadMagnets();
         toast(editingId ? 'Resource updated' : 'Resource added', 'success');
+        if (generateAfterSave && savedId) {
+            await generateLeadFlow(savedId);
+        }
     } catch (e) {
         toast(e.message || 'Could not save resource', 'error');
     }
@@ -3605,29 +3656,48 @@ function leadFlowPreviewHtml(flow) {
     const followUp = flow.follow_up || '';
     const url = setup.lead_magnet_url || '';
     return `
-        <div class="flow-preview-layout">
-            <div class="flow-preview-panel">
-                <div class="flow-preview-title">${esc(flow.lead_magnet_title || 'Prepared lead flow')}</div>
-                <div class="flow-preview-desc">Use this setup in ManyChat for Instagram comments. The post CTA should ask people to comment the keyword.</div>
-                <div class="kw-badge">Trigger keyword: <strong>${esc(keyword)}</strong></div>
-                <div class="kw-badge">Public reply: <strong>${esc(publicReply)}</strong></div>
-                <div class="kw-badge">Opening button: <strong>${esc(openingButton)}</strong></div>
-                ${url ? `<div class="kw-badge">Link button: <strong>${esc(linkButton)}</strong></div>` : ''}
-                ${question ? `<div class="chat-msg"><div class="chat-avatar">?</div><div class="chat-bubble"><div class="chat-bubble-label">Optional Question</div><div class="chat-bubble-text">${esc(question)}</div></div></div>` : ''}
-                ${followUp ? `<div class="chat-msg"><div class="chat-avatar">+</div><div class="chat-bubble"><div class="chat-bubble-label">Optional Follow-Up</div><div class="chat-bubble-text">${esc(followUp)}</div></div></div>` : ''}
+        ${flowBadgesHtml(keyword, publicReply, openingButton, linkButton, url)}
+        ${flowPhoneHtml({ firstMessage, openingButton, linkButton, url, question, followUp })}`;
+}
+
+function leadFlowCardPreviewHtml(resource) {
+    const flow = leadFlowFromResource(resource);
+    const setup = flow.manychat_setup || {};
+    return flowPhoneHtml({
+        firstMessage: flow.first_message,
+        openingButton: flow.opening_dm_button_label || setup.opening_dm_button_label,
+        linkButton: flow.link_button_label || setup.link_button_label,
+        url: setup.lead_magnet_url || '',
+        question: null,
+        followUp: null,
+    });
+}
+
+function flowBadgesHtml(keyword, publicReply, openingButton, linkButton, url) {
+    return `
+        <div style="display:flex; flex-wrap:wrap; gap:10px; margin-bottom:16px">
+            <div class="kw-badge">Trigger keyword: <strong>${esc(keyword)}</strong></div>
+            <div class="kw-badge">Public reply: <strong>${esc(publicReply)}</strong></div>
+            <div class="kw-badge">Opening button: <strong>${esc(openingButton)}</strong></div>
+            ${url ? `<div class="kw-badge">Link button: <strong>${esc(linkButton)}</strong></div>` : ''}
+        </div>`;
+}
+
+function flowPhoneHtml({ firstMessage, openingButton, linkButton, url, question, followUp }) {
+    return `
+        <div class="dm-phone">
+            <div class="dm-phone-head"><span>‹</span><span class="dm-avatar"></span><span>instagram</span></div>
+            <div class="dm-bubble">
+                ${esc(firstMessage || 'Hey there! I’m so happy you’re here, thanks so much for your interest.\n\nClick below and I’ll send it in just a sec.')}
+                <div class="dm-button">${esc(openingButton)}</div>
             </div>
-            <div class="dm-phone">
-                <div class="dm-phone-head"><span>‹</span><span class="dm-avatar"></span><span>instagram</span></div>
-                <div class="dm-bubble">
-                    ${esc(firstMessage || 'Hey! Thanks for your interest. Click below and I’ll send it in just a sec.')}
-                    <div class="dm-button">${esc(openingButton)}</div>
-                </div>
-                <div class="dm-user-reply">${esc(openingButton)}</div>
-                <div class="dm-bubble">
-                    ${url ? esc(`Here is the link: ${url}`) : esc('Here are the details I mentioned.')}
-                    ${url ? `<div class="dm-button">${esc(linkButton)}</div>` : ''}
-                </div>
+            <div class="dm-user-reply">${esc(openingButton)}</div>
+            <div class="dm-bubble">
+                ${url ? esc(`Here is the link: ${url}`) : esc('Here are the details I mentioned.')}
+                ${url ? `<div class="dm-button">${esc(linkButton)}</div>` : ''}
             </div>
+            ${question ? `<div class="dm-bubble">${esc(question)}</div>` : ''}
+            ${followUp ? `<div class="dm-bubble">${esc(followUp)}</div>` : ''}
         </div>`;
 }
 

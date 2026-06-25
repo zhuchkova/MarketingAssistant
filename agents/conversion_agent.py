@@ -113,7 +113,8 @@ Rules:
 - Public comment reply should be short and acknowledge that the DM/resource is coming
 - Return exactly 3 public_comment_reply_options. The selected public_comment_reply must be one of them unless a saved public reply exists.
 - If a saved public comment reply exists, use it unless it is clearly unsafe or irrelevant
-- If a saved first DM/delivery message exists, use it as the first_message unless it is clearly unsafe or irrelevant
+- first_message is the opening DM before the user clicks the button. It must not include the URL directly and should not say the link is already inside the message. Pattern: “Hey there! I’m so happy you’re here, thanks so much for your interest. Click below and I’ll send it in just a sec.”
+- If a saved first DM/delivery message exists, use it as first_message only if it follows the opening-DM pattern and does not already send the link.
 - If saved button labels exist, use them exactly unless they are too long or unclear
 - If a saved qualification question or follow-up exists, use it unless it is clearly unsafe or irrelevant
 - If a lead magnet URL exists, the first message must include that URL

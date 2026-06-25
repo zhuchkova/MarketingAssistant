@@ -243,14 +243,22 @@ def build_manychat_setup(lead_magnet: dict) -> dict:
 
 def flow_from_lead_magnet(lead_magnet: dict) -> dict:
     setup = build_manychat_setup(lead_magnet)
+    first_message = lead_magnet.get("delivery_message") or default_opening_dm(lead_magnet)
     return {
         "trigger_keyword": setup["trigger_keyword"],
         "public_comment_reply": setup["public_comment_reply"],
         "public_comment_reply_options": setup["public_comment_reply_options"],
-        "first_message": lead_magnet.get("delivery_message") or "",
+        "first_message": first_message,
         "opening_dm_button_label": setup["opening_dm_button_label"],
         "link_button_label": setup["link_button_label"],
         "qualification_question": lead_magnet.get("qualification_question") or "",
         "follow_up": lead_magnet.get("follow_up_cta") or "",
         "manychat_setup": setup,
     }
+
+
+def default_opening_dm(lead_magnet: dict) -> str:
+    return (
+        "Hey there! I’m so happy you’re here, thanks so much for your interest.\n\n"
+        "Click below and I’ll send it in just a sec."
+    )
