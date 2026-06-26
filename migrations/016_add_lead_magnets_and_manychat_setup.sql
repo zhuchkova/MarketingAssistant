@@ -32,7 +32,4 @@ ALTER TABLE posts
     ADD COLUMN IF NOT EXISTS lead_magnet_id UUID
         REFERENCES lead_magnets(id) ON DELETE SET NULL;
 
-ALTER TABLE manychat_flows
-    ADD COLUMN IF NOT EXISTS lead_magnet_id UUID REFERENCES lead_magnets(id) ON DELETE SET NULL,
-    ADD COLUMN IF NOT EXISTS public_comment_reply TEXT,
-    ADD COLUMN IF NOT EXISTS manychat_setup JSONB DEFAULT '{}'::jsonb;
+DROP TABLE IF EXISTS manychat_flows;

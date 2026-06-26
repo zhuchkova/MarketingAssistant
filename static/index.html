@@ -960,28 +960,6 @@
             color: var(--text-3);
             line-height: 1.55;
         }
-        .flow-resource-preview {
-            background: #ffffff;
-            border: 1px solid var(--border);
-            border-radius: var(--r-sm);
-            padding: 12px 14px;
-            margin: -4px 0 16px;
-        }
-        .flow-resource-preview-title {
-            font-size: 14px;
-            font-weight: 800;
-            color: var(--text);
-            margin-bottom: 4px;
-        }
-        .flow-resource-preview-text {
-            font-size: 14px;
-            color: var(--text-3);
-            line-height: 1.55;
-            overflow-wrap: anywhere;
-        }
-        .flow-custom-fields.is-muted {
-            opacity: 0.48;
-        }
         .flow-json {
             background: #f8fbf3;
             border: 1px solid var(--border);
@@ -3614,6 +3592,7 @@ function leadFlowFromResource(resource) {
         public_comment_reply: publicReply,
         public_comment_reply_options: [publicReply],
         trigger_keyword: keyword,
+        opening_dm_text: firstMessage || `Hey there! Thanks so much for your interest.\n\nClick below and I’ll send ${resource.title || 'it'} in just a sec.`,
         opening_dm_button_label: openingButton,
         link_button_label: linkButton,
         flow_type: 'instagram_comment_to_dm',
@@ -3657,7 +3636,7 @@ function leadFlowPreviewHtml(flow) {
     const url = setup.lead_magnet_url || '';
     return `
         ${flowBadgesHtml(keyword, publicReply, openingButton, linkButton, url)}
-        ${flowPhoneHtml({ firstMessage, openingButton, linkButton, url, question, followUp })}`;
+        ${flowPhoneHtml({ firstMessage, openingButton, linkButton, url, question, followUp, title: flow.lead_magnet_title })}`;
 }
 
 function leadFlowCardPreviewHtml(resource) {
@@ -3670,6 +3649,7 @@ function leadFlowCardPreviewHtml(resource) {
         url: setup.lead_magnet_url || '',
         question: null,
         followUp: null,
+        title: resource.title,
     });
 }
 
@@ -3683,17 +3663,18 @@ function flowBadgesHtml(keyword, publicReply, openingButton, linkButton, url) {
         </div>`;
 }
 
-function flowPhoneHtml({ firstMessage, openingButton, linkButton, url, question, followUp }) {
+function flowPhoneHtml({ firstMessage, openingButton, linkButton, url, question, followUp, title }) {
+    const resourceName = title || 'the resource';
     return `
         <div class="dm-phone">
             <div class="dm-phone-head"><span>‹</span><span class="dm-avatar"></span><span>instagram</span></div>
             <div class="dm-bubble">
-                ${esc(firstMessage || 'Hey there! I’m so happy you’re here, thanks so much for your interest.\n\nClick below and I’ll send it in just a sec.')}
+                ${esc(firstMessage || `Hey there! Thanks so much for your interest.\n\nClick below and I’ll send ${resourceName} in just a sec.`)}
                 <div class="dm-button">${esc(openingButton)}</div>
             </div>
             <div class="dm-user-reply">${esc(openingButton)}</div>
             <div class="dm-bubble">
-                ${url ? esc(`Here is the link: ${url}`) : esc('Here are the details I mentioned.')}
+                ${url ? esc(`${resourceName} is ready for you.`) : esc('Here are the details I mentioned.')}
                 ${url ? `<div class="dm-button">${esc(linkButton)}</div>` : ''}
             </div>
             ${question ? `<div class="dm-bubble">${esc(question)}</div>` : ''}
@@ -3726,73 +3707,6 @@ function renderFlowPostContext(flow = null) {
         </div>
         <div class="flow-context-title">${esc(post.hook || 'Selected Instagram post')}</div>
         <div class="flow-context-text">${esc((post.final_text || post.body || '').slice(0, 220))}${(post.final_text || post.body || '').length > 220 ? '...' : ''}</div>`;
-}
-
-function renderSelectedLeadMagnetPreview() {
-    const preview = document.getElementById('flow-resource-preview');
-    const customFields = document.getElementById('flow-custom-fields');
-    if (!preview) return;
-
-    const id = val('flow-lead-magnet');
-    const guide = S.leadMagnets.find(item => String(item.id) === String(id));
-    if (!guide) {
-        preview.innerHTML = `
-            <div class="flow-resource-preview-title">No saved resource selected</div>
-            <div class="flow-resource-preview-text">Use the fields below for a simple flow, such as booking details, a product link, or a first-step conversation.</div>`;
-        if (customFields) customFields.style.display = '';
-        return;
-    }
-
-    preview.innerHTML = `
-        <div class="flow-resource-preview-title">${esc(guide.title || 'Saved resource')}</div>
-        <div class="flow-resource-preview-text">
-            ${guide.suggested_keyword ? `<strong>Keyword:</strong> ${esc(guide.suggested_keyword)}<br>` : ''}
-            ${guide.trigger_type ? `<strong>Trigger:</strong> ${esc(guide.trigger_type.replace(/_/g, ' '))}<br>` : ''}
-            ${guide.public_comment_reply ? `<strong>Public reply:</strong> ${esc(guide.public_comment_reply)}<br>` : ''}
-            ${guide.opening_dm_button_label ? `<strong>Opening button:</strong> ${esc(guide.opening_dm_button_label)}<br>` : ''}
-            ${guide.url ? `<strong>URL:</strong> ${esc(guide.url)}<br>` : ''}
-            ${guide.link_button_label ? `<strong>Link button:</strong> ${esc(guide.link_button_label)}<br>` : ''}
-            ${guide.delivery_message ? `<strong>DM:</strong> ${esc(guide.delivery_message)}<br>` : ''}
-            ${guide.qualification_question ? `<strong>Question:</strong> ${esc(guide.qualification_question)}<br>` : ''}
-            ${guide.follow_up_cta ? `<strong>Follow-up:</strong> ${esc(guide.follow_up_cta)}<br>` : ''}
-            ${esc(guide.description || 'This saved resource will shape the keyword, DM, and follow-up.')}
-        </div>`;
-    if (customFields) customFields.style.display = 'none';
-}
-
-async function createFlowFromSetup() {
-    if (!S.flowPostId) return;
-
-    const body = {
-        lead_magnet_id: val('flow-lead-magnet') || null,
-        custom_offer_title: val('flow-custom-title') || null,
-        custom_offer_url: val('flow-custom-url') || null,
-        custom_offer_description: val('flow-custom-description') || null,
-        custom_trigger_type: val('flow-custom-trigger-type') || null,
-        custom_keyword: val('flow-custom-keyword') || null,
-        custom_public_comment_reply: val('flow-custom-public') || null,
-        custom_first_message: val('flow-custom-first-message') || null,
-        custom_opening_dm_button_label: val('flow-custom-open-button') || null,
-        custom_link_button_label: val('flow-custom-link-button') || null,
-        custom_qualification_question: val('flow-custom-qualification') || null,
-        custom_follow_up: val('flow-custom-follow-up') || null,
-    };
-
-    const btn = document.getElementById('btn-flow-create');
-    btn.disabled = true;
-    btn.textContent = 'Preparing…';
-
-    try {
-        const res = await api('POST', `/posts/${S.flowPostId}/conversion`, body);
-        if (res.error) throw new Error(res.error);
-        renderFlowResult(res.flow || res);
-        toast('Lead flow prepared', 'success');
-    } catch (e) {
-        toast(e.message || 'Failed to prepare flow', 'error');
-    } finally {
-        btn.disabled = false;
-        btn.textContent = 'Prepare Flow';
-    }
 }
 
 function copyFlow() {

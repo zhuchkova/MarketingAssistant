@@ -15,6 +15,7 @@ class ManyChatSetup(BaseModel):
     public_comment_reply: str = Field(description="Public reply to configure in the Instagram comments automation")
     trigger_keyword: str = Field(description="Keyword users should comment")
     public_comment_reply_options: List[str] = Field(description="Alternative short public replies")
+    opening_dm_text: str = Field(description="Opening DM text shown before the user clicks the button")
     opening_dm_button_label: str = Field(description="Button label in the opening DM, for example Send me the link")
     link_button_label: str = Field(description="Button label for the delivered link, for example Open")
     flow_type: str = Field(description="Type of flow, for example instagram_comment_to_dm")
@@ -52,7 +53,9 @@ structured_model = model.with_structured_output(ManyChatFlowResult)
 prompt = ChatPromptTemplate.from_template("""
 You are a conversion strategist for Instagram.
 
-Create a simple ManyChat-style conversion flow for this generated Instagram post.
+Create a reusable ManyChat-style Instagram comment-to-DM flow for this lead resource.
+
+The flow may later be attached to many Instagram reels or carousels. If the post fields below are blank, ignore them and base the flow on the creator, audience, and selected lead magnet/resource.
 
 Creator profile:
 - Niche: {niche}
@@ -79,7 +82,7 @@ Audience analysis:
 - Positioning: {positioning}
 - Known for: {known_for}
 
-Generated post:
+Optional generated post context:
 - Platform: {platform}
 - Post goal: {post_goal}
 - Hook: {hook}
@@ -113,11 +116,12 @@ Rules:
 - Public comment reply should be short and acknowledge that the DM/resource is coming
 - Return exactly 3 public_comment_reply_options. The selected public_comment_reply must be one of them unless a saved public reply exists.
 - If a saved public comment reply exists, use it unless it is clearly unsafe or irrelevant
-- first_message is the opening DM before the user clicks the button. It must not include the URL directly and should not say the link is already inside the message. Pattern: “Hey there! I’m so happy you’re here, thanks so much for your interest. Click below and I’ll send it in just a sec.”
+- first_message is the opening DM before the user clicks the button. It must not include the URL directly and should not say the link is already inside the message.
+- Make first_message specific to this lead magnet/resource, creator, and audience. Do not reuse the same generic wording for every resource. Good pattern: friendly acknowledgement + the resource/result they asked for + click the button to receive it.
 - If a saved first DM/delivery message exists, use it as first_message only if it follows the opening-DM pattern and does not already send the link.
 - If saved button labels exist, use them exactly unless they are too long or unclear
 - If a saved qualification question or follow-up exists, use it unless it is clearly unsafe or irrelevant
-- If a lead magnet URL exists, the first message must include that URL
+- If a lead magnet URL exists, the first message must NOT include that URL; the URL belongs in the link step after the user clicks the opening button.
 - If no lead magnet URL exists, create a useful goal-based flow: booking details for book_visit, order details for buy_order, or a simple next-step conversation for comment/save/share/follow. Do not pretend a link exists.
 - opening_dm_button_label should be direct, for example “Send me the link”, “Show me”, “Start”, “Tell me more”, or “Send details”.
 - link_button_label should be short, for example “Open”, “Book”, “View”, “Shop”, or “Read”.
@@ -130,6 +134,7 @@ Rules:
   - public_comment_reply
   - public_comment_reply_options
   - trigger_keyword
+  - opening_dm_text
   - opening_dm_button_label
   - link_button_label
   - flow_type
@@ -139,6 +144,7 @@ Rules:
   - api_supported_parts
 - setup_steps must reflect the real choices made for this flow: keyword mode, selected keyword or any-word trigger, public reply, opening DM, button label, link button label, optional qualification question, optional follow-up, preview, and go live.
 - api_supported_parts should say the API can help with account metadata, tags, fields, and sending content/flows once a subscriber/contact exists, but Instagram comment automation setup itself is prepared as manual ManyChat setup notes for now.
+- opening_dm_text must exactly match first_message.
 - Do not add extra keys to manychat_setup.
 """)
 

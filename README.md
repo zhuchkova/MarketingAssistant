@@ -153,7 +153,7 @@ Generates complete LinkedIn or Instagram posts.
 
 ### 4. Conversion Agent
 
-Creates ManyChat-style conversion flows from generated Instagram posts.
+Creates reusable ManyChat-style Instagram comment-to-DM flows from lead resources.
 
 #### Output
 
@@ -293,19 +293,16 @@ lead_magnets
   ├── url
   ├── description
   ├── suggested_keyword
+  ├── trigger_type
   ├── public_comment_reply
   ├── delivery_message
+  ├── opening_dm_button_label
+  ├── link_button_label
+  ├── qualification_question
   ├── follow_up_cta
   ├── preferred_post_goal
+  ├── manychat_setup
   └── is_primary
-manychat_flows
-  ├── lead_magnet_id
-  ├── trigger_keyword
-  ├── public_comment_reply
-  ├── first_message
-  ├── qualification_question
-  ├── follow_up
-  └── manychat_setup
 ```
 
 ### ChromaDB
@@ -601,25 +598,13 @@ DELETE /user-profiles/{profile_id}/lead-magnets/{lead_magnet_id}
 
 Lead magnets are optional reusable resources for Instagram comment-to-DM flows. The URL is optional so a flow can send a link, booking details, order instructions, or simply start a conversation. A generated flow can store trigger mode, keyword, public reply, first DM, opening button label, link button label, optional qualification question, optional follow-up, preferred post goal, and setup JSON.
 
-#### Generate Post-Linked Conversion Flow
-
-```http
-POST /posts/{post_id}/conversion
-```
-
-This endpoint is mainly for connecting or previewing a flow from an Instagram reel/carousel post. If the post already has a prepared `lead_magnet_id`, the app reuses that prepared flow instead of inventing a new one. If a custom one-time automation is sent in the request body, the Conversion Agent uses those custom fields.
-
-Triggers:
-
-```text
-Conversion Agent
-```
-
 #### Get Conversion Flow
 
 ```http
 GET /posts/{post_id}/conversion
 ```
+
+This endpoint only previews the reusable lead flow already attached to the Instagram reel/carousel post through `posts.lead_magnet_id`. It does not generate or store a post-specific ManyChat flow.
 
 ---
 
@@ -751,71 +736,56 @@ Use `lead_magnet_id` only for Instagram posts when the CTA should reuse a saved 
 }
 ```
 
-### Generate Conversion Flow Response
-
-Optional request body:
+### Get Attached Lead Flow Response
 
 ```json
 {
+  "trigger_keyword": "SYSTEM",
+  "public_comment_reply_options": [
+    "Sent it to you. Check your DMs.",
+    "Just sent it your way.",
+    "Thanks for commenting — I sent the workflow."
+  ],
+  "public_comment_reply": "Sent it to you.",
+  "first_message": "Hey there! Thanks for your interest.\n\nClick below and I’ll send the workflow in just a sec.",
+  "opening_dm_button_label": "Send me the link",
+  "link_button_label": "Open",
+  "qualification_question": "Are you building this for yourself or for clients?",
+  "follow_up": "Start with the simple version first, then automate the repeatable parts.",
   "lead_magnet_id": "55555555-5555-5555-5555-555555555555",
-  "custom_offer_title": null,
-  "custom_offer_url": null,
-  "custom_offer_description": null,
-  "custom_trigger_type": "specific_word",
-  "custom_keyword": "SYSTEM",
-  "custom_public_comment_reply": "Sent it to you. Check your DMs.",
-  "custom_first_message": "Hey! Thanks for your interest. Click below and I’ll send the workflow.",
-  "custom_opening_dm_button_label": "Send me the link",
-  "custom_link_button_label": "Open",
-  "custom_qualification_question": "Are you building this for yourself or for clients?",
-  "custom_follow_up": "Start with the simple version first, then automate the repeatable parts."
-}
-```
-
-```json
-{
-  "status": "conversion flow created",
-  "flow_id": "44444444-4444-4444-4444-444444444444",
-  "post_id": "33333333-3333-3333-3333-333333333333",
-  "flow": {
+  "lead_magnet_title": "Workflow guide",
+  "manychat_setup": {
+    "manual_required": true,
+    "comment_trigger_mode": "specific_word",
     "trigger_keyword": "SYSTEM",
+    "public_comment_reply": "Sent it to you.",
     "public_comment_reply_options": [
       "Sent it to you. Check your DMs.",
       "Just sent it your way.",
       "Thanks for commenting — I sent the workflow."
     ],
-    "public_comment_reply": "Sent it to you.",
-    "first_message": "Here is the workflow I mentioned.",
+    "opening_dm_text": "Hey there! Thanks for your interest.\n\nClick below and I’ll send the workflow in just a sec.",
     "opening_dm_button_label": "Send me the link",
     "link_button_label": "Open",
-    "qualification_question": "Are you building this for yourself or for clients?",
-    "follow_up": "Start with the simple version first, then automate the repeatable parts.",
-    "manychat_setup": {
-      "manual_required": true,
-      "comment_trigger_mode": "specific_word",
-      "trigger_keyword": "SYSTEM",
-      "public_comment_reply": "Sent it to you.",
-      "public_comment_reply_options": [
-        "Sent it to you. Check your DMs.",
-        "Just sent it your way.",
-        "Thanks for commenting — I sent the workflow."
-      ],
-      "opening_dm_button_label": "Send me the link",
-      "link_button_label": "Open",
-      "flow_type": "instagram_comment_to_dm",
-      "lead_magnet_used": true,
-      "lead_magnet_url": "https://example.com/guide",
-      "setup_steps": [
-        "Create an Instagram Comments automation in ManyChat.",
-        "Set comments to a specific word or reaction.",
-        "Use SYSTEM as the trigger keyword.",
-        "Enable public comment reply and use the selected reply.",
-        "Add the opening DM and button label.",
-        "Add the link delivery message and Open button.",
-        "Preview Comments and DM before going live."
-      ],
-      "api_supported_parts": ["account metadata", "tags", "custom fields", "sendContent", "sendFlow"]
-    }
+    "flow_type": "instagram_comment_to_dm",
+    "lead_magnet_used": true,
+    "lead_magnet_url": "https://example.com/guide",
+    "setup_steps": [
+      "Create an Instagram Comments automation in ManyChat.",
+      "Set the comment trigger to a specific word or reaction.",
+      "Use the trigger keyword 'SYSTEM'.",
+      "Turn on public comment reply and use: Sent it to you.",
+      "Add this opening DM text: Hey there! Thanks for your interest.\n\nClick below and I’ll send the workflow in just a sec.",
+      "Set the opening DM button label to: Send me the link",
+      "After the button click, add a link step with URL https://example.com/guide and button label: Open",
+      "Preview the Comments and DM tabs before going live.",
+      "Click Go Live in ManyChat when ready."
+    ],
+    "api_supported_parts": [
+      "Account metadata",
+      "Tags and custom fields",
+      "Sending content or flows to existing contacts"
+    ]
   }
 }
 ```
@@ -916,6 +886,14 @@ Idea Agent
         ▼
 Content Ideas
 
+User adds lead resource
+        │
+        ▼
+Conversion Agent
+        │
+        ▼
+Reusable Lead Flow
+
 User selects content idea
         │
         ▼
@@ -926,14 +904,6 @@ Content Agent
         │
         ▼
 Generated Post
-
-POST /posts/{post_id}/conversion
-        │
-        ▼
-Conversion Agent
-        │
-        ▼
-ManyChat Flow
 ```
 
 ---

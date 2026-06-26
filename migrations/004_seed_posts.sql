@@ -22,18 +22,3 @@ INSERT INTO posts (
     'Most founders don’t need a marketing team.\n\nThey need 3 AI workflows that generate ideas, write posts, and convert leads automatically.\n\nComment AGENT and I will send you the system.'
 )
 ON CONFLICT (id) DO NOTHING;
-
-INSERT INTO manychat_flows (
-    id,
-    post_id,
-    trigger_keyword,
-    first_message,
-    follow_up
-) VALUES (
-    '66666666-6666-6666-6666-666666666666',
-    '55555555-5555-5555-5555-555555555555',
-    'AGENT',
-    'Hey! Here is the AI marketing workflow template I mentioned.',
-    'Quick question: are you building this for your own business or for clients?'
-)
-ON CONFLICT (id) DO NOTHING;

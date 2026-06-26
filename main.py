@@ -13,7 +13,6 @@ from schemas.user_profile import CreateUserProfileRequest, UpdateUserProfileRequ
 from schemas.post_generation import GeneratePostRequest, UpdatePostRequest
 from schemas.content_idea import ContentIdeaRequest, GenerateIdeasRequest
 from schemas.lead_magnet import LeadMagnetRequest
-from schemas.conversion import CreateConversionFlowRequest
 from schemas.auth import RegisterRequest, LoginRequest
 from auth import get_current_user, hash_password, verify_password, create_token
 from authorization import check_profile_owner, check_post_owner
@@ -27,7 +26,8 @@ from db.content_repository import (get_content_generation_context,
     get_lookup_id, save_post, update_post_content)
 from agents.conversion_agent import run_conversion_agent
 from db.conversion_repository import (get_conversion_context,
-    attach_lead_magnet_context, flow_from_lead_magnet, save_manychat_flow)
+    attach_lead_magnet_context)
+from db.lead_flow_builder import flow_from_lead_magnet
 from db.lead_magnet_repository import (
     delete_lead_magnet,
     get_lead_magnet,
@@ -1059,71 +1059,6 @@ def delete_post(
     return {"status": "deleted", "post_id": post_id}
 
 
-@app.post("/posts/{post_id}/conversion")
-def create_conversion_flow(
-    post_id: str,
-    request: Optional[CreateConversionFlowRequest] = None,
-    current_user: dict = Depends(get_current_user),
-):
-    request = request.model_dump() if request else {}
-    conn = psycopg.connect(os.getenv("DATABASE_URL"))
-
-    try:
-        check_post_owner(conn, post_id, current_user["user_id"])
-        context = get_conversion_context(conn, post_id)
-        if context.get("platform") != "instagram":
-            raise HTTPException(
-                status_code=400,
-                detail="Lead flows are only available for Instagram posts",
-            )
-        if context.get("instagram_content_type") == "story":
-            raise HTTPException(
-                status_code=400,
-                detail="Comment-to-DM lead flows are only available for Instagram reels and carousels",
-            )
-
-        lead_magnet = None
-        selected_lead_magnet_id = request.get("lead_magnet_id") or context.get("post_lead_magnet_id")
-        if not selected_lead_magnet_id:
-            raise HTTPException(
-                status_code=400,
-                detail="Prepare a lead flow resource first, then select it while drafting the post",
-            )
-        if selected_lead_magnet_id:
-            try:
-                lead_magnet = get_lead_magnet(
-                    conn,
-                    selected_lead_magnet_id,
-                    context["user_profile_id"],
-                )
-            except ValueError:
-                raise HTTPException(status_code=404, detail="Lead magnet not found")
-
-        context = attach_lead_magnet_context(context, lead_magnet=lead_magnet)
-        flow = flow_from_lead_magnet(lead_magnet)
-        flow_id = save_manychat_flow(
-            conn,
-            post_id,
-            flow,
-            lead_magnet_id=lead_magnet["id"] if lead_magnet else None,
-        )
-        conn.commit()
-
-        return {
-            "status": "conversion flow created",
-            "flow_id": flow_id,
-            "post_id": post_id,
-            "flow": flow,
-        }
-
-    except Exception:
-        conn.rollback()
-        raise
-
-    finally:
-        conn.close()
-
-
 @app.get("/posts/{post_id}/conversion")
 def get_conversion_flow(
     post_id: str,
@@ -1144,60 +1079,27 @@ def get_conversion_flow(
                 detail="Comment-to-DM lead flows are only available for Instagram reels and carousels",
             )
 
-        with conn.cursor() as cur:
-            cur.execute("""
-                SELECT
-                    id,
-                    trigger_keyword,
-                    public_comment_reply,
-                    first_message,
-                    qualification_question,
-                    follow_up,
-                    manychat_setup,
-                    lead_magnet_id
-                FROM manychat_flows
-                WHERE post_id = %s
-            """, (post_id,))
-            row = cur.fetchone()
+        selected_lead_magnet_id = context.get("post_lead_magnet_id")
+        if not selected_lead_magnet_id:
+            return {"error": "No prepared lead flow is attached to this post"}
 
-        if not row:
-            selected_lead_magnet_id = context.get("post_lead_magnet_id")
-            if not selected_lead_magnet_id:
-                return {"error": "No prepared lead flow is attached to this post"}
+        try:
+            lead_magnet = get_lead_magnet(
+                conn,
+                selected_lead_magnet_id,
+                context["user_profile_id"],
+            )
+        except ValueError:
+            return {"error": "Attached lead flow resource was not found"}
 
-            try:
-                lead_magnet = get_lead_magnet(
-                    conn,
-                    selected_lead_magnet_id,
-                    context["user_profile_id"],
-                )
-            except ValueError:
-                return {"error": "Attached lead flow resource was not found"}
-
-            return {
-                **flow_from_lead_magnet(lead_magnet),
-                "id": None,
-                "lead_magnet_id": lead_magnet["id"],
-                "lead_magnet_title": lead_magnet["title"],
-            }
+        return {
+            **flow_from_lead_magnet(lead_magnet),
+            "id": None,
+            "lead_magnet_id": lead_magnet["id"],
+            "lead_magnet_title": lead_magnet["title"],
+        }
     finally:
         conn.close()
-
-    if not row:
-        return {"error": "Conversion flow not found"}
-
-    return {
-        "id": row[0],
-        "trigger_keyword": row[1],
-        "public_comment_reply": row[2],
-        "first_message": row[3],
-        "opening_dm_button_label": (row[6] or {}).get("opening_dm_button_label") if row[6] else None,
-        "link_button_label": (row[6] or {}).get("link_button_label") if row[6] else None,
-        "qualification_question": row[4],
-        "follow_up": row[5],
-        "manychat_setup": row[6] or {},
-        "lead_magnet_id": row[7],
-    }
 
 
 app.mount("/static", StaticFiles(directory=os.path.join(os.path.dirname(__file__), "static")), name="static")

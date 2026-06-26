@@ -115,17 +115,3 @@ CREATE TABLE lead_magnets (
 ALTER TABLE posts
     ADD COLUMN IF NOT EXISTS lead_magnet_id UUID
         REFERENCES lead_magnets(id) ON DELETE SET NULL;
-
-CREATE TABLE manychat_flows (
-    id UUID PRIMARY KEY,
-    post_id UUID UNIQUE NOT NULL
-        REFERENCES posts(id) ON DELETE CASCADE,
-    lead_magnet_id UUID
-        REFERENCES lead_magnets(id) ON DELETE SET NULL,
-    trigger_keyword TEXT,
-    public_comment_reply TEXT,
-    first_message TEXT,
-    qualification_question TEXT,
-    follow_up TEXT,
-    manychat_setup JSONB DEFAULT '{}'::jsonb
-);

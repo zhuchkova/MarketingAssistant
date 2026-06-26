@@ -1,7 +1,7 @@
 import uuid
 from psycopg.types.json import Jsonb
 
-from db.conversion_repository import build_manychat_setup
+from db.lead_flow_builder import build_manychat_setup
 
 
 def _has_flow_details(data: dict) -> bool:
