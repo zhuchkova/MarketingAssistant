@@ -33,9 +33,9 @@ def build_manychat_setup(lead_magnet: dict) -> dict:
             "Just sent it your way.",
             "Thanks for commenting. Check your DMs.",
         ])[:3]
-    opening_button = lead_magnet.get("opening_dm_button_label") or ""
-    link_button = lead_magnet.get("link_button_label") or ""
     url = lead_magnet.get("url") or ""
+    opening_button = lead_magnet.get("opening_dm_button_label") or ""
+    link_button = (lead_magnet.get("link_button_label") or "") if url else ""
     first_message = lead_magnet.get("delivery_message") or ""
     second_message = lead_magnet.get("second_dm_message") or ""
     qualification_question = lead_magnet.get("qualification_question") or ""
@@ -50,7 +50,9 @@ def build_manychat_setup(lead_magnet: dict) -> dict:
     elif trigger_type != "any_word":
         setup_steps.append("Choose the trigger keyword before going live.")
     if public_reply:
-        setup_steps.append(f"Turn on public comment reply and use: {public_reply}")
+        alternatives = [option for option in reply_options if option != public_reply]
+        suffix = f" Alternative replies: {' | '.join(alternatives)}" if alternatives else ""
+        setup_steps.append(f"Turn on public comment reply and use: {public_reply}{suffix}")
     else:
         setup_steps.append("Turn on public comment reply and add the reply text.")
     if first_message:

@@ -130,7 +130,7 @@ Rules:
 - If a lead magnet URL exists, the first message must NOT include that URL; the URL belongs in the link step after the user clicks the opening button.
 - If no lead magnet URL exists, create a useful goal-based flow: booking details for book_visit, order details for buy_order, or a simple next-step conversation for comment/save/share/follow. Do not pretend a link exists.
 - opening_dm_button_label should be direct, for example “Send me the link”, “Show me”, “Start”, “Tell me more”, or “Send details”.
-- link_button_label should be short, for example “Open”, “Book”, “View”, “Shop”, or “Read”.
+- link_button_label should be short, for example “Open”, “Book”, “View”, “Shop”, or “Read”. If no URL exists, return an empty string for link_button_label.
 - Qualification question is optional in real setup, but output one useful easy-to-answer question for users who want it.
 - Follow-up is optional in real setup, but output a gentle follow-up that moves the user toward the creator's offer.
 - Keep messages short and natural
@@ -149,7 +149,7 @@ Rules:
   - lead_magnet_url as a URL string or an empty string if no URL exists
   - setup_steps
   - api_supported_parts
-- setup_steps must reflect the real choices made for this flow: keyword mode, selected keyword or any-word trigger, public reply, opening DM, button label, link button label, optional qualification question, optional follow-up, preview, and go live.
+- setup_steps must reflect the real choices made for this flow: keyword mode, selected keyword or any-word trigger, public reply, public reply alternatives, opening DM, button label, second DM, link button label only when a URL exists, optional qualification question, optional follow-up, preview, and go live.
 - api_supported_parts should say the API can help with account metadata, tags, fields, and sending content/flows once a subscriber/contact exists, but Instagram comment automation setup itself is prepared as manual ManyChat setup notes for now.
 - opening_dm_text must exactly match first_message.
 - second_dm_text must exactly match second_message.

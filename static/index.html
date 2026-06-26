@@ -764,6 +764,21 @@
         .post-status-actions .card-mark-btn {
             position: static;
         }
+        .post-flow-indicator {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            border: 1px solid #f7c8d9;
+            background: var(--pink-soft);
+            color: var(--primary);
+            display: inline-grid;
+            place-items: center;
+            cursor: help;
+        }
+        .post-flow-indicator .flat-icon {
+            width: 18px;
+            height: 18px;
+        }
         .card-check-btn:hover,
         .card-check-btn.active {
             border-color: var(--border);
@@ -981,6 +996,35 @@
             white-space: pre-wrap;
             overflow-x: auto;
         }
+        .flow-steps-panel {
+            background: var(--pink-soft);
+            border: 1px solid #f7c8d9;
+            border-radius: var(--r-sm);
+            padding: 16px;
+            margin-top: 16px;
+        }
+        .flow-steps-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 10px;
+        }
+        .flow-steps-title {
+            color: var(--primary);
+            font-size: 13px;
+            font-weight: 900;
+            letter-spacing: .05em;
+            text-transform: uppercase;
+        }
+        .flow-steps-list {
+            margin: 0;
+            padding-left: 22px;
+            color: #a7651f;
+            font-size: 14px;
+            line-height: 1.55;
+        }
+        .flow-steps-list li + li { margin-top: 6px; }
         .flow-advanced {
             border: 1px solid var(--border);
             border-radius: var(--r-sm);
@@ -1288,6 +1332,11 @@
     </symbol>
     <symbol id="icon-message" viewBox="0 0 24 24">
         <path d="M21 12a8 8 0 0 1-8 8H7l-4 2 1.4-4.2A8 8 0 1 1 21 12z"></path>
+    </symbol>
+    <symbol id="icon-flow-waves" viewBox="0 0 24 24">
+        <path d="M3 7c3-3 6 3 9 0s6-3 9 0"></path>
+        <path d="M3 12c3-3 6 3 9 0s6-3 9 0"></path>
+        <path d="M3 17c3-3 6 3 9 0s6-3 9 0"></path>
     </symbol>
     <symbol id="icon-target" viewBox="0 0 24 24">
         <circle cx="12" cy="12" r="8"></circle><circle cx="12" cy="12" r="3"></circle><path d="M12 2v3M12 19v3M2 12h3M19 12h3"></path>
@@ -1805,6 +1854,12 @@
                             <option value="published">Published</option>
                         </select>
                     </div>
+                    <div class="idea-filter-control">
+                        <label for="post-automation-filter">Automation</label>
+                        <select id="post-automation-filter" onchange="setPostAutomationFilter(this.value)">
+                            <option value="all">All</option>
+                        </select>
+                    </div>
                 </div>
             </div>
             <div id="posts-container"></div>
@@ -1819,6 +1874,9 @@
                 </div>
                 <div class="ideas-toolbar-right">
                     <span class="count-pill" id="lead-magnets-count">0 resources</span>
+                    <button class="btn btn-secondary btn-sm" id="btn-regenerate-all-flows" onclick="generateAllLeadFlows()" style="display:none">
+                        Regenerate All Flows
+                    </button>
                 </div>
             </div>
             <div id="lead-flows-panel"></div>
@@ -2055,6 +2113,7 @@
             <div id="flow-post-context" class="flow-context-card"></div>
             <div id="flow-result">
                 <div id="flow-preview"></div>
+                <div id="flow-steps"></div>
                 <pre class="flow-json" id="flow-json" style="margin-top:16px"></pre>
             </div>
         </div>
@@ -2063,6 +2122,10 @@
             <button id="btn-flow-copy" class="btn btn-secondary btn-sm" onclick="copyFlow()">
                 <svg class="flat-icon"><use href="#icon-copy"></use></svg>
                 Copy Flow
+            </button>
+            <button id="btn-flow-copy-steps" class="btn btn-secondary btn-sm" onclick="copySetupSteps()">
+                <svg class="flat-icon"><use href="#icon-copy"></use></svg>
+                Copy Setup Steps
             </button>
         </div>
     </div>
@@ -2219,6 +2282,7 @@ const S = {
     postPlatformFilter: 'all',
     postTypeFilter: 'all',
     postStatusFilter: 'all',
+    postAutomationFilter: 'all',
     postEditId: null,
     postEditSyncing: false,
     leadMagnetEditId: null,
@@ -2651,13 +2715,15 @@ function renderLeadFlows() {
     if (!panel) return;
 
     document.getElementById('lead-magnets-count').textContent = `${S.leadMagnets.length} ${S.leadMagnets.length === 1 ? 'resource' : 'resources'}`;
+    const regenerateAllButton = document.getElementById('btn-regenerate-all-flows');
+    if (regenerateAllButton) regenerateAllButton.style.display = S.leadMagnets.length ? '' : 'none';
     const editing = S.leadMagnetEditId ? S.leadMagnets.find(item => String(item.id) === String(S.leadMagnetEditId)) : null;
 
     panel.innerHTML = `
         <div class="form-panel standalone" style="margin-bottom:18px">
             <div class="flow-form-head">
                 <div class="flow-form-heading">
-                    <div class="flow-form-icon">${iconSvg('icon-message')}</div>
+                    <div class="flow-form-icon">${iconSvg('icon-flow-waves')}</div>
                     <div class="form-section-head" style="margin-bottom:0">
                         <h2>${editing ? 'Edit Flow Resource' : 'Add Flow Resource'}</h2>
                         <p>Add reusable resources first. Then generate Instagram comment-to-DM flows from them and reuse those flows while drafting posts.</p>
@@ -2705,8 +2771,6 @@ function renderLeadFlows() {
                     <input type="text" id="flow-resource-keyword" placeholder="e.g. GUIDE" value="${esc(editing?.suggested_keyword || '')}">
                     <span class="form-hint">Optional before generation. The app can suggest it.</span>
                 </div>
-            </div>
-            <div class="grid-2">
                 <div class="form-group">
                     <label>Trigger Mode</label>
                     <select id="flow-resource-trigger-type">
@@ -2714,11 +2778,6 @@ function renderLeadFlows() {
                         <option value="any_word" ${editing?.trigger_type === 'any_word' ? 'selected' : ''}>Any word or reaction</option>
                     </select>
                     <span class="form-hint">Usually use a specific keyword. “Any word” is useful for very broad comment capture.</span>
-                </div>
-                <div class="form-group">
-                    <label>Opening Button</label>
-                    <input type="text" id="flow-resource-opening-button" placeholder="Send me the link" value="${esc(editing?.opening_dm_button_label || '')}">
-                    <span class="form-hint">Button in the opening DM.</span>
                 </div>
             </div>
             <div class="form-group flow-reply-options">
@@ -2737,17 +2796,24 @@ function renderLeadFlows() {
                     <span class="form-hint">First DM before the person clicks the button.</span>
                 </div>
                 <div class="form-group">
+                    <label>Opening Button</label>
+                    <input type="text" id="flow-resource-opening-button" placeholder="Send me the link" value="${esc(editing?.opening_dm_button_label || '')}">
+                    <span class="form-hint">Button in the opening DM.</span>
+                </div>
+            </div>
+            <div class="grid-2">
+                <div class="form-group">
                     <label>Second DM</label>
                     <input type="text" id="flow-resource-second-message" placeholder="Here are the details I mentioned." value="${esc(editing?.second_dm_message || '')}">
                     <span class="form-hint">Message after the person clicks the opening button.</span>
                 </div>
-            </div>
-            <div class="grid-2">
                 <div class="form-group">
                     <label>Link Button</label>
                     <input type="text" id="flow-resource-link-button" placeholder="Open" value="${esc(editing?.link_button_label || '')}">
                     <span class="form-hint">Button attached to the resource URL, if there is one.</span>
                 </div>
+            </div>
+            <div class="grid-2">
                 <div class="form-group">
                     <label>Qualification Question</label>
                     <input type="text" id="flow-resource-qualification" placeholder="What are you trying to solve first?" value="${esc(editing?.qualification_question || '')}">
@@ -2763,7 +2829,6 @@ function renderLeadFlows() {
             <div class="flow-form-actions">
                 <button class="btn btn-primary btn-lg" onclick="saveLeadMagnet()">${editing ? 'Save Resource' : 'Add Resource'}</button>
                 <button class="btn btn-secondary btn-lg" onclick="saveLeadMagnet(true)">${editing ? 'Save + Regenerate Flow' : 'Add + Generate Flow'}</button>
-                ${S.leadMagnets.length ? `<button class="btn btn-secondary btn-lg" onclick="generateAllLeadFlows()">Regenerate All Flows</button>` : ''}
             </div>
         </div>
 
@@ -2800,6 +2865,7 @@ function renderLeadFlows() {
 }
 
 function leadMagnetPayloadFromForm() {
+    const url = val('flow-resource-url');
     const publicReplyOptions = [
         val('flow-resource-public-reply'),
         val('flow-resource-public-reply-2'),
@@ -2807,7 +2873,7 @@ function leadMagnetPayloadFromForm() {
     ].filter(Boolean);
     return {
         title: val('flow-resource-title'),
-        url: val('flow-resource-url'),
+        url,
         suggested_keyword: val('flow-resource-keyword'),
         trigger_type: val('flow-resource-trigger-type'),
         public_comment_reply: val('flow-resource-public-reply'),
@@ -2815,7 +2881,7 @@ function leadMagnetPayloadFromForm() {
         delivery_message: val('flow-resource-message'),
         second_dm_message: val('flow-resource-second-message'),
         opening_dm_button_label: val('flow-resource-opening-button'),
-        link_button_label: val('flow-resource-link-button'),
+        link_button_label: url ? val('flow-resource-link-button') : null,
         qualification_question: val('flow-resource-qualification'),
         description: val('flow-resource-description'),
         follow_up_cta: val('flow-resource-follow-up'),
@@ -3188,6 +3254,11 @@ function renderPosts() {
     cont.innerHTML = `<div class="posts-list">${visiblePosts.map(p => `
         <div class="post-row" id="pr-${p.id}">
             <div class="post-status-actions">
+                ${p.lead_magnet_title ? `
+                    <span class="post-flow-indicator" title="${esc(p.lead_magnet_title)}" aria-label="Automation: ${esc(p.lead_magnet_title)}">
+                        <svg class="flat-icon"><use href="#icon-flow-waves"></use></svg>
+                    </span>
+                ` : ''}
                 <button class="card-mark-btn ${p.is_favorite ? 'active' : ''}" onclick="togglePostFavorite(event, '${p.id}')" aria-label="${p.is_favorite ? 'Remove from favorite posts' : 'Add to favorite posts'}">♥</button>
                 <button class="card-mark-btn card-check-btn ${p.is_published ? 'active' : ''}" onclick="togglePostPublished(event, '${p.id}')" aria-label="${p.is_published ? 'Remove from published posts' : 'Mark post as published'}">✓</button>
             </div>
@@ -3197,7 +3268,6 @@ function renderPosts() {
                 ${p.post_length ? `<span class="tag tag-format">${esc(p.post_length)}</span>` : ''}
                 <span class="tag tag-format">${esc(p.post_format||'')}</span>
                 <span class="tag tag-goal">${esc(p.post_goal||'')}</span>
-                ${p.lead_magnet_title ? `<span class="tag tag-goal">${esc(p.lead_magnet_title)}</span>` : ''}
             </div>
             <div class="post-row-hook">${esc(p.hook || (p.final_text||'').slice(0,80))}</div>
             <div class="post-row-preview">${esc(p.final_text||'')}</div>
@@ -3220,7 +3290,9 @@ function filteredPosts() {
         const statusOk = S.postStatusFilter === 'all'
             || (S.postStatusFilter === 'favorite' && post.is_favorite)
             || (S.postStatusFilter === 'published' && post.is_published);
-        return platformOk && typeOk && statusOk;
+        const automationOk = S.postAutomationFilter === 'all'
+            || (S.postAutomationFilter.startsWith('flow:') && String(post.lead_magnet_id || '') === S.postAutomationFilter.slice(5));
+        return platformOk && typeOk && statusOk && automationOk;
     });
 }
 
@@ -3228,14 +3300,43 @@ function syncPostFilters() {
     const platform = document.getElementById('post-platform-filter');
     const type = document.getElementById('post-type-filter');
     const status = document.getElementById('post-status-filter');
+    const automation = document.getElementById('post-automation-filter');
     const typeWrap = document.getElementById('post-type-filter-wrap');
 
     if (platform) platform.value = S.postPlatformFilter;
     if (type) type.value = S.postTypeFilter;
     if (status) status.value = S.postStatusFilter;
+    if (automation) {
+        const options = postAutomationFilterOptions();
+        automation.innerHTML = options.map(option => `
+            <option value="${esc(option.value)}">${esc(option.label)}</option>
+        `).join('');
+        const values = new Set(options.map(option => option.value));
+        if (!values.has(S.postAutomationFilter)) S.postAutomationFilter = 'all';
+        automation.value = S.postAutomationFilter;
+    }
 
     const showType = S.postPlatformFilter !== 'linkedin';
     if (typeWrap) typeWrap.style.display = showType ? '' : 'none';
+}
+
+function postAutomationFilterOptions() {
+    const flowMap = new Map();
+    S.leadMagnets.forEach(flow => {
+        if (flow.id) flowMap.set(String(flow.id), flow.title || 'Untitled flow');
+    });
+    S.posts.forEach(post => {
+        if (post.lead_magnet_id) {
+            flowMap.set(String(post.lead_magnet_id), post.lead_magnet_title || flowMap.get(String(post.lead_magnet_id)) || 'Untitled flow');
+        }
+    });
+
+    return [
+        { value: 'all', label: 'All' },
+        ...[...flowMap.entries()]
+            .sort((a, b) => a[1].localeCompare(b[1]))
+            .map(([id, title]) => ({ value: `flow:${id}`, label: title })),
+    ];
 }
 
 function setPostPlatformFilter(value) {
@@ -3254,6 +3355,11 @@ function setPostTypeFilter(value) {
 
 function setPostStatusFilter(value) {
     S.postStatusFilter = value;
+    renderPosts();
+}
+
+function setPostAutomationFilter(value) {
+    S.postAutomationFilter = value;
     renderPosts();
 }
 
@@ -3604,8 +3710,10 @@ function renderFlowResult(flow) {
     renderFlowPostContext(flow);
     document.getElementById('flow-result').style.display = '';
     document.getElementById('btn-flow-copy').style.display = '';
+    document.getElementById('btn-flow-copy-steps').style.display = '';
 
     document.getElementById('flow-preview').innerHTML = leadFlowPreviewHtml(flow);
+    document.getElementById('flow-steps').innerHTML = flowSetupStepsHtml(flow);
     document.getElementById('flow-json').textContent = JSON.stringify(flow.manychat_setup || {}, null, 2);
 }
 
@@ -3618,13 +3726,19 @@ function leadFlowFromResource(resource) {
         publicReply,
         ...((setup.public_comment_reply_options || []).filter(Boolean)),
     ]).slice(0, 3);
+    const url = setup.lead_magnet_url || resource.url || '';
     const openingButton = resource.opening_dm_button_label || setup.opening_dm_button_label || '';
-    const linkButton = resource.link_button_label || setup.link_button_label || '';
+    const linkButton = url ? (resource.link_button_label || setup.link_button_label || '') : '';
     const firstMessage = resource.delivery_message || setup.opening_dm_text || '';
     const secondMessage = resource.second_dm_message || setup.second_dm_text || '';
     const question = resource.qualification_question || '';
     const followUp = resource.follow_up_cta || '';
-    const normalizedSetup = hasSetup ? setup : {
+    const normalizedSetup = hasSetup ? {
+        ...setup,
+        lead_magnet_url: url,
+        lead_magnet_used: Boolean(url),
+        link_button_label: linkButton,
+    } : {
         manual_required: true,
         comment_trigger_mode: resource.trigger_type || 'specific_word',
         public_comment_reply: publicReply,
@@ -3635,17 +3749,17 @@ function leadFlowFromResource(resource) {
         opening_dm_button_label: openingButton,
         link_button_label: linkButton,
         flow_type: 'instagram_comment_to_dm',
-        lead_magnet_used: Boolean(resource.url),
-        lead_magnet_url: resource.url || '',
+        lead_magnet_used: Boolean(url),
+        lead_magnet_url: url,
         setup_steps: [
             'Create an Instagram Comments automation in ManyChat.',
             `Set the comment trigger to ${resource.trigger_type === 'any_word' ? 'any word or reaction' : 'a specific word or reaction'}.`,
             resource.trigger_type === 'any_word' ? 'No specific keyword is required.' : keyword ? `Use the trigger keyword '${keyword}'.` : 'Choose a trigger keyword before going live.',
-            publicReply ? `Turn on public comment reply and use: ${publicReply}` : 'Add a public comment reply.',
+            publicReply ? `Turn on public comment reply and use: ${publicReply}${publicReplyOptions.filter(reply => reply !== publicReply).length ? ` Alternative replies: ${publicReplyOptions.filter(reply => reply !== publicReply).join(' | ')}` : ''}` : 'Add a public comment reply.',
             firstMessage ? `Add this opening DM text: ${firstMessage}` : 'Add an opening DM.',
             openingButton ? `Set the opening DM button label to: ${openingButton}` : 'Add an opening DM button if the flow should continue by button click.',
             secondMessage ? `After the button click, send this second DM text: ${secondMessage}` : 'After the button click, add the second DM text or resource details.',
-            resource.url && linkButton ? `Attach URL ${resource.url} to the second DM with button label: ${linkButton}` : 'No URL is required.',
+            url && linkButton ? `Attach URL ${url} to the second DM with button label: ${linkButton}` : 'No URL is required.',
             'Preview the Comments and DM tabs before going live.',
             'Click Go Live in ManyChat when ready.',
         ],
@@ -3672,12 +3786,12 @@ function leadFlowPreviewHtml(flow) {
     const keyword = flow.trigger_keyword || setup.trigger_keyword || '';
     const publicReply = flow.public_comment_reply || setup.public_comment_reply || '';
     const openingButton = flow.opening_dm_button_label || setup.opening_dm_button_label || '';
-    const linkButton = flow.link_button_label || setup.link_button_label || '';
     const firstMessage = flow.first_message || setup.opening_dm_text || '';
     const secondMessage = flow.second_message || setup.second_dm_text || '';
     const question = flow.qualification_question || '';
     const followUp = flow.follow_up || '';
     const url = setup.lead_magnet_url || '';
+    const linkButton = url ? (flow.link_button_label || setup.link_button_label || '') : '';
     return `
         ${flowBadgesHtml(keyword, publicReply)}
         ${flowPhoneHtml({ firstMessage, secondMessage, openingButton, linkButton, url, question, followUp, title: flow.lead_magnet_title })}`;
@@ -3690,8 +3804,8 @@ function leadFlowCardPreviewHtml(resource) {
         firstMessage: flow.first_message,
         secondMessage: flow.second_message,
         openingButton: flow.opening_dm_button_label || setup.opening_dm_button_label,
-        linkButton: flow.link_button_label || setup.link_button_label,
         url: setup.lead_magnet_url || '',
+        linkButton: setup.lead_magnet_url ? (flow.link_button_label || setup.link_button_label) : '',
         question: null,
         followUp: null,
         title: resource.title,
@@ -3728,6 +3842,53 @@ function flowPhoneHtml({ firstMessage, secondMessage, openingButton, linkButton,
             ${question ? `<div class="dm-bubble">${esc(question)}</div>` : ''}
             ${followUp ? `<div class="dm-bubble">${esc(followUp)}</div>` : ''}
         </div>`;
+}
+
+function flowSetupStepsHtml(flow) {
+    const prepared = preparedSetupSteps(flow);
+    const steps = prepared.steps;
+    if (!steps.length) return '';
+    return `
+        <div class="flow-steps-panel">
+            <div class="flow-steps-head">
+                <div class="flow-steps-title">${esc(prepared.title || 'ManyChat setup steps')}</div>
+                <button class="btn btn-secondary btn-sm" onclick="copySetupSteps()">
+                    <svg class="flat-icon"><use href="#icon-copy"></use></svg>
+                    Copy Steps
+                </button>
+            </div>
+            <ol class="flow-steps-list">
+                ${steps.map(step => `<li>${esc(step)}</li>`).join('')}
+            </ol>
+        </div>`;
+}
+
+function preparedSetupSteps(flow) {
+    const setup = flow?.manychat_setup || {};
+    let steps = [...(setup.setup_steps || [])];
+    let title = 'Create an Instagram Comments automation in ManyChat.';
+    if (steps[0] && /^Create an Instagram Comments automation/i.test(steps[0])) {
+        title = steps[0];
+        steps = steps.slice(1);
+    }
+
+    const publicReply = flow?.public_comment_reply || setup.public_comment_reply || '';
+    const publicReplies = uniqueList([
+        publicReply,
+        ...((flow?.public_comment_reply_options || setup.public_comment_reply_options || []).filter(Boolean)),
+    ]);
+    const alternatives = publicReplies.filter(reply => reply && reply !== publicReply);
+
+    if (alternatives.length) {
+        steps = steps.map(step => {
+            if (!/^Turn on public comment reply/i.test(step) || /Alternative replies:/i.test(step)) {
+                return step;
+            }
+            return `${step} Alternative replies: ${alternatives.join(' | ')}`;
+        });
+    }
+
+    return { title, steps };
 }
 
 function flowPost() {
@@ -3770,7 +3931,7 @@ function copyFlow() {
         `Trigger Keyword: ${flow.trigger_keyword || setup.trigger_keyword || ''}`,
         `\nPublic Reply Options:\n${publicReplies.map((reply, index) => `${index + 1}. ${reply}`).join('\n')}`,
         flow.opening_dm_button_label || setup.opening_dm_button_label ? `\nOpening Button:\n${flow.opening_dm_button_label || setup.opening_dm_button_label || ''}` : '',
-        flow.link_button_label || setup.link_button_label ? `\nLink Button:\n${flow.link_button_label || setup.link_button_label || ''}` : '',
+        setup.lead_magnet_url && (flow.link_button_label || setup.link_button_label) ? `\nLink Button:\n${flow.link_button_label || setup.link_button_label || ''}` : '',
         `\nOpening DM:\n${flow.first_message || ''}`,
         `\nSecond DM:\n${flow.second_message || setup.second_dm_text || ''}`,
         `\nQualification Question:\n${flow.qualification_question || ''}`,
@@ -3778,6 +3939,17 @@ function copyFlow() {
         `\n\nManyChat Setup JSON:\n${json}`,
     ].join('');
     copyTxt(text);
+}
+
+function copySetupSteps() {
+    const prepared = preparedSetupSteps(S.flowData);
+    const steps = prepared.steps;
+    if (!steps.length) {
+        toast('No setup steps to copy', 'error');
+        return;
+    }
+    const title = prepared.title ? `${prepared.title}\n` : '';
+    copyTxt(`${title}${steps.map((step, index) => `${index + 1}. ${step}`).join('\n')}`);
 }
 
 // ─── EDIT PROFILE MODAL ────────────────────────────

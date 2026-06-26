@@ -235,7 +235,7 @@ def update_lead_magnet_flow(conn, lead_magnet_id: str, profile_id: str, flow: di
         "delivery_message": flow.get("first_message"),
         "second_dm_message": flow.get("second_message"),
         "opening_dm_button_label": flow.get("opening_dm_button_label"),
-        "link_button_label": flow.get("link_button_label"),
+        "link_button_label": flow.get("link_button_label") if existing[1] else None,
         "qualification_question": flow.get("qualification_question"),
         "follow_up_cta": flow.get("follow_up"),
     }
