@@ -102,6 +102,7 @@ CREATE TABLE lead_magnets (
     trigger_type TEXT DEFAULT 'specific_word',
     public_comment_reply TEXT,
     delivery_message TEXT,
+    second_dm_message TEXT,
     opening_dm_button_label TEXT,
     link_button_label TEXT,
     qualification_question TEXT,

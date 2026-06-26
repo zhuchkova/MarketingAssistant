@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import List, Optional
 from pydantic import BaseModel, ConfigDict, field_validator
 
 from schemas.post_generation import ALLOWED_POST_GOALS
@@ -20,7 +20,9 @@ class LeadMagnetRequest(BaseModel):
     suggested_keyword: Optional[str] = None
     trigger_type: Optional[str] = None
     public_comment_reply: Optional[str] = None
+    public_comment_reply_options: Optional[List[str]] = None
     delivery_message: Optional[str] = None
+    second_dm_message: Optional[str] = None
     opening_dm_button_label: Optional[str] = None
     link_button_label: Optional[str] = None
     qualification_question: Optional[str] = None
@@ -42,6 +44,7 @@ class LeadMagnetRequest(BaseModel):
         "trigger_type",
         "public_comment_reply",
         "delivery_message",
+        "second_dm_message",
         "opening_dm_button_label",
         "link_button_label",
         "qualification_question",
@@ -80,6 +83,14 @@ class LeadMagnetRequest(BaseModel):
             )
         return value
 
+    @field_validator("public_comment_reply_options")
+    @classmethod
+    def clean_public_reply_options(cls, value: Optional[List[str]]) -> Optional[List[str]]:
+        if value is None:
+            return None
+        cleaned = [item.strip() for item in value if item and item.strip()]
+        return cleaned[:3] or None
+
     model_config = ConfigDict(
         json_schema_extra={
             "example": {
@@ -89,7 +100,13 @@ class LeadMagnetRequest(BaseModel):
                 "suggested_keyword": "GUIDE",
                 "trigger_type": "specific_word",
                 "public_comment_reply": "Sent it to you now.",
+                "public_comment_reply_options": [
+                    "Sent it to you now.",
+                    "Just sent it your way.",
+                    "Thanks for commenting. Check your DMs."
+                ],
                 "delivery_message": "Here is the guide I mentioned.",
+                "second_dm_message": "Here are the details I mentioned.",
                 "opening_dm_button_label": "Send me the link",
                 "link_button_label": "Open",
                 "qualification_question": "What are you trying to plan first?",

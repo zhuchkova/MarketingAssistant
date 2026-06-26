@@ -323,7 +323,17 @@
         .form-hint { font-size: 13px; color: var(--text-4); }
 
         .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-        @media (max-width: 600px) { .grid-2 { grid-template-columns: 1fr; } }
+        .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+        .flow-reply-options {
+            padding: 14px;
+            border: 1px solid var(--border);
+            border-radius: var(--r-sm);
+            background: #fbfdf7;
+        }
+        @media (max-width: 600px) {
+            .grid-2,
+            .grid-3 { grid-template-columns: 1fr; }
+        }
 
         /* ── DIVIDER ────────────────────── */
         .divider { height: 1px; background: var(--border); margin: 24px 0; }
@@ -2040,7 +2050,7 @@
         </div>
         <div class="modal-body">
             <p style="font-size:15px; color:var(--text-3); margin-bottom:18px;">
-                View the prepared Instagram comment-to-DM flow attached to this post.
+                View the prepared reusable Instagram comment-to-DM flow.
             </p>
             <div id="flow-post-context" class="flow-context-card"></div>
             <div id="flow-result">
@@ -2711,16 +2721,25 @@ function renderLeadFlows() {
                     <span class="form-hint">Button in the opening DM.</span>
                 </div>
             </div>
+            <div class="form-group flow-reply-options">
+                <label>Public Reply Options</label>
+                <div class="grid-3">
+                    <input type="text" id="flow-resource-public-reply" placeholder="Main reply" value="${esc(editing?.public_comment_reply || '')}">
+                    <input type="text" id="flow-resource-public-reply-2" placeholder="Alternative reply" value="${esc(publicReplyOption(editing, 1))}">
+                    <input type="text" id="flow-resource-public-reply-3" placeholder="Alternative reply" value="${esc(publicReplyOption(editing, 2))}">
+                </div>
+                <span class="form-hint">Option 1 is the main public reply. Options 2 and 3 are alternatives for ManyChat setup.</span>
+            </div>
             <div class="grid-2">
                 <div class="form-group">
-                    <label>Public Reply</label>
-                    <input type="text" id="flow-resource-public-reply" placeholder="Sent it to you now." value="${esc(editing?.public_comment_reply || '')}">
-                    <span class="form-hint">Can be generated. Similar to ManyChat’s public reply options.</span>
+                    <label>Opening DM</label>
+                    <input type="text" id="flow-resource-message" placeholder="Hey there, I’m so happy you’re here. Click below and I’ll send the guide in just a sec." value="${esc(editing?.delivery_message || '')}">
+                    <span class="form-hint">First DM before the person clicks the button.</span>
                 </div>
                 <div class="form-group">
-                    <label>Opening DM</label>
-                    <input type="text" id="flow-resource-message" placeholder="Here is the guide I mentioned." value="${esc(editing?.delivery_message || '')}">
-                    <span class="form-hint">Can be generated. This is the opening DM text.</span>
+                    <label>Second DM</label>
+                    <input type="text" id="flow-resource-second-message" placeholder="Here are the details I mentioned." value="${esc(editing?.second_dm_message || '')}">
+                    <span class="form-hint">Message after the person clicks the opening button.</span>
                 </div>
             </div>
             <div class="grid-2">
@@ -2760,7 +2779,7 @@ function renderLeadFlows() {
                         ${item.url ? `<div class="lead-resource-url">${esc(item.url)}</div>` : ''}
                         ${item.public_comment_reply ? `<div class="idea-hook"><strong>Public reply:</strong> ${esc(item.public_comment_reply)}</div>` : ''}
                         ${item.delivery_message ? `<div class="idea-hook"><strong>Opening DM:</strong> ${esc(item.delivery_message)}</div>` : ''}
-                        ${item.opening_dm_button_label ? `<div class="idea-angle">${esc(item.opening_dm_button_label)}</div>` : ''}
+                        ${item.second_dm_message ? `<div class="idea-hook"><strong>Second DM:</strong> ${esc(item.second_dm_message)}</div>` : ''}
                         ${item.suggested_keyword && item.delivery_message ? `<div class="lead-card-hover-preview">${leadFlowCardPreviewHtml(item)}</div>` : ''}
                         <div class="idea-card-actions">
                             <button class="btn btn-secondary btn-sm" onclick="viewLeadFlowResource('${esc(item.id)}')">View</button>
@@ -2781,13 +2800,20 @@ function renderLeadFlows() {
 }
 
 function leadMagnetPayloadFromForm() {
+    const publicReplyOptions = [
+        val('flow-resource-public-reply'),
+        val('flow-resource-public-reply-2'),
+        val('flow-resource-public-reply-3'),
+    ].filter(Boolean);
     return {
         title: val('flow-resource-title'),
         url: val('flow-resource-url'),
         suggested_keyword: val('flow-resource-keyword'),
         trigger_type: val('flow-resource-trigger-type'),
         public_comment_reply: val('flow-resource-public-reply'),
+        public_comment_reply_options: publicReplyOptions.length ? publicReplyOptions : null,
         delivery_message: val('flow-resource-message'),
+        second_dm_message: val('flow-resource-second-message'),
         opening_dm_button_label: val('flow-resource-opening-button'),
         link_button_label: val('flow-resource-link-button'),
         qualification_question: val('flow-resource-qualification'),
@@ -2795,6 +2821,12 @@ function leadMagnetPayloadFromForm() {
         follow_up_cta: val('flow-resource-follow-up'),
         preferred_post_goal: val('flow-resource-goal'),
     };
+}
+
+function publicReplyOption(resource, index) {
+    if (!resource) return '';
+    const options = (resource.manychat_setup && resource.manychat_setup.public_comment_reply_options) || [];
+    return options[index] || '';
 }
 
 async function refreshLeadMagnets() {
@@ -3579,20 +3611,27 @@ function renderFlowResult(flow) {
 
 function leadFlowFromResource(resource) {
     const setup = resource.manychat_setup || {};
-    const keyword = resource.suggested_keyword || setup.trigger_keyword || 'INFO';
-    const publicReply = resource.public_comment_reply || setup.public_comment_reply || 'Sent it to you. Check your DMs.';
-    const openingButton = resource.opening_dm_button_label || setup.opening_dm_button_label || 'Send me the link';
-    const linkButton = resource.link_button_label || setup.link_button_label || 'Open';
-    const firstMessage = resource.delivery_message || '';
+    const hasSetup = Object.keys(setup).length > 0;
+    const keyword = resource.suggested_keyword || setup.trigger_keyword || '';
+    const publicReply = resource.public_comment_reply || setup.public_comment_reply || '';
+    const publicReplyOptions = uniqueList([
+        publicReply,
+        ...((setup.public_comment_reply_options || []).filter(Boolean)),
+    ]).slice(0, 3);
+    const openingButton = resource.opening_dm_button_label || setup.opening_dm_button_label || '';
+    const linkButton = resource.link_button_label || setup.link_button_label || '';
+    const firstMessage = resource.delivery_message || setup.opening_dm_text || '';
+    const secondMessage = resource.second_dm_message || setup.second_dm_text || '';
     const question = resource.qualification_question || '';
     const followUp = resource.follow_up_cta || '';
-    const normalizedSetup = Object.keys(setup).length ? setup : {
+    const normalizedSetup = hasSetup ? setup : {
         manual_required: true,
         comment_trigger_mode: resource.trigger_type || 'specific_word',
         public_comment_reply: publicReply,
-        public_comment_reply_options: [publicReply],
+        public_comment_reply_options: publicReplyOptions,
         trigger_keyword: keyword,
-        opening_dm_text: firstMessage || `Hey there! Thanks so much for your interest.\n\nClick below and I’ll send ${resource.title || 'it'} in just a sec.`,
+        opening_dm_text: firstMessage,
+        second_dm_text: secondMessage,
         opening_dm_button_label: openingButton,
         link_button_label: linkButton,
         flow_type: 'instagram_comment_to_dm',
@@ -3601,10 +3640,12 @@ function leadFlowFromResource(resource) {
         setup_steps: [
             'Create an Instagram Comments automation in ManyChat.',
             `Set the comment trigger to ${resource.trigger_type === 'any_word' ? 'any word or reaction' : 'a specific word or reaction'}.`,
-            resource.trigger_type === 'any_word' ? 'No specific keyword is required.' : `Use the trigger keyword '${keyword}'.`,
-            `Turn on public comment reply and use: ${publicReply}`,
-            `Add an opening DM with button label: ${openingButton}`,
-            resource.url ? `Add a link step with URL ${resource.url} and button label: ${linkButton}` : 'Add the next-step message or details. No URL is required.',
+            resource.trigger_type === 'any_word' ? 'No specific keyword is required.' : keyword ? `Use the trigger keyword '${keyword}'.` : 'Choose a trigger keyword before going live.',
+            publicReply ? `Turn on public comment reply and use: ${publicReply}` : 'Add a public comment reply.',
+            firstMessage ? `Add this opening DM text: ${firstMessage}` : 'Add an opening DM.',
+            openingButton ? `Set the opening DM button label to: ${openingButton}` : 'Add an opening DM button if the flow should continue by button click.',
+            secondMessage ? `After the button click, send this second DM text: ${secondMessage}` : 'After the button click, add the second DM text or resource details.',
+            resource.url && linkButton ? `Attach URL ${resource.url} to the second DM with button label: ${linkButton}` : 'No URL is required.',
             'Preview the Comments and DM tabs before going live.',
             'Click Go Live in ManyChat when ready.',
         ],
@@ -3613,7 +3654,9 @@ function leadFlowFromResource(resource) {
     return {
         trigger_keyword: keyword,
         public_comment_reply: publicReply,
+        public_comment_reply_options: publicReplyOptions,
         first_message: firstMessage,
+        second_message: secondMessage,
         opening_dm_button_label: openingButton,
         link_button_label: linkButton,
         qualification_question: question,
@@ -3626,17 +3669,18 @@ function leadFlowFromResource(resource) {
 
 function leadFlowPreviewHtml(flow) {
     const setup = flow.manychat_setup || {};
-    const keyword = flow.trigger_keyword || setup.trigger_keyword || 'INFO';
-    const publicReply = flow.public_comment_reply || setup.public_comment_reply || 'Sent it to you. Check your DMs.';
-    const openingButton = flow.opening_dm_button_label || setup.opening_dm_button_label || 'Send me the link';
-    const linkButton = flow.link_button_label || setup.link_button_label || 'Open';
-    const firstMessage = flow.first_message || '';
+    const keyword = flow.trigger_keyword || setup.trigger_keyword || '';
+    const publicReply = flow.public_comment_reply || setup.public_comment_reply || '';
+    const openingButton = flow.opening_dm_button_label || setup.opening_dm_button_label || '';
+    const linkButton = flow.link_button_label || setup.link_button_label || '';
+    const firstMessage = flow.first_message || setup.opening_dm_text || '';
+    const secondMessage = flow.second_message || setup.second_dm_text || '';
     const question = flow.qualification_question || '';
     const followUp = flow.follow_up || '';
     const url = setup.lead_magnet_url || '';
     return `
-        ${flowBadgesHtml(keyword, publicReply, openingButton, linkButton, url)}
-        ${flowPhoneHtml({ firstMessage, openingButton, linkButton, url, question, followUp, title: flow.lead_magnet_title })}`;
+        ${flowBadgesHtml(keyword, publicReply)}
+        ${flowPhoneHtml({ firstMessage, secondMessage, openingButton, linkButton, url, question, followUp, title: flow.lead_magnet_title })}`;
 }
 
 function leadFlowCardPreviewHtml(resource) {
@@ -3644,6 +3688,7 @@ function leadFlowCardPreviewHtml(resource) {
     const setup = flow.manychat_setup || {};
     return flowPhoneHtml({
         firstMessage: flow.first_message,
+        secondMessage: flow.second_message,
         openingButton: flow.opening_dm_button_label || setup.opening_dm_button_label,
         linkButton: flow.link_button_label || setup.link_button_label,
         url: setup.lead_magnet_url || '',
@@ -3653,36 +3698,40 @@ function leadFlowCardPreviewHtml(resource) {
     });
 }
 
-function flowBadgesHtml(keyword, publicReply, openingButton, linkButton, url) {
+function flowBadgesHtml(keyword, publicReply) {
     return `
         <div style="display:flex; flex-wrap:wrap; gap:10px; margin-bottom:16px">
-            <div class="kw-badge">Trigger keyword: <strong>${esc(keyword)}</strong></div>
-            <div class="kw-badge">Public reply: <strong>${esc(publicReply)}</strong></div>
-            <div class="kw-badge">Opening button: <strong>${esc(openingButton)}</strong></div>
-            ${url ? `<div class="kw-badge">Link button: <strong>${esc(linkButton)}</strong></div>` : ''}
+            ${keyword ? `<div class="kw-badge">Trigger keyword: <strong>${esc(keyword)}</strong></div>` : ''}
+            ${publicReply ? `<div class="kw-badge">Public reply: <strong>${esc(publicReply)}</strong></div>` : ''}
         </div>`;
 }
 
-function flowPhoneHtml({ firstMessage, openingButton, linkButton, url, question, followUp, title }) {
+function flowPhoneHtml({ firstMessage, secondMessage, openingButton, linkButton, url, question, followUp, title }) {
     const resourceName = title || 'the resource';
+    const fallbackMessage = openingButton
+        ? `Hey there, I’m so happy you’re here. Thanks so much for your interest.\n\nClick below and I’ll send ${resourceName} in just a sec.`
+        : `Hey there, I’m so happy you’re here. Thanks so much for your interest in ${resourceName}.`;
     return `
         <div class="dm-phone">
             <div class="dm-phone-head"><span>‹</span><span class="dm-avatar"></span><span>instagram</span></div>
             <div class="dm-bubble">
-                ${esc(firstMessage || `Hey there! Thanks so much for your interest.\n\nClick below and I’ll send ${resourceName} in just a sec.`)}
-                <div class="dm-button">${esc(openingButton)}</div>
+                ${esc(firstMessage || fallbackMessage)}
+                ${openingButton ? `<div class="dm-button">${esc(openingButton)}</div>` : ''}
             </div>
-            <div class="dm-user-reply">${esc(openingButton)}</div>
-            <div class="dm-bubble">
-                ${url ? esc(`${resourceName} is ready for you.`) : esc('Here are the details I mentioned.')}
-                ${url ? `<div class="dm-button">${esc(linkButton)}</div>` : ''}
-            </div>
+            ${openingButton ? `<div class="dm-user-reply">${esc(openingButton)}</div>` : ''}
+            ${secondMessage ? `
+                <div class="dm-bubble">
+                    ${esc(secondMessage)}
+                    ${url && linkButton ? `<div class="dm-button">${esc(linkButton)}</div>` : ''}
+                </div>
+            ` : ''}
             ${question ? `<div class="dm-bubble">${esc(question)}</div>` : ''}
             ${followUp ? `<div class="dm-bubble">${esc(followUp)}</div>` : ''}
         </div>`;
 }
 
 function flowPost() {
+    if (!S.flowPostId) return null;
     return S.posts.find(p => String(p.id) === String(S.flowPostId))
         || (S.detailPost && String(S.detailPost.id) === String(S.flowPostId) ? S.detailPost : null)
         || S.genPost;
@@ -3713,12 +3762,17 @@ function copyFlow() {
     const flow = S.flowData || {};
     const setup = flow.manychat_setup || {};
     const json = document.getElementById('flow-json').textContent || '{}';
+    const publicReplies = uniqueList([
+        flow.public_comment_reply || setup.public_comment_reply || '',
+        ...((flow.public_comment_reply_options || setup.public_comment_reply_options || []).filter(Boolean)),
+    ]);
     const text = [
         `Trigger Keyword: ${flow.trigger_keyword || setup.trigger_keyword || ''}`,
-        `\nPublic Reply:\n${flow.public_comment_reply || setup.public_comment_reply || ''}`,
-        `\nOpening Button:\n${flow.opening_dm_button_label || setup.opening_dm_button_label || ''}`,
-        `\nLink Button:\n${flow.link_button_label || setup.link_button_label || ''}`,
+        `\nPublic Reply Options:\n${publicReplies.map((reply, index) => `${index + 1}. ${reply}`).join('\n')}`,
+        flow.opening_dm_button_label || setup.opening_dm_button_label ? `\nOpening Button:\n${flow.opening_dm_button_label || setup.opening_dm_button_label || ''}` : '',
+        flow.link_button_label || setup.link_button_label ? `\nLink Button:\n${flow.link_button_label || setup.link_button_label || ''}` : '',
         `\nOpening DM:\n${flow.first_message || ''}`,
+        `\nSecond DM:\n${flow.second_message || setup.second_dm_text || ''}`,
         `\nQualification Question:\n${flow.qualification_question || ''}`,
         `\nFollow-Up:\n${flow.follow_up || ''}`,
         `\n\nManyChat Setup JSON:\n${json}`,
@@ -4125,6 +4179,16 @@ function rawVal(id) { return document.getElementById(id)?.value || ''; }
 
 function esc(s) {
     return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function uniqueList(items) {
+    const seen = new Set();
+    return (items || []).filter(item => {
+        const value = String(item || '').trim();
+        if (!value || seen.has(value)) return false;
+        seen.add(value);
+        return true;
+    });
 }
 
 async function copyTxt(text) {

@@ -16,6 +16,7 @@ class ManyChatSetup(BaseModel):
     trigger_keyword: str = Field(description="Keyword users should comment")
     public_comment_reply_options: List[str] = Field(description="Alternative short public replies")
     opening_dm_text: str = Field(description="Opening DM text shown before the user clicks the button")
+    second_dm_text: str = Field(description="Second DM text sent after the user clicks the opening button")
     opening_dm_button_label: str = Field(description="Button label in the opening DM, for example Send me the link")
     link_button_label: str = Field(description="Button label for the delivered link, for example Open")
     flow_type: str = Field(description="Type of flow, for example instagram_comment_to_dm")
@@ -32,6 +33,7 @@ class ManyChatFlowResult(BaseModel):
     public_comment_reply_options: List[str] = Field(description="Three short public comment reply options")
     public_comment_reply: str = Field(description="Short public reply to the user's Instagram comment")
     first_message: str = Field(description="First ManyChat DM message")
+    second_message: str = Field(description="Second DM message after the user clicks the opening button")
     opening_dm_button_label: str = Field(description="Opening DM button label")
     link_button_label: str = Field(description="Link button label")
     qualification_question: str = Field(description="One question to qualify the lead")
@@ -98,6 +100,7 @@ Selected lead magnet or offer:
 - Comment trigger mode: {lead_magnet_trigger_type}
 - Public comment reply: {lead_magnet_public_comment_reply}
 - Delivery message: {lead_magnet_delivery_message}
+- Second DM message: {lead_magnet_second_dm_message}
 - Opening DM button label: {lead_magnet_opening_dm_button_label}
 - Link button label: {lead_magnet_link_button_label}
 - Qualification question: {lead_magnet_qualification_question}
@@ -117,8 +120,11 @@ Rules:
 - Return exactly 3 public_comment_reply_options. The selected public_comment_reply must be one of them unless a saved public reply exists.
 - If a saved public comment reply exists, use it unless it is clearly unsafe or irrelevant
 - first_message is the opening DM before the user clicks the button. It must not include the URL directly and should not say the link is already inside the message.
-- Make first_message specific to this lead magnet/resource, creator, and audience. Do not reuse the same generic wording for every resource. Good pattern: friendly acknowledgement + the resource/result they asked for + click the button to receive it.
+- Make first_message specific to this lead magnet/resource, creator, and audience. Use the resource title, description, outcome, niche, or local context when available.
+- Do not reuse the same generic wording for every resource. Good pattern: “Hey there, I’m so happy you’re here. Thanks for your interest in [resource/outcome]. Click below and I’ll send [specific resource] in just a sec.”
 - If a saved first DM/delivery message exists, use it as first_message only if it follows the opening-DM pattern and does not already send the link.
+- second_message is sent after the user clicks the opening DM button. It should deliver the promised resource/details and may mention that the link/button is below, but should not be identical to first_message.
+- If a saved second DM exists, use it unless it is clearly unsafe or irrelevant.
 - If saved button labels exist, use them exactly unless they are too long or unclear
 - If a saved qualification question or follow-up exists, use it unless it is clearly unsafe or irrelevant
 - If a lead magnet URL exists, the first message must NOT include that URL; the URL belongs in the link step after the user clicks the opening button.
@@ -135,6 +141,7 @@ Rules:
   - public_comment_reply_options
   - trigger_keyword
   - opening_dm_text
+  - second_dm_text
   - opening_dm_button_label
   - link_button_label
   - flow_type
@@ -145,6 +152,7 @@ Rules:
 - setup_steps must reflect the real choices made for this flow: keyword mode, selected keyword or any-word trigger, public reply, opening DM, button label, link button label, optional qualification question, optional follow-up, preview, and go live.
 - api_supported_parts should say the API can help with account metadata, tags, fields, and sending content/flows once a subscriber/contact exists, but Instagram comment automation setup itself is prepared as manual ManyChat setup notes for now.
 - opening_dm_text must exactly match first_message.
+- second_dm_text must exactly match second_message.
 - Do not add extra keys to manychat_setup.
 """)
 

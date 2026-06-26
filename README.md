@@ -296,6 +296,7 @@ lead_magnets
   ├── trigger_type
   ├── public_comment_reply
   ├── delivery_message
+  ├── second_dm_message
   ├── opening_dm_button_label
   ├── link_button_label
   ├── qualification_question

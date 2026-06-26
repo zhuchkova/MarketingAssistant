@@ -4,30 +4,40 @@ def default_opening_dm(lead_magnet: dict) -> str:
 
     if title and description:
         return (
-            "Hey there! Thanks so much for your interest.\n\n"
+            "Hey there, I’m so happy you’re here. Thanks so much for your interest.\n\n"
             f"Click below and I’ll send {title} in just a sec."
         )
 
     if title and title != "this":
         return (
-            "Hey there! Thanks so much for your interest.\n\n"
+            "Hey there, I’m so happy you’re here. Thanks so much for your interest.\n\n"
             f"Click below and I’ll send {title} in just a sec."
         )
 
     return (
-        "Hey there! Thanks so much for your interest.\n\n"
+        "Hey there, I’m so happy you’re here. Thanks so much for your interest.\n\n"
         "Click below and I’ll send it in just a sec."
     )
 
 
 def build_manychat_setup(lead_magnet: dict) -> dict:
     trigger_type = lead_magnet.get("trigger_type") or "specific_word"
-    trigger_keyword = lead_magnet.get("suggested_keyword") or "INFO"
-    public_reply = lead_magnet.get("public_comment_reply") or "Sent it to you. Check your DMs."
-    opening_button = lead_magnet.get("opening_dm_button_label") or "Send me the link"
-    link_button = lead_magnet.get("link_button_label") or "Open"
+    trigger_keyword = lead_magnet.get("suggested_keyword") or ""
+    public_reply = lead_magnet.get("public_comment_reply") or ""
+    reply_options = lead_magnet.get("public_comment_reply_options") or []
+    reply_options = [option for option in reply_options if option]
+    if public_reply and public_reply not in reply_options:
+        reply_options = [public_reply, *reply_options]
+    if public_reply:
+        reply_options = (reply_options + [
+            "Just sent it your way.",
+            "Thanks for commenting. Check your DMs.",
+        ])[:3]
+    opening_button = lead_magnet.get("opening_dm_button_label") or ""
+    link_button = lead_magnet.get("link_button_label") or ""
     url = lead_magnet.get("url") or ""
-    first_message = lead_magnet.get("delivery_message") or default_opening_dm(lead_magnet)
+    first_message = lead_magnet.get("delivery_message") or ""
+    second_message = lead_magnet.get("second_dm_message") or ""
     qualification_question = lead_magnet.get("qualification_question") or ""
     follow_up = lead_magnet.get("follow_up_cta") or ""
 
@@ -35,17 +45,32 @@ def build_manychat_setup(lead_magnet: dict) -> dict:
         "Create an Instagram Comments automation in ManyChat.",
         f"Set the comment trigger to {'any word or reaction' if trigger_type == 'any_word' else 'a specific word or reaction'}.",
     ]
-    if trigger_type != "any_word":
+    if trigger_type != "any_word" and trigger_keyword:
         setup_steps.append(f"Use the trigger keyword '{trigger_keyword}'.")
-    setup_steps.extend([
-        f"Turn on public comment reply and use: {public_reply}",
-        f"Add this opening DM text: {first_message}",
-        f"Set the opening DM button label to: {opening_button}",
-    ])
-    if url:
-        setup_steps.append(f"After the button click, add a link step with URL {url} and button label: {link_button}")
+    elif trigger_type != "any_word":
+        setup_steps.append("Choose the trigger keyword before going live.")
+    if public_reply:
+        setup_steps.append(f"Turn on public comment reply and use: {public_reply}")
     else:
-        setup_steps.append("After the button click, add the next-step message or details. No URL is required for this flow.")
+        setup_steps.append("Turn on public comment reply and add the reply text.")
+    if first_message:
+        setup_steps.append(f"Add this opening DM text: {first_message}")
+    else:
+        setup_steps.append("Add an opening DM text.")
+    if opening_button:
+        setup_steps.append(f"Set the opening DM button label to: {opening_button}")
+    else:
+        setup_steps.append("Add an opening DM button label if the flow should continue by button click.")
+    if second_message:
+        setup_steps.append(f"After the button click, send this second DM text: {second_message}")
+    else:
+        setup_steps.append("After the button click, add the second DM text or resource details.")
+    if url and link_button:
+        setup_steps.append(f"Attach URL {url} to the second DM with button label: {link_button}")
+    elif url:
+        setup_steps.append(f"Attach URL {url} to the second DM.")
+    else:
+        setup_steps.append("No URL is required for this flow.")
     if qualification_question:
         setup_steps.append(f"Optionally ask this qualification question: {qualification_question}")
     if follow_up:
@@ -59,13 +84,10 @@ def build_manychat_setup(lead_magnet: dict) -> dict:
         "manual_required": True,
         "comment_trigger_mode": trigger_type,
         "public_comment_reply": public_reply,
-        "public_comment_reply_options": [
-            public_reply,
-            "Just sent it your way.",
-            "Thanks for commenting. Check your DMs.",
-        ],
+        "public_comment_reply_options": reply_options,
         "trigger_keyword": trigger_keyword,
         "opening_dm_text": first_message,
+        "second_dm_text": second_message,
         "opening_dm_button_label": opening_button,
         "link_button_label": link_button,
         "flow_type": "instagram_comment_to_dm",
@@ -86,7 +108,8 @@ def flow_from_lead_magnet(lead_magnet: dict) -> dict:
         "trigger_keyword": setup["trigger_keyword"],
         "public_comment_reply": setup["public_comment_reply"],
         "public_comment_reply_options": setup["public_comment_reply_options"],
-        "first_message": lead_magnet.get("delivery_message") or default_opening_dm(lead_magnet),
+        "first_message": lead_magnet.get("delivery_message") or setup.get("opening_dm_text") or "",
+        "second_message": lead_magnet.get("second_dm_message") or setup.get("second_dm_text") or "",
         "opening_dm_button_label": setup["opening_dm_button_label"],
         "link_button_label": setup["link_button_label"],
         "qualification_question": lead_magnet.get("qualification_question") or "",

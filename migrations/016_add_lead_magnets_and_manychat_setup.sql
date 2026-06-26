@@ -9,6 +9,7 @@ CREATE TABLE IF NOT EXISTS lead_magnets (
     trigger_type TEXT DEFAULT 'specific_word',
     public_comment_reply TEXT,
     delivery_message TEXT,
+    second_dm_message TEXT,
     opening_dm_button_label TEXT,
     link_button_label TEXT,
     qualification_question TEXT,
@@ -21,6 +22,7 @@ CREATE TABLE IF NOT EXISTS lead_magnets (
 
 ALTER TABLE lead_magnets
     ADD COLUMN IF NOT EXISTS public_comment_reply TEXT,
+    ADD COLUMN IF NOT EXISTS second_dm_message TEXT,
     ADD COLUMN IF NOT EXISTS preferred_post_goal TEXT,
     ADD COLUMN IF NOT EXISTS trigger_type TEXT DEFAULT 'specific_word',
     ADD COLUMN IF NOT EXISTS opening_dm_button_label TEXT,
