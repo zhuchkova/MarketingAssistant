@@ -4,6 +4,7 @@ from pydantic import ValidationError
 
 from schemas.auth import LoginRequest, RegisterRequest
 from schemas.content_idea import ContentIdeaRequest
+from schemas.lead_magnet import LeadMagnetRequest
 from schemas.post_generation import GeneratePostRequest, UpdatePostRequest
 from schemas.user_profile import CreateUserProfileRequest
 
@@ -102,11 +103,23 @@ class ValidationTests(unittest.TestCase):
             instagram_content_type="carousel",
             post_goal="share",
             post_length="long",
+            lead_magnet_id="55555555-5555-5555-5555-555555555555",
         )
 
         self.assertEqual(request.post_goal, "share")
         self.assertEqual(request.instagram_content_type, "carousel")
         self.assertEqual(request.post_length, "long")
+        self.assertEqual(request.lead_magnet_id, "55555555-5555-5555-5555-555555555555")
+
+    def test_generate_post_rejects_invalid_lead_magnet_id(self):
+        with self.assertRaises(ValidationError):
+            GeneratePostRequest(
+                content_idea_id="22222222-2222-2222-2222-222222222444",
+                platform="instagram",
+                instagram_content_type="carousel",
+                post_goal="comment",
+                lead_magnet_id="not-a-uuid",
+            )
 
     def test_generate_post_rejects_unknown_instagram_type(self):
         with self.assertRaises(ValidationError):
@@ -144,6 +157,42 @@ class ValidationTests(unittest.TestCase):
                 body="Useful body",
                 cta="Comment YES",
                 final_text="   ",
+            )
+
+    def test_lead_magnet_accepts_reusable_flow_fields(self):
+        request = LeadMagnetRequest(
+            title=" Bouquet Guide ",
+            url=" https://example.com/guide ",
+            suggested_keyword=" GUIDE ",
+            trigger_type=" SPECIFIC_WORD ",
+            public_comment_reply=" Sent it to you now. ",
+            delivery_message=" Here is the guide. ",
+            opening_dm_button_label=" Send me the link ",
+            link_button_label=" Open ",
+            qualification_question=" What are you trying to solve? ",
+            follow_up_cta=" Book a bouquet consult. ",
+            preferred_post_goal=" DOWNLOAD ",
+        )
+
+        self.assertEqual(request.title, "Bouquet Guide")
+        self.assertEqual(request.suggested_keyword, "GUIDE")
+        self.assertEqual(request.trigger_type, "specific_word")
+        self.assertEqual(request.opening_dm_button_label, "Send me the link")
+        self.assertEqual(request.link_button_label, "Open")
+        self.assertEqual(request.preferred_post_goal, "download")
+
+    def test_lead_magnet_rejects_unknown_trigger_type(self):
+        with self.assertRaises(ValidationError):
+            LeadMagnetRequest(
+                title="Guide",
+                trigger_type="everyone",
+            )
+
+    def test_lead_magnet_rejects_unknown_preferred_goal(self):
+        with self.assertRaises(ValidationError):
+            LeadMagnetRequest(
+                title="Guide",
+                preferred_post_goal="subscribe",
             )
 
     def test_custom_idea_rejects_unknown_style(self):

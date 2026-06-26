@@ -1,4 +1,20 @@
-import uuid
+EMPTY_LEAD_MAGNET_CONTEXT = {
+    "lead_magnet_id": None,
+    "lead_magnet_title": None,
+    "lead_magnet_url": None,
+    "lead_magnet_description": None,
+    "lead_magnet_keyword": None,
+    "lead_magnet_trigger_type": None,
+    "lead_magnet_public_comment_reply": None,
+    "lead_magnet_delivery_message": None,
+    "lead_magnet_second_dm_message": None,
+    "lead_magnet_opening_dm_button_label": None,
+    "lead_magnet_link_button_label": None,
+    "lead_magnet_qualification_question": None,
+    "lead_magnet_follow_up_cta": None,
+    "lead_magnet_preferred_post_goal": None,
+    "lead_magnet_manychat_setup": {},
+}
 
 
 def get_conversion_context(conn, post_id: str) -> dict:
@@ -32,6 +48,8 @@ def get_conversion_context(conn, post_id: str) -> dict:
                 p.body,
                 p.cta,
                 p.final_text,
+                p.lead_magnet_id,
+                p.instagram_content_type,
                 pl.name AS platform,
                 pg.name AS post_goal
 
@@ -80,32 +98,35 @@ def get_conversion_context(conn, post_id: str) -> dict:
             "body": row[24],
             "cta": row[25],
             "final_text": row[26],
-            "platform": row[27],
-            "post_goal": row[28],
+            "post_lead_magnet_id": row[27],
+            "instagram_content_type": row[28],
+            "platform": row[29],
+            "post_goal": row[30],
+            **EMPTY_LEAD_MAGNET_CONTEXT,
         }
 
 
-def save_manychat_flow(conn, post_id: str, flow: dict) -> str:
-    flow_id = str(uuid.uuid4())
+def attach_lead_magnet_context(context: dict, lead_magnet: dict = None) -> dict:
+    context = {**context, **EMPTY_LEAD_MAGNET_CONTEXT}
 
-    with conn.cursor() as cur:
-        cur.execute("""
-            INSERT INTO manychat_flows (
-                id,
-                post_id,
-                trigger_keyword,
-                first_message,
-                qualification_question,
-                follow_up
-            )
-            VALUES (%s, %s, %s, %s, %s, %s)
-        """, (
-            flow_id,
-            post_id,
-            flow["trigger_keyword"],
-            flow["first_message"],
-            flow["qualification_question"],
-            flow["follow_up"],
-        ))
+    if lead_magnet:
+        context.update({
+            "lead_magnet_id": lead_magnet.get("id"),
+            "lead_magnet_title": lead_magnet.get("title"),
+            "lead_magnet_url": lead_magnet.get("url"),
+            "lead_magnet_description": lead_magnet.get("description"),
+            "lead_magnet_keyword": lead_magnet.get("suggested_keyword"),
+            "lead_magnet_trigger_type": lead_magnet.get("trigger_type"),
+            "lead_magnet_public_comment_reply": lead_magnet.get("public_comment_reply"),
+            "lead_magnet_delivery_message": lead_magnet.get("delivery_message"),
+            "lead_magnet_second_dm_message": lead_magnet.get("second_dm_message"),
+            "lead_magnet_opening_dm_button_label": lead_magnet.get("opening_dm_button_label"),
+            "lead_magnet_link_button_label": lead_magnet.get("link_button_label"),
+            "lead_magnet_qualification_question": lead_magnet.get("qualification_question"),
+            "lead_magnet_follow_up_cta": lead_magnet.get("follow_up_cta"),
+            "lead_magnet_preferred_post_goal": lead_magnet.get("preferred_post_goal"),
+            "lead_magnet_manychat_setup": lead_magnet.get("manychat_setup") or {},
+        })
+        return context
 
-    return flow_id
+    return context

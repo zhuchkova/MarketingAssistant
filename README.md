@@ -15,11 +15,11 @@ The system combines **LLMs, RAG (Retrieval-Augmented Generation), LangChain, Chr
 * Analyze a creator's positioning and audience
 * Generate content ideas and hooks
 * Create platform-specific posts for LinkedIn and Instagram
-* Generate conversion funnels and ManyChat automations
+* Generate Instagram conversion funnels and ManyChat-style automations
 
 The goal is to provide highly relevant, engaging, and conversion-oriented content rather than generic AI-generated posts.
 
-Each signed-in user can manage multiple marketing profiles (for example: LinkedIn Personal Brand, AI Consulting Business, Fitness Coaching Brand), each with its own audience analysis, content ideas, posts, and conversion funnels.
+Each signed-in user can manage multiple marketing profiles (for example: LinkedIn Personal Brand, AI Consulting Business, Fitness Coaching Brand), each with its own audience analysis, content ideas, posts, and Instagram conversion funnels.
 
 ---
 
@@ -83,6 +83,10 @@ Analyzes a creator profile and generates:
 * Offer
 * Target Audience
 * Expertise
+* Personal Touch
+* Market Scope
+* Primary Market
+* Currency
 * Tone
 * Goal
 
@@ -126,6 +130,7 @@ Draft controls:
 * `instagram_content_type`: `carousel`, `story`, or `reel` when platform is Instagram
 * `post_length`: `short`, `medium`, or `long`
 * `post_goal`: comment, DM keyword, save, follow, download, share, book/visit, or buy/order
+* optional `lead_magnet_id`: a saved Instagram flow resource that the CTA should use
 
 Generates complete LinkedIn or Instagram posts.
 
@@ -135,6 +140,7 @@ Generates complete LinkedIn or Instagram posts.
 * Platform
 * Format
 * Goal
+* Optional saved flow resource for Instagram CTA alignment
 
 #### Output
 
@@ -147,7 +153,7 @@ Generates complete LinkedIn or Instagram posts.
 
 ### 4. Conversion Agent
 
-Creates ManyChat conversion flows from generated posts.
+Creates reusable ManyChat-style Instagram comment-to-DM flows from lead resources.
 
 #### Output
 
@@ -272,6 +278,7 @@ content_ideas
   ├── post_format
   └── is_favorite
 posts
+  ├── lead_magnet_id
   ├── instagram_content_type
   ├── post_length
   ├── is_favorite
@@ -281,7 +288,22 @@ posts
   ├── body
   ├── cta
   └── final_text
-manychat_flows
+lead_magnets
+  ├── title
+  ├── url
+  ├── description
+  ├── suggested_keyword
+  ├── trigger_type
+  ├── public_comment_reply
+  ├── delivery_message
+  ├── second_dm_message
+  ├── opening_dm_button_label
+  ├── link_button_label
+  ├── qualification_question
+  ├── follow_up_cta
+  ├── preferred_post_goal
+  ├── manychat_setup
+  └── is_primary
 ```
 
 ### ChromaDB
@@ -345,8 +367,8 @@ The seed script uses `upsert`, so rerunning it updates existing cards with the s
 * `positioning_knowledge/` for audience research, positioning, pains, desires, objections, and voice-of-customer patterns. This collection is split into smaller JSON files so editors can open them comfortably.
 * `idea_knowledge.json` for hook patterns, content angles, belief shifts, and audience-specific idea triggers.
 * `content_frameworks.json` for LinkedIn structures, Instagram carousel/story/Reel structures, and length rules.
-* `cta_conversion_knowledge.json` for comment, DM, save, follow, download, share, book/visit, and buy/order CTA patterns.
-* `manychat_funnel_templates.json` for keyword flows, first messages, qualifying questions, and follow-ups.
+* `cta_conversion_knowledge.json` for comment, DM, save, follow, download, share, book/visit, buy/order, public reply, and no-guide fallback CTA patterns.
+* `manychat_funnel_templates.json` for keyword flows, public comment replies, first messages, qualifying questions, follow-ups, lead magnet delivery, no-guide fallbacks, and manual ManyChat setup JSON.
 
 To inspect the current Chroma collections:
 
@@ -554,23 +576,36 @@ DELETE /posts/{post_id}
 
 ### Conversion
 
-#### Generate Conversion Flow
+Lead flow setup is optional and happens after the main profile workflow. A user can create a profile, review audience analysis, generate ideas, and draft posts without adding any lead magnet or ManyChat resource.
+
+In the frontend, reusable flow resources are managed from the **Lead Flows** dashboard tab. The intended workflow is:
+
+1. Add one or more resources, such as a guide, booking page, product page, class details, or a conversation offer.
+2. Generate one flow or regenerate all flows. The app prepares the keyword mode, keyword, public reply, opening DM, button labels, optional qualification question, follow-up, and ManyChat setup JSON.
+3. Draft Instagram reels/carousels and optionally select one prepared flow so the Content Agent writes the CTA around the real keyword and promise.
+
+LinkedIn posts and Instagram Stories do not use comment-to-DM automation selectors.
+
+#### Profile Lead Magnets
 
 ```http
-POST /posts/{post_id}/conversion
+GET /user-profiles/{profile_id}/lead-magnets
+POST /user-profiles/{profile_id}/lead-magnets
+POST /user-profiles/{profile_id}/lead-magnets/{lead_magnet_id}/generate-flow
+POST /user-profiles/{profile_id}/lead-magnets/generate-flows
+PUT /user-profiles/{profile_id}/lead-magnets/{lead_magnet_id}
+DELETE /user-profiles/{profile_id}/lead-magnets/{lead_magnet_id}
 ```
 
-Triggers:
-
-```text
-Conversion Agent
-```
+Lead magnets are optional reusable resources for Instagram comment-to-DM flows. The URL is optional so a flow can send a link, booking details, order instructions, or simply start a conversation. A generated flow can store trigger mode, keyword, public reply, first DM, opening button label, link button label, optional qualification question, optional follow-up, preferred post goal, and setup JSON.
 
 #### Get Conversion Flow
 
 ```http
 GET /posts/{post_id}/conversion
 ```
+
+This endpoint only previews the reusable lead flow already attached to the Instagram reel/carousel post through `posts.lead_magnet_id`. It does not generate or store a post-specific ManyChat flow.
 
 ---
 
@@ -673,6 +708,7 @@ Post format is inferred from the selected content idea's `post_format`.
 Use `instagram_content_type` only when `platform` is `instagram`.
 Allowed `post_goal` values are `comment`, `dm_keyword`, `follow`, `download`, `share`, `save`, `book_visit`, and `buy_order`.
 Allowed `post_length` values are `short`, `medium`, and `long`.
+Use `lead_magnet_id` only for Instagram posts when the CTA should reuse a saved flow resource.
 
 ```json
 {
@@ -680,7 +716,8 @@ Allowed `post_length` values are `short`, `medium`, and `long`.
   "platform": "instagram",
   "instagram_content_type": "carousel",
   "post_goal": "share",
-  "post_length": "medium"
+  "post_length": "medium",
+  "lead_magnet_id": "55555555-5555-5555-5555-555555555555"
 }
 ```
 
@@ -694,23 +731,62 @@ Allowed `post_length` values are `short`, `medium`, and `long`.
     "hook": "Most founders do not need more content ideas.",
     "body": "They need a repeatable system for turning expertise into useful posts.",
     "cta": "Comment SYSTEM and I will send you the workflow.",
-    "final_text": "Most founders do not need more content ideas.\n\nThey need a repeatable system for turning expertise into useful posts.\n\nComment SYSTEM and I will send you the workflow."
+    "final_text": "Most founders do not need more content ideas.\n\nThey need a repeatable system for turning expertise into useful posts.\n\nComment SYSTEM and I will send you the workflow.",
+    "lead_magnet_id": "55555555-5555-5555-5555-555555555555"
   }
 }
 ```
 
-### Generate Conversion Flow Response
+### Get Attached Lead Flow Response
 
 ```json
 {
-  "status": "conversion flow created",
-  "flow_id": "44444444-4444-4444-4444-444444444444",
-  "post_id": "33333333-3333-3333-3333-333333333333",
-  "flow": {
+  "trigger_keyword": "SYSTEM",
+  "public_comment_reply_options": [
+    "Sent it to you. Check your DMs.",
+    "Just sent it your way.",
+    "Thanks for commenting — I sent the workflow."
+  ],
+  "public_comment_reply": "Sent it to you.",
+  "first_message": "Hey there! Thanks for your interest.\n\nClick below and I’ll send the workflow in just a sec.",
+  "opening_dm_button_label": "Send me the link",
+  "link_button_label": "Open",
+  "qualification_question": "Are you building this for yourself or for clients?",
+  "follow_up": "Start with the simple version first, then automate the repeatable parts.",
+  "lead_magnet_id": "55555555-5555-5555-5555-555555555555",
+  "lead_magnet_title": "Workflow guide",
+  "manychat_setup": {
+    "manual_required": true,
+    "comment_trigger_mode": "specific_word",
     "trigger_keyword": "SYSTEM",
-    "first_message": "Here is the workflow I mentioned.",
-    "qualification_question": "Are you building this for yourself or for clients?",
-    "follow_up": "Start with the simple version first, then automate the repeatable parts."
+    "public_comment_reply": "Sent it to you.",
+    "public_comment_reply_options": [
+      "Sent it to you. Check your DMs.",
+      "Just sent it your way.",
+      "Thanks for commenting — I sent the workflow."
+    ],
+    "opening_dm_text": "Hey there! Thanks for your interest.\n\nClick below and I’ll send the workflow in just a sec.",
+    "opening_dm_button_label": "Send me the link",
+    "link_button_label": "Open",
+    "flow_type": "instagram_comment_to_dm",
+    "lead_magnet_used": true,
+    "lead_magnet_url": "https://example.com/guide",
+    "setup_steps": [
+      "Create an Instagram Comments automation in ManyChat.",
+      "Set the comment trigger to a specific word or reaction.",
+      "Use the trigger keyword 'SYSTEM'.",
+      "Turn on public comment reply and use: Sent it to you.",
+      "Add this opening DM text: Hey there! Thanks for your interest.\n\nClick below and I’ll send the workflow in just a sec.",
+      "Set the opening DM button label to: Send me the link",
+      "After the button click, add a link step with URL https://example.com/guide and button label: Open",
+      "Preview the Comments and DM tabs before going live.",
+      "Click Go Live in ManyChat when ready."
+    ],
+    "api_supported_parts": [
+      "Account metadata",
+      "Tags and custom fields",
+      "Sending content or flows to existing contacts"
+    ]
   }
 }
 ```
@@ -738,7 +814,7 @@ Passwords are hashed with bcrypt before storage. The app never returns password 
 
 Profile ownership is enforced on profile-level endpoints. A signed-in user can only load, update, list posts for, or read generated audience/content data for profiles owned by their user account.
 
-Post ownership is enforced through the post's parent marketing profile. A signed-in user cannot generate a post from another user's content idea, read another user's post, delete another user's post, or create/read conversion flows for another user's post.
+Post ownership is enforced through the post's parent marketing profile. A signed-in user cannot generate a post from another user's content idea, read another user's post, delete another user's post, or create/read conversion flows for another user's post. Conversion flows are limited to Instagram posts.
 
 Sign out is client-side because JWTs are stateless. The frontend removes the saved token and profile id from browser storage. Tokens expire after 7 days.
 
@@ -811,6 +887,14 @@ Idea Agent
         ▼
 Content Ideas
 
+User adds lead resource
+        │
+        ▼
+Conversion Agent
+        │
+        ▼
+Reusable Lead Flow
+
 User selects content idea
         │
         ▼
@@ -821,14 +905,6 @@ Content Agent
         │
         ▼
 Generated Post
-
-POST /posts/{post_id}/conversion
-        │
-        ▼
-Conversion Agent
-        │
-        ▼
-ManyChat Flow
 ```
 
 ---

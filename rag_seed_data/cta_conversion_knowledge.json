@@ -158,5 +158,61 @@
       "type": "principle",
       "goal": "conversion"
     }
+  },
+  {
+    "id": "cta_lead_magnet_keyword_rule",
+    "document": "Lead magnet CTA rule: If a saved guide exists, the CTA should name the guide and keyword clearly, for example: “Comment GUIDE and I’ll send you the free checklist.” Do not use vague CTAs when a specific resource exists.",
+    "metadata": {
+      "type": "principle",
+      "goal": "download"
+    }
+  },
+  {
+    "id": "cta_no_guide_fallback_rule",
+    "document": "No-guide CTA rule: If no guide or URL exists, avoid promising a download. Use a goal-based CTA such as “Comment START and I’ll send you the first step,” “Comment BOOK and I’ll send the details,” or “Comment ORDER and I’ll send the link.”",
+    "metadata": {
+      "type": "principle",
+      "goal": "conversion"
+    }
+  },
+  {
+    "id": "cta_public_reply_rule",
+    "document": "Public comment reply rule: Keep the public reply short and natural: “Sent it,” “I’ll DM it now,” “Sending the details,” or “Check your DMs.” The real value should be in the private message.",
+    "metadata": {
+      "type": "principle",
+      "goal": "comment"
+    }
+  },
+  {
+    "id": "cta_selected_flow_resource_rule",
+    "document": "Selected reusable flow rule: When a saved Instagram flow resource is selected before drafting a post, the CTA must be built around that resource and keyword. The CTA should clearly tell the reader what to comment and what they will receive, for example: “Comment GUIDE and I’ll send you the bouquet care checklist.”",
+    "metadata": {
+      "type": "principle",
+      "goal": "dm_keyword"
+    }
+  },
+  {
+    "id": "cta_selected_flow_no_public_url_rule",
+    "document": "Selected flow URL rule: If a selected flow resource has a URL, do not place the URL directly in the Instagram caption unless explicitly needed. Use the caption to drive the comment keyword, then deliver the URL in the DM flow.",
+    "metadata": {
+      "type": "principle",
+      "goal": "download"
+    }
+  },
+  {
+    "id": "cta_flow_goal_alignment_rule",
+    "document": "Flow goal alignment rule: Match the CTA promise to the reusable flow's preferred goal. Download flows promise a guide or checklist, book/visit flows promise details or booking help, buy/order flows promise product/order information, save/share flows promise a compact reference worth keeping or sending.",
+    "metadata": {
+      "type": "principle",
+      "goal": "conversion"
+    }
+  },
+  {
+    "id": "cta_no_selected_flow_rule",
+    "document": "No selected flow rule: If no reusable Instagram flow is selected, write a normal CTA for the selected post goal. Do not invent a keyword, guide, download, or automation that the user did not prepare.",
+    "metadata": {
+      "type": "principle",
+      "goal": "conversion"
+    }
   }
 ]

@@ -11,7 +11,7 @@ def retrieve_content_frameworks(
     profile: dict,
     audience_analysis: dict,
     content_idea: dict,
-    n_results: int = 5
+    n_results: int = 7
 ) -> str:
     query = f"""
     Niche: {profile.get("niche")}
@@ -38,6 +38,9 @@ def retrieve_content_frameworks(
     Platform: {content_idea.get("platform")}
     Instagram content type: {content_idea.get("instagram_content_type")}
     Post length: {content_idea.get("post_length")}
+    Selected flow resource: {content_idea.get("lead_magnet_title")}
+    Flow trigger keyword: {content_idea.get("lead_magnet_keyword")}
+    Flow preferred goal: {content_idea.get("lead_magnet_preferred_post_goal")}
     """
 
     results = collection.query(

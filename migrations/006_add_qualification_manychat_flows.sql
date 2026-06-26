@@ -1,2 +1,1 @@
-ALTER TABLE manychat_flows
-ADD COLUMN qualification_question TEXT;
+-- manychat_flows was removed. Reusable flow fields now live on lead_magnets.

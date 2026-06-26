@@ -1,7 +1,7 @@
 # uvicorn main:app --reload
 import os
 import uuid
-from typing import List
+from typing import List, Optional
 from dotenv import load_dotenv
 load_dotenv()
 from fastapi import FastAPI, HTTPException, Depends
@@ -12,6 +12,7 @@ import psycopg
 from schemas.user_profile import CreateUserProfileRequest, UpdateUserProfileRequest
 from schemas.post_generation import GeneratePostRequest, UpdatePostRequest
 from schemas.content_idea import ContentIdeaRequest, GenerateIdeasRequest
+from schemas.lead_magnet import LeadMagnetRequest
 from schemas.auth import RegisterRequest, LoginRequest
 from auth import get_current_user, hash_password, verify_password, create_token
 from authorization import check_profile_owner, check_post_owner
@@ -25,7 +26,16 @@ from db.content_repository import (get_content_generation_context,
     get_lookup_id, save_post, update_post_content)
 from agents.conversion_agent import run_conversion_agent
 from db.conversion_repository import (get_conversion_context,
-    save_manychat_flow)
+    attach_lead_magnet_context)
+from db.lead_flow_builder import flow_from_lead_magnet
+from db.lead_magnet_repository import (
+    delete_lead_magnet,
+    get_lead_magnet,
+    list_lead_magnets,
+    save_lead_magnet,
+    update_lead_magnet,
+    update_lead_magnet_flow,
+)
 
 
 def get_allowed_origins() -> List[str]:
@@ -324,6 +334,185 @@ def get_audience_analysis(
     }
 
 
+def get_flow_resource_generation_context(conn, profile_id: str, lead_magnet: dict) -> dict:
+    profile, audience_analysis = get_profile_with_audience_analysis(conn, profile_id)
+    if not profile or not audience_analysis:
+        raise ValueError("Profile or audience analysis not found")
+
+    context = {
+        **profile,
+        **audience_analysis,
+        "audience_analysis_id": audience_analysis.get("id"),
+        "post_id": None,
+        "platform": "instagram",
+        "post_goal": lead_magnet.get("preferred_post_goal") or "dm_keyword",
+        "hook": "",
+        "body": "",
+        "cta": "",
+        "final_text": (
+            "Reusable Instagram comment-to-DM flow resource. "
+            "Generate keyword, public reply, opening DM, button labels, "
+            "optional qualification question, follow-up, and setup JSON."
+        ),
+    }
+    return attach_lead_magnet_context(context, lead_magnet=lead_magnet)
+
+
+@app.get("/user-profiles/{profile_id}/lead-magnets")
+def get_profile_lead_magnets(
+    profile_id: str,
+    current_user: dict = Depends(get_current_user),
+):
+    conn = psycopg.connect(os.getenv("DATABASE_URL"))
+    try:
+        check_profile_owner(conn, profile_id, current_user["user_id"])
+        return list_lead_magnets(conn, profile_id)
+    finally:
+        conn.close()
+
+
+@app.post("/user-profiles/{profile_id}/lead-magnets")
+def create_profile_lead_magnet(
+    profile_id: str,
+    request: LeadMagnetRequest,
+    current_user: dict = Depends(get_current_user),
+):
+    data = request.model_dump()
+    conn = psycopg.connect(os.getenv("DATABASE_URL"))
+    try:
+        check_profile_owner(conn, profile_id, current_user["user_id"])
+        is_primary = len(list_lead_magnets(conn, profile_id)) == 0
+        lead_magnet_id = save_lead_magnet(conn, profile_id, data, is_primary=is_primary)
+        conn.commit()
+        return {
+            "status": "lead magnet created",
+            "lead_magnet_id": lead_magnet_id,
+        }
+    except Exception:
+        conn.rollback()
+        raise
+    finally:
+        conn.close()
+
+
+@app.put("/user-profiles/{profile_id}/lead-magnets/{lead_magnet_id}")
+def update_profile_lead_magnet(
+    profile_id: str,
+    lead_magnet_id: str,
+    request: LeadMagnetRequest,
+    current_user: dict = Depends(get_current_user),
+):
+    data = request.model_dump()
+    conn = psycopg.connect(os.getenv("DATABASE_URL"))
+    try:
+        check_profile_owner(conn, profile_id, current_user["user_id"])
+        update_lead_magnet(conn, lead_magnet_id, profile_id, data)
+        conn.commit()
+        return {
+            "status": "lead magnet updated",
+            "lead_magnet_id": lead_magnet_id,
+        }
+    except ValueError:
+        conn.rollback()
+        raise HTTPException(status_code=404, detail="Lead magnet not found")
+    except Exception:
+        conn.rollback()
+        raise
+    finally:
+        conn.close()
+
+
+@app.post("/user-profiles/{profile_id}/lead-magnets/{lead_magnet_id}/generate-flow")
+def generate_profile_lead_magnet_flow(
+    profile_id: str,
+    lead_magnet_id: str,
+    current_user: dict = Depends(get_current_user),
+):
+    conn = psycopg.connect(os.getenv("DATABASE_URL"))
+    try:
+        check_profile_owner(conn, profile_id, current_user["user_id"])
+        try:
+            lead_magnet = get_lead_magnet(conn, lead_magnet_id, profile_id)
+            context = get_flow_resource_generation_context(conn, profile_id, lead_magnet)
+        except ValueError as exc:
+            raise HTTPException(status_code=404, detail=str(exc))
+
+        flow = run_conversion_agent(context)
+        update_lead_magnet_flow(conn, lead_magnet_id, profile_id, flow)
+        conn.commit()
+        return {
+            "status": "lead flow generated",
+            "lead_magnet_id": lead_magnet_id,
+            "flow": flow,
+        }
+    except HTTPException:
+        conn.rollback()
+        raise
+    except Exception:
+        conn.rollback()
+        raise
+    finally:
+        conn.close()
+
+
+@app.post("/user-profiles/{profile_id}/lead-magnets/generate-flows")
+def generate_profile_lead_magnet_flows(
+    profile_id: str,
+    current_user: dict = Depends(get_current_user),
+):
+    conn = psycopg.connect(os.getenv("DATABASE_URL"))
+    generated = []
+    try:
+        check_profile_owner(conn, profile_id, current_user["user_id"])
+        lead_magnets = list_lead_magnets(conn, profile_id)
+        for lead_magnet in lead_magnets:
+            context = get_flow_resource_generation_context(conn, profile_id, lead_magnet)
+            flow = run_conversion_agent(context)
+            update_lead_magnet_flow(conn, lead_magnet["id"], profile_id, flow)
+            generated.append({
+                "lead_magnet_id": lead_magnet["id"],
+                "title": lead_magnet["title"],
+                "flow": flow,
+            })
+
+        conn.commit()
+        return {
+            "status": "lead flows generated",
+            "count": len(generated),
+            "flows": generated,
+        }
+    except Exception:
+        conn.rollback()
+        raise
+    finally:
+        conn.close()
+
+
+@app.delete("/user-profiles/{profile_id}/lead-magnets/{lead_magnet_id}")
+def delete_profile_lead_magnet(
+    profile_id: str,
+    lead_magnet_id: str,
+    current_user: dict = Depends(get_current_user),
+):
+    conn = psycopg.connect(os.getenv("DATABASE_URL"))
+    try:
+        check_profile_owner(conn, profile_id, current_user["user_id"])
+        delete_lead_magnet(conn, lead_magnet_id, profile_id)
+        conn.commit()
+        return {
+            "status": "lead magnet deleted",
+            "lead_magnet_id": lead_magnet_id,
+        }
+    except ValueError:
+        conn.rollback()
+        raise HTTPException(status_code=404, detail="Lead magnet not found")
+    except Exception:
+        conn.rollback()
+        raise
+    finally:
+        conn.close()
+
+
 @app.get("/user-profiles/{profile_id}/content-ideas")
 def get_content_ideas(
     profile_id: str,
@@ -563,11 +752,14 @@ def get_posts_for_profile(
                     COALESCE(p.is_published, FALSE) AS is_published,
                     pl.name AS platform,
                     pf.name AS post_format,
-                    pg.name AS post_goal
+                    pg.name AS post_goal,
+                    p.lead_magnet_id,
+                    lm.title AS lead_magnet_title
                 FROM posts p
                 JOIN platforms pl ON p.platform_id = pl.id
                 LEFT JOIN post_formats pf ON p.post_format_id = pf.id
                 LEFT JOIN post_goals pg ON p.post_goal_id = pg.id
+                LEFT JOIN lead_magnets lm ON p.lead_magnet_id = lm.id
                 WHERE p.user_profile_id = %s
             """, (profile_id,))
             rows = cur.fetchall()
@@ -580,6 +772,7 @@ def get_posts_for_profile(
             "instagram_content_type": row[4], "post_length": row[5],
             "is_favorite": row[6], "is_published": row[7],
             "platform": row[8], "post_format": row[9], "post_goal": row[10],
+            "lead_magnet_id": row[11], "lead_magnet_title": row[12],
         }
         for row in rows
     ]
@@ -652,6 +845,26 @@ def generate_post(
         post_format = context.get("idea_post_format") or "how_to"
         post_format_id = get_lookup_id(conn, "post_formats", post_format)
         post_goal_id = get_lookup_id(conn, "post_goals", request["post_goal"])
+        lead_magnet = None
+        if request.get("lead_magnet_id"):
+            if request["platform"] != "instagram":
+                raise HTTPException(
+                    status_code=400,
+                    detail="Flow resources can only be attached to Instagram posts",
+                )
+            if request.get("instagram_content_type") == "story":
+                raise HTTPException(
+                    status_code=400,
+                    detail="Comment-to-DM flow resources are only available for Instagram reels and carousels",
+                )
+            try:
+                lead_magnet = get_lead_magnet(
+                    conn,
+                    request["lead_magnet_id"],
+                    context["user_profile_id"],
+                )
+            except ValueError:
+                raise HTTPException(status_code=404, detail="Flow resource not found")
 
         agent_input = {
             **context,
@@ -660,6 +873,19 @@ def generate_post(
             "post_length": request.get("post_length", "medium"),
             "post_format": post_format,
             "post_goal": request["post_goal"],
+            "lead_magnet_id": lead_magnet["id"] if lead_magnet else None,
+            "lead_magnet_title": lead_magnet["title"] if lead_magnet else None,
+            "lead_magnet_url": lead_magnet["url"] if lead_magnet else None,
+            "lead_magnet_description": lead_magnet["description"] if lead_magnet else None,
+            "lead_magnet_keyword": lead_magnet["suggested_keyword"] if lead_magnet else None,
+            "lead_magnet_trigger_type": lead_magnet.get("trigger_type") if lead_magnet else None,
+            "lead_magnet_public_comment_reply": lead_magnet.get("public_comment_reply") if lead_magnet else None,
+            "lead_magnet_delivery_message": lead_magnet["delivery_message"] if lead_magnet else None,
+            "lead_magnet_opening_dm_button_label": lead_magnet.get("opening_dm_button_label") if lead_magnet else None,
+            "lead_magnet_link_button_label": lead_magnet.get("link_button_label") if lead_magnet else None,
+            "lead_magnet_qualification_question": lead_magnet.get("qualification_question") if lead_magnet else None,
+            "lead_magnet_follow_up_cta": lead_magnet["follow_up_cta"] if lead_magnet else None,
+            "lead_magnet_preferred_post_goal": lead_magnet.get("preferred_post_goal") if lead_magnet else None,
         }
 
         generated_post = run_content_agent(agent_input)
@@ -670,6 +896,7 @@ def generate_post(
             "platform_id": platform_id,
             "post_format_id": post_format_id,
             "post_goal_id": post_goal_id,
+            "lead_magnet_id": agent_input["lead_magnet_id"],
             "instagram_content_type": agent_input["instagram_content_type"],
             "post_length": agent_input["post_length"],
         }
@@ -677,7 +904,19 @@ def generate_post(
         post_id = save_post(conn, post_data)
         conn.commit()
 
-        return {"status": "post generated", "post_id": post_id, "post": generated_post}
+        return {
+            "status": "post generated",
+            "post_id": post_id,
+            "post": {
+                **generated_post,
+                "lead_magnet_id": agent_input["lead_magnet_id"],
+                "lead_magnet_title": lead_magnet["title"] if lead_magnet else None,
+                "platform": request["platform"],
+                "instagram_content_type": agent_input["instagram_content_type"],
+                "post_goal": request["post_goal"],
+                "post_length": agent_input["post_length"],
+            },
+        }
     finally:
         conn.close()
 
@@ -701,11 +940,14 @@ def get_post(
                     COALESCE(p.is_published, FALSE) AS is_published,
                     pl.name AS platform,
                     pf.name AS post_format,
-                    pg.name AS post_goal
+                    pg.name AS post_goal,
+                    p.lead_magnet_id,
+                    lm.title AS lead_magnet_title
                 FROM posts p
                 JOIN platforms pl ON p.platform_id = pl.id
                 LEFT JOIN post_formats pf ON p.post_format_id = pf.id
                 LEFT JOIN post_goals pg ON p.post_goal_id = pg.id
+                LEFT JOIN lead_magnets lm ON p.lead_magnet_id = lm.id
                 WHERE p.id = %s
             """, (post_id,))
             row = cur.fetchone()
@@ -720,6 +962,7 @@ def get_post(
         "final_text": row[4], "instagram_content_type": row[5], "post_length": row[6],
         "is_favorite": row[7], "is_published": row[8],
         "platform": row[9], "post_format": row[10], "post_goal": row[11],
+        "lead_magnet_id": row[12], "lead_magnet_title": row[13],
     }
 
 
@@ -816,35 +1059,6 @@ def delete_post(
     return {"status": "deleted", "post_id": post_id}
 
 
-@app.post("/posts/{post_id}/conversion")
-def create_conversion_flow(
-    post_id: str,
-    current_user: dict = Depends(get_current_user),
-):
-    conn = psycopg.connect(os.getenv("DATABASE_URL"))
-
-    try:
-        check_post_owner(conn, post_id, current_user["user_id"])
-        context = get_conversion_context(conn, post_id)
-        flow = run_conversion_agent(context)
-        flow_id = save_manychat_flow(conn, post_id, flow)
-        conn.commit()
-
-        return {
-            "status": "conversion flow created",
-            "flow_id": flow_id,
-            "post_id": post_id,
-            "flow": flow,
-        }
-
-    except Exception:
-        conn.rollback()
-        raise
-
-    finally:
-        conn.close()
-
-
 @app.get("/posts/{post_id}/conversion")
 def get_conversion_flow(
     post_id: str,
@@ -853,27 +1067,39 @@ def get_conversion_flow(
     conn = psycopg.connect(os.getenv("DATABASE_URL"))
     try:
         check_post_owner(conn, post_id, current_user["user_id"])
+        context = get_conversion_context(conn, post_id)
+        if context.get("platform") != "instagram":
+            raise HTTPException(
+                status_code=400,
+                detail="Lead flows are only available for Instagram posts",
+            )
+        if context.get("instagram_content_type") == "story":
+            raise HTTPException(
+                status_code=400,
+                detail="Comment-to-DM lead flows are only available for Instagram reels and carousels",
+            )
 
-        with conn.cursor() as cur:
-            cur.execute("""
-                SELECT id, trigger_keyword, first_message, qualification_question, follow_up
-                FROM manychat_flows
-                WHERE post_id = %s
-            """, (post_id,))
-            row = cur.fetchone()
+        selected_lead_magnet_id = context.get("post_lead_magnet_id")
+        if not selected_lead_magnet_id:
+            return {"error": "No prepared lead flow is attached to this post"}
+
+        try:
+            lead_magnet = get_lead_magnet(
+                conn,
+                selected_lead_magnet_id,
+                context["user_profile_id"],
+            )
+        except ValueError:
+            return {"error": "Attached lead flow resource was not found"}
+
+        return {
+            **flow_from_lead_magnet(lead_magnet),
+            "id": None,
+            "lead_magnet_id": lead_magnet["id"],
+            "lead_magnet_title": lead_magnet["title"],
+        }
     finally:
         conn.close()
-
-    if not row:
-        return {"error": "Conversion flow not found"}
-
-    return {
-        "id": row[0],
-        "trigger_keyword": row[1],
-        "first_message": row[2],
-        "qualification_question": row[3],
-        "follow_up": row[4],
-    }
 
 
 app.mount("/static", StaticFiles(directory=os.path.join(os.path.dirname(__file__), "static")), name="static")

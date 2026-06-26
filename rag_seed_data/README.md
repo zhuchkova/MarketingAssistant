@@ -48,9 +48,9 @@ The `content_frameworks.json` collection includes:
 * 20 Instagram frameworks across `carousel`, `story`, and `reel`.
 * 3 length rules for `short`, `medium`, and `long` posts.
 
-The `cta_conversion_knowledge.json` collection includes 20 CTA examples and principles across `comment`, `dm_keyword`, `save`, `follow`, `download`, `share`, `book_visit`, and `buy_order`.
+The `cta_conversion_knowledge.json` collection includes CTA examples and principles across `comment`, `dm_keyword`, `save`, `follow`, `download`, `share`, `book_visit`, `buy_order`, lead magnet keyword CTAs, public replies, and no-guide fallbacks.
 
-The `manychat_funnel_templates.json` collection includes 10 flow templates with first message, qualification question, and follow-up guidance.
+The `manychat_funnel_templates.json` collection includes flow templates with public comment replies, first message, qualification question, follow-up guidance, lead magnet delivery, no-guide fallbacks, booking/order fallbacks, and manual ManyChat setup JSON.
 
 Avoid adding full copyrighted articles or long copied posts. Instead, turn each source into a short original summary card.
 

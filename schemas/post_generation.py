@@ -24,6 +24,7 @@ class GeneratePostRequest(BaseModel):
     post_goal: str
     instagram_content_type: Optional[str] = None
     post_length: str = "medium"
+    lead_magnet_id: Optional[str] = None
 
     @field_validator("content_idea_id")
     @classmethod
@@ -32,6 +33,16 @@ class GeneratePostRequest(BaseModel):
             return str(UUID(str(value)))
         except ValueError:
             raise ValueError("content_idea_id must be a valid UUID")
+
+    @field_validator("lead_magnet_id")
+    @classmethod
+    def validate_lead_magnet_id(cls, value: Optional[str]) -> Optional[str]:
+        if value is None or str(value).strip() == "":
+            return None
+        try:
+            return str(UUID(str(value)))
+        except ValueError:
+            raise ValueError("lead_magnet_id must be a valid UUID")
 
     @field_validator("platform")
     @classmethod
@@ -78,7 +89,8 @@ class GeneratePostRequest(BaseModel):
                 "platform": "instagram",
                 "instagram_content_type": "carousel",
                 "post_goal": "comment",
-                "post_length": "medium"
+                "post_length": "medium",
+                "lead_magnet_id": "55555555-5555-5555-5555-555555555555"
             }
         }
     )
