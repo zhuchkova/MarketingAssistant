@@ -276,14 +276,17 @@ content_ideas
   ├── angle
   ├── topic
   ├── post_format
+  ├── created_at
   └── is_favorite
 posts
   ├── automation_resource_id
   ├── instagram_content_type
   ├── post_length
+  ├── created_at
   ├── is_favorite
   ├── is_published
   ├── published_at
+  ├── published_url
   ├── hook
   ├── body
   ├── cta

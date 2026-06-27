@@ -1,5 +1,25 @@
 import uuid
 
+
+def compose_full_post_text(data: dict) -> str:
+    return "\n\n".join(
+        str(data.get(key) or "").strip()
+        for key in ("hook", "body", "cta")
+        if str(data.get(key) or "").strip()
+    )
+
+
+def normalized_final_text(data: dict) -> str:
+    final_text = str(data.get("final_text") or "").strip()
+    composed = compose_full_post_text(data)
+    hook = str(data.get("hook") or "").strip()
+    cta = str(data.get("cta") or "").strip()
+
+    if composed and (not final_text or (hook and hook not in final_text) or (cta and cta not in final_text)):
+        return composed
+
+    return final_text or composed
+
 def get_content_generation_context(conn, content_idea_id: str) -> dict:
     with conn.cursor() as cur:
         cur.execute("""
@@ -104,6 +124,7 @@ def get_lookup_id(conn, table_name: str, name: str) -> int:
 
 def save_post(conn, data: dict) -> str:
     post_id = str(uuid.uuid4())
+    final_text = normalized_final_text(data)
 
     with conn.cursor() as cur:
         cur.execute("""
@@ -136,13 +157,14 @@ def save_post(conn, data: dict) -> str:
             data["hook"],
             data["body"],
             data["cta"],
-            data["final_text"],
+            final_text,
         ))
 
     return post_id
 
 
 def update_post_content(conn, post_id: str, data: dict) -> None:
+    final_text = normalized_final_text(data)
     with conn.cursor() as cur:
         cur.execute("""
             UPDATE posts
@@ -155,6 +177,6 @@ def update_post_content(conn, post_id: str, data: dict) -> None:
             data["hook"],
             data.get("body", ""),
             data.get("cta", ""),
-            data["final_text"],
+            final_text,
             post_id,
         ))

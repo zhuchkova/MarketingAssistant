@@ -651,6 +651,22 @@
             gap: 14px;
             margin-bottom: 20px;
         }
+        .toolbar-stack {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        .toolbar-stack .ideas-toolbar { margin-bottom: 0; }
+        .prominent-search-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .prominent-search-row label {
+            min-width: 68px;
+        }
         .ideas-toolbar-left { min-width: 0; }
         .ideas-toolbar-right { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
         .ideas-toolbar h3 { font-size: 20px; font-weight: 700; }
@@ -704,6 +720,11 @@
             padding: 2px 7px; border-radius: 4px; margin-bottom: 9px;
         }
         .idea-title { font-size: 17px; font-weight: 700; line-height: 1.35; margin-bottom: 7px; }
+        .idea-time {
+            font-size: 12px;
+            color: var(--text-4);
+            margin: -2px 0 7px;
+        }
         .idea-hook {
             font-size: 15px; color: var(--text-3); line-height: 1.65;
             margin-bottom: 12px;
@@ -804,6 +825,13 @@
             margin-bottom: 16px;
         }
         .post-filter-row .idea-filter-control select { min-width: 150px; }
+        .post-search-input {
+            width: 280px !important;
+            max-width: 100%;
+            min-width: 0;
+            padding: 8px 11px;
+            font-size: 14px;
+        }
         .length-mark {
             display: inline-grid;
             place-items: center;
@@ -829,6 +857,11 @@
         }
         .post-row:hover { border-color: var(--surface-3); }
         .post-row-meta { display: flex; align-items: center; gap: 6px; margin-bottom: 10px; flex-wrap: wrap; }
+        .post-row-time {
+            font-size: 12px;
+            color: var(--text-4);
+            margin-bottom: 8px;
+        }
         .post-row-hook { font-size: 16px; font-weight: 700; margin-bottom: 6px; line-height: 1.4; color: var(--text); }
         .post-row-preview {
             font-size: 15px; color: var(--text-3); line-height: 1.6;
@@ -836,7 +869,30 @@
             overflow: hidden;
             display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
         }
+        .post-published-url {
+            font-size: 13px;
+            color: var(--text-3);
+            margin: -3px 0 12px;
+            overflow-wrap: anywhere;
+        }
+        .post-published-url a {
+            color: var(--primary);
+            font-weight: 700;
+            text-decoration: none;
+        }
         .post-row-actions { display: flex; gap: 7px; flex-wrap: wrap; }
+        .posts-pagination {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 16px;
+        }
+        .posts-page-label {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--text-3);
+        }
 
         /* ═══════════════════════════════════
              MODALS
@@ -1807,40 +1863,71 @@
 
         <!-- CONTENT IDEAS -->
         <div class="tab-pane" id="pane-ideas">
-            <div class="ideas-toolbar">
-                <div class="ideas-toolbar-left">
-                    <h3>Content Ideas</h3>
-                    <p>Pick an idea to draft a post. Format is the structure; idea framing is the point of view.</p>
-                </div>
-                <div class="ideas-toolbar-right">
-                    <span class="count-pill" id="ideas-count">0 ideas</span>
-                    <div class="idea-filter-control">
-                        <label for="idea-format-filter">Filter</label>
-                        <select id="idea-format-filter" onchange="setIdeaFilter(this.value)"></select>
+            <div class="toolbar-stack">
+                <div class="ideas-toolbar">
+                    <div class="ideas-toolbar-left">
+                        <h3>Content Ideas</h3>
+                        <p>Pick an idea to draft a post. Format is the structure; idea framing is the point of view.</p>
                     </div>
+                    <div class="ideas-toolbar-right">
+                        <span class="count-pill" id="ideas-count">0 ideas</span>
+                        <button class="btn btn-secondary btn-sm" onclick="openIdeaModal()">Custom Idea</button>
+                        <button class="btn btn-primary btn-sm" onclick="generateMoreIdeas()">Generate More</button>
+                        <button class="btn btn-ghost btn-sm" onclick="regenerateIdeas()">Regenerate All</button>
+                    </div>
+                </div>
+                <div class="prominent-search-row">
+                    <label for="idea-search">Search</label>
+                    <input class="post-search-input" type="text" id="idea-search" placeholder="Find ideas..." oninput="setIdeaSearch(this.value)" />
                     <div class="idea-filter-control">
-                        <label for="idea-favorite-filter">Favorites</label>
-                        <select id="idea-favorite-filter" onchange="setIdeaFavoriteFilter(this.value)">
-                            <option value="all">All</option>
-                            <option value="favorite">Favorites</option>
+                        <label for="idea-sort">Sort</label>
+                        <select id="idea-sort" onchange="setIdeaSort(this.value)">
+                            <option value="newest">Newest first</option>
+                            <option value="oldest">Oldest first</option>
+                            <option value="title">Title A-Z</option>
                         </select>
                     </div>
-                    <button class="btn btn-secondary btn-sm" onclick="openIdeaModal()">Custom Idea</button>
-                    <button class="btn btn-primary btn-sm" onclick="generateMoreIdeas()">Generate More</button>
-                    <button class="btn btn-ghost btn-sm" onclick="regenerateIdeas()">Regenerate All</button>
+                </div>
+                <div class="ideas-toolbar">
+                    <div class="ideas-toolbar-left"></div>
+                    <div class="ideas-toolbar-right">
+                        <div class="idea-filter-control">
+                            <label for="idea-format-filter">Filter</label>
+                            <select id="idea-format-filter" onchange="setIdeaFilter(this.value)"></select>
+                        </div>
+                        <div class="idea-filter-control">
+                            <label for="idea-favorite-filter">Favorites</label>
+                            <select id="idea-favorite-filter" onchange="setIdeaFavoriteFilter(this.value)">
+                                <option value="all">All</option>
+                                <option value="favorite">Favorites</option>
+                            </select>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="ideas-grid" id="ideas-grid"></div>
+            <div id="ideas-pagination"></div>
         </div>
 
         <!-- POSTS -->
         <div class="tab-pane" id="pane-posts">
-            <div class="ideas-toolbar">
-                <div>
-                    <h3>My Posts</h3>
-                    <p>Drafts saved for this profile</p>
+            <div class="toolbar-stack">
+                <div class="ideas-toolbar">
+                    <div>
+                        <h3>My Posts</h3>
+                        <p>Drafts saved for this profile</p>
+                    </div>
+                    <div class="ideas-toolbar-right">
+                        <span class="count-pill" id="posts-count">0 posts</span>
+                    </div>
                 </div>
-                <div class="ideas-toolbar-right">
+                <div class="prominent-search-row">
+                    <label for="post-search">Search</label>
+                    <input class="post-search-input" type="text" id="post-search" placeholder="Find posts..." oninput="setPostSearch(this.value)" />
+                </div>
+                <div class="ideas-toolbar">
+                    <div class="ideas-toolbar-left"></div>
+                    <div class="ideas-toolbar-right">
                     <div class="idea-filter-control">
                         <label for="post-platform-filter">Platform</label>
                         <select id="post-platform-filter" onchange="setPostPlatformFilter(this.value)">
@@ -1871,6 +1958,7 @@
                         <select id="post-automation-filter" onchange="setPostAutomationFilter(this.value)">
                             <option value="all">All</option>
                         </select>
+                    </div>
                     </div>
                 </div>
             </div>
@@ -2042,6 +2130,8 @@
         </div>
         <div class="modal-body">
             <div class="post-row-meta" id="detail-meta" style="margin-bottom:16px"></div>
+            <div class="post-row-time" id="detail-time"></div>
+            <div class="post-published-url" id="detail-published-url" style="display:none"></div>
             <div class="copy-row">
                 <span class="copy-row-text">✓ Post ready to use</span>
                 <button class="btn btn-secondary btn-sm" onclick="copyDetailPost()">
@@ -2290,11 +2380,18 @@ const S = {
     genPostPlatform: null,
     ideaFilter: 'all',
     ideaFavoriteFilter: 'all',
+    ideaSearch: '',
+    ideaSort: 'newest',
+    ideaPage: 1,
+    ideasPerPage: 12,
     ideaEditId: null,
     postPlatformFilter: 'all',
     postTypeFilter: 'all',
     postStatusFilter: 'all',
     postAutomationFilter: 'all',
+    postSearch: '',
+    postPage: 1,
+    postsPerPage: 10,
     postEditId: null,
     postEditSyncing: false,
     automationResourceEditId: null,
@@ -3029,26 +3126,28 @@ async function deleteAutomationResource(id) {
 
 function renderIdeas() {
     const grid = document.getElementById('ideas-grid');
+    const pager = document.getElementById('ideas-pagination');
     document.getElementById('ideas-count').textContent = `${S.ideas.length} ideas`;
     renderIdeaFormatFilter();
+    if (pager) pager.innerHTML = '';
 
     if (!S.ideas.length) {
         grid.innerHTML = `<div class="empty" style="grid-column:1/-1"><div class="empty-icon"></div><div class="empty-title">No ideas yet</div><div class="empty-desc">Generate ideas or add a custom one</div></div>`;
         return;
     }
 
-    const visibleIdeas = S.ideas.filter(idea => {
-        const formatOk = S.ideaFilter === 'all' || ideaFormat(idea) === S.ideaFilter;
-        const favoriteOk = S.ideaFavoriteFilter === 'all' || idea.is_favorite;
-        return formatOk && favoriteOk;
-    });
+    const visibleIdeas = filteredIdeas();
+    const totalPages = Math.max(1, Math.ceil(visibleIdeas.length / S.ideasPerPage));
+    if (S.ideaPage > totalPages) S.ideaPage = totalPages;
+    const start = (S.ideaPage - 1) * S.ideasPerPage;
+    const pageIdeas = visibleIdeas.slice(start, start + S.ideasPerPage);
 
     if (!visibleIdeas.length) {
-        grid.innerHTML = `<div class="empty" style="grid-column:1/-1"><div class="empty-icon"></div><div class="empty-title">No ideas match these filters</div><div class="empty-desc">Choose another filter or generate more ideas</div></div>`;
+        grid.innerHTML = `<div class="empty" style="grid-column:1/-1"><div class="empty-icon"></div><div class="empty-title">No ideas match these filters</div><div class="empty-desc">Try another search, filter, or generate more ideas</div></div>`;
         return;
     }
 
-    grid.innerHTML = visibleIdeas.map((idea) => {
+    grid.innerHTML = pageIdeas.map((idea) => {
         const i = S.ideas.findIndex(item => item.id === idea.id);
         const format = ideaFormat(idea);
         return `
@@ -3056,6 +3155,7 @@ function renderIdeas() {
             <button class="card-mark-btn ${idea.is_favorite ? 'active' : ''}" onclick="toggleIdeaFavorite(event, '${idea.id}')" aria-label="${idea.is_favorite ? 'Remove from favorite ideas' : 'Add to favorite ideas'}">♥</button>
             <div class="idea-topic-badge">${esc(formatLabel(format))}</div>
             <div class="idea-title">${esc(idea.title)}</div>
+            <div class="idea-time">${esc(ideaTimestampText(idea))}</div>
             <div class="idea-hook">${esc(idea.hook)}</div>
             <div class="idea-foot">
                 <span class="idea-angle">${esc(idea.topic || '')}</span>
@@ -3067,6 +3167,47 @@ function renderIdeas() {
             </div>
         </div>`;
     }).join('');
+
+    if (pager && totalPages > 1) {
+        pager.innerHTML = `
+            <div class="posts-pagination">
+                <button class="btn btn-ghost btn-sm" onclick="setIdeaPage(${S.ideaPage - 1})" ${S.ideaPage <= 1 ? 'disabled' : ''}>Previous</button>
+                <span class="posts-page-label">Page ${S.ideaPage} of ${totalPages}</span>
+                <button class="btn btn-ghost btn-sm" onclick="setIdeaPage(${S.ideaPage + 1})" ${S.ideaPage >= totalPages ? 'disabled' : ''}>Next</button>
+            </div>
+        `;
+    }
+}
+
+function filteredIdeas() {
+    const query = S.ideaSearch.trim().toLowerCase();
+    return [...S.ideas].filter(idea => {
+        const formatOk = S.ideaFilter === 'all' || ideaFormat(idea) === S.ideaFilter;
+        const favoriteOk = S.ideaFavoriteFilter === 'all' || idea.is_favorite;
+        const haystack = [
+            idea.title,
+            idea.hook,
+            idea.angle,
+            idea.topic,
+            ideaFormat(idea),
+            formatLabel(ideaFormat(idea)),
+        ].filter(Boolean).join(' ').toLowerCase();
+        return formatOk && favoriteOk && (!query || haystack.includes(query));
+    }).sort(compareIdeas);
+}
+
+function compareIdeas(a, b) {
+    if (S.ideaSort === 'title') {
+        return String(a.title || '').localeCompare(String(b.title || ''));
+    }
+    const aTime = Date.parse(a.created_at || '') || 0;
+    const bTime = Date.parse(b.created_at || '') || 0;
+    return S.ideaSort === 'oldest' ? aTime - bTime : bTime - aTime;
+}
+
+function ideaTimestampText(idea) {
+    const created = formatDateTime(idea.created_at);
+    return created ? `Created ${created}` : 'Created recently';
 }
 
 function renderIdeaFormatFilter() {
@@ -3080,15 +3221,38 @@ function renderIdeaFormatFilter() {
     select.value = S.ideaFilter;
     const favoriteSelect = document.getElementById('idea-favorite-filter');
     if (favoriteSelect) favoriteSelect.value = S.ideaFavoriteFilter;
+    const search = document.getElementById('idea-search');
+    if (search && search.value !== S.ideaSearch) search.value = S.ideaSearch;
+    const sort = document.getElementById('idea-sort');
+    if (sort) sort.value = S.ideaSort;
 }
 
 function setIdeaFilter(format) {
     S.ideaFilter = format;
+    S.ideaPage = 1;
     renderIdeas();
 }
 
 function setIdeaFavoriteFilter(value) {
     S.ideaFavoriteFilter = value;
+    S.ideaPage = 1;
+    renderIdeas();
+}
+
+function setIdeaSearch(value) {
+    S.ideaSearch = value;
+    S.ideaPage = 1;
+    renderIdeas();
+}
+
+function setIdeaSort(value) {
+    S.ideaSort = value;
+    S.ideaPage = 1;
+    renderIdeas();
+}
+
+function setIdeaPage(page) {
+    S.ideaPage = Math.max(1, page);
     renderIdeas();
 }
 
@@ -3250,6 +3414,8 @@ async function regenerateIdeas() {
 function renderPosts() {
     const cont = document.getElementById('posts-container');
     syncPostFilters();
+    const countPill = document.getElementById('posts-count');
+    if (countPill) countPill.textContent = `${S.posts.length} ${S.posts.length === 1 ? 'post' : 'posts'}`;
 
     if (!S.posts.length) {
         cont.innerHTML = `<div class="empty"><div class="empty-icon"></div><div class="empty-title">No posts yet</div><div class="empty-desc">Open Content Ideas and choose one to draft your first post</div></div>`;
@@ -3257,12 +3423,17 @@ function renderPosts() {
     }
 
     const visiblePosts = filteredPosts();
+    const totalPages = Math.max(1, Math.ceil(visiblePosts.length / S.postsPerPage));
+    if (S.postPage > totalPages) S.postPage = totalPages;
+    const start = (S.postPage - 1) * S.postsPerPage;
+    const pagePosts = visiblePosts.slice(start, start + S.postsPerPage);
+
     if (!visiblePosts.length) {
-        cont.innerHTML = `<div class="empty"><div class="empty-icon"></div><div class="empty-title">No posts match these filters</div><div class="empty-desc">Try another platform or Instagram type</div></div>`;
+        cont.innerHTML = `<div class="empty"><div class="empty-icon"></div><div class="empty-title">No posts match these filters</div><div class="empty-desc">Try another search, platform, or Instagram type</div></div>`;
         return;
     }
 
-    cont.innerHTML = `<div class="posts-list">${visiblePosts.map(p => `
+    cont.innerHTML = `<div class="posts-list">${pagePosts.map(p => `
         <div class="post-row" id="pr-${p.id}">
             <div class="post-status-actions">
                 ${p.automation_resource_title ? `
@@ -3280,8 +3451,16 @@ function renderPosts() {
                 <span class="tag tag-format">${esc(p.post_format||'')}</span>
                 <span class="tag tag-goal">${esc(p.post_goal||'')}</span>
             </div>
+            <div class="post-row-time">${esc(postTimestampText(p))}</div>
             <div class="post-row-hook">${esc(p.hook || (p.final_text||'').slice(0,80))}</div>
-            <div class="post-row-preview">${esc(p.final_text||'')}</div>
+            <div class="post-row-preview">${esc(displayPostText(p))}</div>
+            ${p.is_published ? `
+                <div class="post-published-url">
+                    ${p.published_url
+                        ? `Published: <a href="${esc(p.published_url)}" target="_blank" rel="noopener noreferrer">${esc(p.published_url)}</a>`
+                        : 'Published URL not added yet'}
+                </div>
+            ` : ''}
             <div class="post-row-actions">
                 <button class="btn btn-secondary btn-sm" onclick="openDetailModal('${p.id}')">View Post</button>
                 <button class="btn btn-secondary btn-sm" onclick="openPostEditModal('${p.id}')">Edit</button>
@@ -3289,13 +3468,25 @@ function renderPosts() {
                     <svg class="flat-icon"><use href="#icon-copy"></use></svg>
                     Copy
                 </button>
+                ${p.is_published ? `<button class="btn btn-secondary btn-sm" onclick="editPublishedUrl('${p.id}')">${p.published_url ? 'Edit URL' : 'Add URL'}</button>` : ''}
                 <button class="btn btn-danger btn-sm" onclick="deletePost('${p.id}')">Delete</button>
             </div>
         </div>`).join('')}</div>`;
+
+    if (totalPages > 1) {
+        cont.innerHTML += `
+            <div class="posts-pagination">
+                <button class="btn btn-ghost btn-sm" onclick="setPostPage(${S.postPage - 1})" ${S.postPage <= 1 ? 'disabled' : ''}>Previous</button>
+                <span class="posts-page-label">Page ${S.postPage} of ${totalPages}</span>
+                <button class="btn btn-ghost btn-sm" onclick="setPostPage(${S.postPage + 1})" ${S.postPage >= totalPages ? 'disabled' : ''}>Next</button>
+            </div>
+        `;
+    }
 }
 
 function filteredPosts() {
-    return S.posts.filter(post => {
+    const query = S.postSearch.trim().toLowerCase();
+    return [...S.posts].sort(comparePostsNewestFirst).filter(post => {
         const platformOk = S.postPlatformFilter === 'all' || post.platform === S.postPlatformFilter;
         const typeOk = S.postTypeFilter === 'all' || post.instagram_content_type === S.postTypeFilter;
         const statusOk = S.postStatusFilter === 'all'
@@ -3303,7 +3494,20 @@ function filteredPosts() {
             || (S.postStatusFilter === 'published' && post.is_published);
         const automationOk = S.postAutomationFilter === 'all'
             || (S.postAutomationFilter.startsWith('flow:') && String(post.automation_resource_id || '') === S.postAutomationFilter.slice(5));
-        return platformOk && typeOk && statusOk && automationOk;
+        const haystack = [
+            post.hook,
+            post.body,
+            post.cta,
+            displayPostText(post),
+            post.platform,
+            post.post_format,
+            post.post_goal,
+            post.instagram_content_type,
+            post.automation_resource_title,
+            post.published_url,
+        ].filter(Boolean).join(' ').toLowerCase();
+        const searchOk = !query || haystack.includes(query);
+        return platformOk && typeOk && statusOk && automationOk && searchOk;
     });
 }
 
@@ -3312,11 +3516,13 @@ function syncPostFilters() {
     const type = document.getElementById('post-type-filter');
     const status = document.getElementById('post-status-filter');
     const automation = document.getElementById('post-automation-filter');
+    const search = document.getElementById('post-search');
     const typeWrap = document.getElementById('post-type-filter-wrap');
 
     if (platform) platform.value = S.postPlatformFilter;
     if (type) type.value = S.postTypeFilter;
     if (status) status.value = S.postStatusFilter;
+    if (search && search.value !== S.postSearch) search.value = S.postSearch;
     if (automation) {
         const options = postAutomationFilterOptions();
         automation.innerHTML = options.map(option => `
@@ -3329,6 +3535,48 @@ function syncPostFilters() {
 
     const showType = S.postPlatformFilter !== 'linkedin';
     if (typeWrap) typeWrap.style.display = showType ? '' : 'none';
+}
+
+function comparePostsNewestFirst(a, b) {
+    const aTime = Date.parse(a.created_at || a.published_at || '') || 0;
+    const bTime = Date.parse(b.created_at || b.published_at || '') || 0;
+    return bTime - aTime;
+}
+
+function postTimestampText(post) {
+    const created = formatDateTime(post.created_at);
+    const published = formatDateTime(post.published_at);
+    if (post.is_published && published) {
+        return created ? `Created ${created} · Published ${published}` : `Published ${published}`;
+    }
+    return created ? `Created ${created}` : 'Created recently';
+}
+
+function displayPostText(post) {
+    const finalText = String(post?.final_text || '').trim();
+    const hook = String(post?.hook || '').trim();
+    const body = String(post?.body || '').trim();
+    const cta = String(post?.cta || '').trim();
+    const composed = [hook, body, cta].filter(Boolean).join('\n\n');
+
+    if (composed && (!finalText || (hook && !finalText.includes(hook)) || (cta && !finalText.includes(cta)))) {
+        return composed;
+    }
+
+    return finalText || composed;
+}
+
+function formatDateTime(value) {
+    if (!value) return '';
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return '';
+    return date.toLocaleString([], {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+    });
 }
 
 function postAutomationFilterOptions() {
@@ -3353,6 +3601,7 @@ function postAutomationFilterOptions() {
 function setPostPlatformFilter(value) {
     S.postPlatformFilter = value;
     if (value === 'linkedin') S.postTypeFilter = 'all';
+    S.postPage = 1;
     renderPosts();
 }
 
@@ -3361,16 +3610,30 @@ function setPostTypeFilter(value) {
     if (value !== 'all' && S.postPlatformFilter === 'linkedin') {
         S.postPlatformFilter = 'instagram';
     }
+    S.postPage = 1;
     renderPosts();
 }
 
 function setPostStatusFilter(value) {
     S.postStatusFilter = value;
+    S.postPage = 1;
     renderPosts();
 }
 
 function setPostAutomationFilter(value) {
     S.postAutomationFilter = value;
+    S.postPage = 1;
+    renderPosts();
+}
+
+function setPostSearch(value) {
+    S.postSearch = value;
+    S.postPage = 1;
+    renderPosts();
+}
+
+function setPostPage(page) {
+    S.postPage = Math.max(1, page);
     renderPosts();
 }
 
@@ -3543,11 +3806,21 @@ async function openDetailModal(postId) {
         <span class="tag tag-format">${esc(p.post_format||'')}</span>
         <span class="tag tag-goal">${esc(p.post_goal||'')}</span>
         ${p.automation_resource_title ? `<span class="tag tag-goal">${esc(p.automation_resource_title)}</span>` : ''}`;
+    document.getElementById('detail-time').textContent = postTimestampText(p);
+    const detailUrl = document.getElementById('detail-published-url');
+    if (detailUrl) {
+        detailUrl.style.display = p.is_published ? '' : 'none';
+        detailUrl.innerHTML = p.is_published
+            ? (p.published_url
+                ? `Published: <a href="${esc(p.published_url)}" target="_blank" rel="noopener noreferrer">${esc(p.published_url)}</a>`
+                : 'Published URL not added yet')
+            : '';
+    }
 
     document.getElementById('d-hook').textContent  = p.hook       || '';
     document.getElementById('d-body').textContent  = p.body       || '';
     document.getElementById('d-cta').textContent   = p.cta        || '';
-    document.getElementById('d-final').textContent = p.final_text || '';
+    document.getElementById('d-final').textContent = displayPostText(p);
 
     const flowButton = document.getElementById('btn-detail-flow');
     if (flowButton) flowButton.style.display = p.platform === 'instagram' && p.instagram_content_type !== 'story' && p.automation_resource_id ? '' : 'none';
@@ -3562,7 +3835,7 @@ function copyDetailPost() {
 
 function copyPost(postId) {
     const post = S.posts.find(p => String(p.id) === String(postId));
-    copyTxt(post?.final_text || '');
+    copyTxt(displayPostText(post));
     markPostPublished(postId);
 }
 
@@ -3584,11 +3857,27 @@ async function togglePostFavorite(event, postId) {
 
 async function togglePostPublished(event, postId) {
     event.stopPropagation();
+    const post = S.posts.find(item => String(item.id) === String(postId));
+    let body = null;
+
+    if (!post?.is_published) {
+        const publishedUrl = prompt('Where was this post published? Paste the URL, or leave empty for now.', post?.published_url || '');
+        if (publishedUrl === null) return;
+        body = { published_url: publishedUrl.trim() };
+    } else if (!confirm('Remove this post from published?')) {
+        return;
+    }
+
     try {
-        const res = await api('PUT', `/posts/${postId}/published`);
+        const res = await api('PUT', `/posts/${postId}/published`, body);
         if (res.error) throw new Error(res.error);
         S.posts = S.posts.map(post => post.id === postId
-            ? { ...post, is_published: res.is_published }
+            ? {
+                ...post,
+                is_published: res.is_published,
+                published_at: res.published_at,
+                published_url: res.published_url,
+            }
             : post
         );
         renderPosts();
@@ -3606,12 +3895,41 @@ async function markPostPublished(postId) {
         const res = await api('PUT', `/posts/${postId}/published`);
         if (res.error) throw new Error(res.error);
         S.posts = S.posts.map(item => String(item.id) === String(postId)
-            ? { ...item, is_published: res.is_published }
+            ? {
+                ...item,
+                is_published: res.is_published,
+                published_at: res.published_at,
+                published_url: res.published_url,
+            }
             : item
         );
         renderPosts();
     } catch {
         // Copy should still succeed even if status update fails.
+    }
+}
+
+async function editPublishedUrl(postId) {
+    const post = S.posts.find(item => String(item.id) === String(postId));
+    if (!post?.is_published) {
+        toast('Mark the post as published first', 'error');
+        return;
+    }
+
+    const publishedUrl = prompt('Published post URL', post.published_url || '');
+    if (publishedUrl === null) return;
+
+    try {
+        const res = await api('PUT', `/posts/${postId}/published-url`, { published_url: publishedUrl.trim() });
+        if (res.error) throw new Error(res.error);
+        S.posts = S.posts.map(item => String(item.id) === String(postId)
+            ? { ...item, published_url: res.published_url }
+            : item
+        );
+        renderPosts();
+        toast(res.published_url ? 'Published URL saved' : 'Published URL removed', 'success');
+    } catch (e) {
+        toast(e.message || 'Could not update published URL', 'error');
     }
 }
 
@@ -3927,7 +4245,7 @@ function renderFlowPostContext(flow = null) {
             ${post.post_goal ? `<span class="tag tag-goal">${esc(post.post_goal)}</span>` : ''}
         </div>
         <div class="flow-context-title">${esc(post.hook || 'Selected Instagram post')}</div>
-        <div class="flow-context-text">${esc((post.final_text || post.body || '').slice(0, 220))}${(post.final_text || post.body || '').length > 220 ? '...' : ''}</div>`;
+        <div class="flow-context-text">${esc(displayPostText(post).slice(0, 220))}${displayPostText(post).length > 220 ? '...' : ''}</div>`;
 }
 
 function copyFlow() {

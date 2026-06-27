@@ -69,6 +69,7 @@ Post requirements:
 - Length: {post_length}
 
 Selected reusable Instagram DM resource:
+- Automation selected: {automation_resource_selected}
 - DM resource title: {automation_resource_title}
 - DM resource URL: {automation_resource_url}
 - DM resource description: {automation_resource_description}
@@ -96,10 +97,11 @@ Rules:
 - Weave in the creator's personal touch only when it strengthens trust, relatability, or story
 - Follow the selected idea's post format. Do not change a personal story into a list or a mistakes post into a generic how-to.
 - End with a CTA matching the post goal
-- If platform is Instagram and a DM resource title or trigger keyword exists, the post CTA must clearly use that DM resource.
-- If a trigger keyword exists, use it exactly in the CTA, for example: "Comment GUIDE and I'll send you the checklist."
-- If a DM resource URL exists, do not put the URL directly in the public post unless the format naturally needs it; tell the reader to comment or DM the keyword so the resource can be sent privately.
-- If no DM resource is selected, use a normal CTA matching the post goal and do not pretend that a download or automation exists.
+- If automation selected is true, the post CTA must clearly use that DM resource.
+- If automation selected is true and a trigger keyword exists, use it exactly in the CTA, for example: "Comment GUIDE and I'll send you the checklist."
+- If automation selected is true and a DM resource URL exists, do not put the URL directly in the public post unless the format naturally needs it; tell the reader to comment or DM the keyword so the resource can be sent privately.
+- If automation selected is false, use a normal CTA matching the post goal and do not pretend that a download, DM automation, keyword, or private resource exists.
+- If automation selected is false, never invent an uppercase comment keyword such as GUIDE, LINK, ARTBUDDY, or similar. A comment CTA may ask a natural question, for example: "What would you add?" or "Tell me your favorite gallery ritual."
 """)
 
 
@@ -125,6 +127,7 @@ def run_content_agent(data: dict) -> dict:
 
     chain_input = {
         **data,
+        "automation_resource_selected": bool(data.get("automation_resource_id")),
         "content_frameworks": frameworks
     }
     chain = prompt | structured_model
