@@ -12,7 +12,7 @@ import psycopg
 from schemas.user_profile import CreateUserProfileRequest, UpdateUserProfileRequest
 from schemas.post_generation import GeneratePostRequest, UpdatePostRequest
 from schemas.content_idea import ContentIdeaRequest, GenerateIdeasRequest
-from schemas.lead_magnet import LeadMagnetRequest
+from schemas.automation_resource import AutomationResourceRequest
 from schemas.auth import RegisterRequest, LoginRequest
 from auth import get_current_user, hash_password, verify_password, create_token
 from authorization import check_profile_owner, check_post_owner
@@ -24,17 +24,17 @@ from db.idea_repository import (get_profile_with_audience_analysis,
 from agents.content_agent import run_content_agent
 from db.content_repository import (get_content_generation_context,
     get_lookup_id, save_post, update_post_content)
-from agents.conversion_agent import run_conversion_agent
-from db.conversion_repository import (get_conversion_context,
-    attach_lead_magnet_context)
-from db.lead_flow_builder import flow_from_lead_magnet
-from db.lead_magnet_repository import (
-    delete_lead_magnet,
-    get_lead_magnet,
-    list_lead_magnets,
-    save_lead_magnet,
-    update_lead_magnet,
-    update_lead_magnet_flow,
+from agents.automation_agent import run_automation_agent
+from db.automation_context_repository import (get_automation_context,
+    attach_automation_resource_context)
+from db.manychat_setup_builder import flow_from_automation_resource
+from db.automation_resource_repository import (
+    delete_automation_resource,
+    get_automation_resource,
+    list_automation_resources,
+    save_automation_resource,
+    update_automation_resource,
+    update_automation_resource_setup,
 )
 
 
@@ -334,7 +334,7 @@ def get_audience_analysis(
     }
 
 
-def get_flow_resource_generation_context(conn, profile_id: str, lead_magnet: dict) -> dict:
+def get_automation_resource_generation_context(conn, profile_id: str, automation_resource: dict) -> dict:
     profile, audience_analysis = get_profile_with_audience_analysis(conn, profile_id)
     if not profile or not audience_analysis:
         raise ValueError("Profile or audience analysis not found")
@@ -345,48 +345,50 @@ def get_flow_resource_generation_context(conn, profile_id: str, lead_magnet: dic
         "audience_analysis_id": audience_analysis.get("id"),
         "post_id": None,
         "platform": "instagram",
-        "post_goal": lead_magnet.get("preferred_post_goal") or "dm_keyword",
+        "post_goal": automation_resource.get("preferred_post_goal") or "dm_keyword",
         "hook": "",
         "body": "",
         "cta": "",
         "final_text": (
-            "Reusable Instagram comment-to-DM flow resource. "
+            "Reusable Instagram comment-to-DM automation resource. "
             "Generate keyword, public reply, opening DM, button labels, "
             "optional qualification question, follow-up, and setup JSON."
         ),
     }
-    return attach_lead_magnet_context(context, lead_magnet=lead_magnet)
+    return attach_automation_resource_context(context, automation_resource=automation_resource)
 
 
-@app.get("/user-profiles/{profile_id}/lead-magnets")
-def get_profile_lead_magnets(
+@app.get("/user-profiles/{profile_id}/lead-magnets", include_in_schema=False)
+@app.get("/user-profiles/{profile_id}/automation-resources")
+def get_profile_automation_resources(
     profile_id: str,
     current_user: dict = Depends(get_current_user),
 ):
     conn = psycopg.connect(os.getenv("DATABASE_URL"))
     try:
         check_profile_owner(conn, profile_id, current_user["user_id"])
-        return list_lead_magnets(conn, profile_id)
+        return list_automation_resources(conn, profile_id)
     finally:
         conn.close()
 
 
-@app.post("/user-profiles/{profile_id}/lead-magnets")
-def create_profile_lead_magnet(
+@app.post("/user-profiles/{profile_id}/lead-magnets", include_in_schema=False)
+@app.post("/user-profiles/{profile_id}/automation-resources")
+def create_profile_automation_resource(
     profile_id: str,
-    request: LeadMagnetRequest,
+    request: AutomationResourceRequest,
     current_user: dict = Depends(get_current_user),
 ):
     data = request.model_dump()
     conn = psycopg.connect(os.getenv("DATABASE_URL"))
     try:
         check_profile_owner(conn, profile_id, current_user["user_id"])
-        is_primary = len(list_lead_magnets(conn, profile_id)) == 0
-        lead_magnet_id = save_lead_magnet(conn, profile_id, data, is_primary=is_primary)
+        is_primary = len(list_automation_resources(conn, profile_id)) == 0
+        automation_resource_id = save_automation_resource(conn, profile_id, data, is_primary=is_primary)
         conn.commit()
         return {
-            "status": "lead magnet created",
-            "lead_magnet_id": lead_magnet_id,
+            "status": "automation resource created",
+            "automation_resource_id": automation_resource_id,
         }
     except Exception:
         conn.rollback()
@@ -395,26 +397,27 @@ def create_profile_lead_magnet(
         conn.close()
 
 
-@app.put("/user-profiles/{profile_id}/lead-magnets/{lead_magnet_id}")
-def update_profile_lead_magnet(
+@app.put("/user-profiles/{profile_id}/lead-magnets/{automation_resource_id}", include_in_schema=False)
+@app.put("/user-profiles/{profile_id}/automation-resources/{automation_resource_id}")
+def update_profile_automation_resource(
     profile_id: str,
-    lead_magnet_id: str,
-    request: LeadMagnetRequest,
+    automation_resource_id: str,
+    request: AutomationResourceRequest,
     current_user: dict = Depends(get_current_user),
 ):
     data = request.model_dump()
     conn = psycopg.connect(os.getenv("DATABASE_URL"))
     try:
         check_profile_owner(conn, profile_id, current_user["user_id"])
-        update_lead_magnet(conn, lead_magnet_id, profile_id, data)
+        update_automation_resource(conn, automation_resource_id, profile_id, data)
         conn.commit()
         return {
-            "status": "lead magnet updated",
-            "lead_magnet_id": lead_magnet_id,
+            "status": "automation resource updated",
+            "automation_resource_id": automation_resource_id,
         }
     except ValueError:
         conn.rollback()
-        raise HTTPException(status_code=404, detail="Lead magnet not found")
+        raise HTTPException(status_code=404, detail="Automation resource not found")
     except Exception:
         conn.rollback()
         raise
@@ -422,27 +425,28 @@ def update_profile_lead_magnet(
         conn.close()
 
 
-@app.post("/user-profiles/{profile_id}/lead-magnets/{lead_magnet_id}/generate-flow")
-def generate_profile_lead_magnet_flow(
+@app.post("/user-profiles/{profile_id}/lead-magnets/{automation_resource_id}/generate-flow", include_in_schema=False)
+@app.post("/user-profiles/{profile_id}/automation-resources/{automation_resource_id}/generate-automation")
+def generate_profile_automation_resource_setup(
     profile_id: str,
-    lead_magnet_id: str,
+    automation_resource_id: str,
     current_user: dict = Depends(get_current_user),
 ):
     conn = psycopg.connect(os.getenv("DATABASE_URL"))
     try:
         check_profile_owner(conn, profile_id, current_user["user_id"])
         try:
-            lead_magnet = get_lead_magnet(conn, lead_magnet_id, profile_id)
-            context = get_flow_resource_generation_context(conn, profile_id, lead_magnet)
+            automation_resource = get_automation_resource(conn, automation_resource_id, profile_id)
+            context = get_automation_resource_generation_context(conn, profile_id, automation_resource)
         except ValueError as exc:
             raise HTTPException(status_code=404, detail=str(exc))
 
-        flow = run_conversion_agent(context)
-        update_lead_magnet_flow(conn, lead_magnet_id, profile_id, flow)
+        flow = run_automation_agent(context)
+        update_automation_resource_setup(conn, automation_resource_id, profile_id, flow)
         conn.commit()
         return {
-            "status": "lead flow generated",
-            "lead_magnet_id": lead_magnet_id,
+            "status": "automation generated",
+            "automation_resource_id": automation_resource_id,
             "flow": flow,
         }
     except HTTPException:
@@ -455,8 +459,9 @@ def generate_profile_lead_magnet_flow(
         conn.close()
 
 
-@app.post("/user-profiles/{profile_id}/lead-magnets/generate-flows")
-def generate_profile_lead_magnet_flows(
+@app.post("/user-profiles/{profile_id}/lead-magnets/generate-flows", include_in_schema=False)
+@app.post("/user-profiles/{profile_id}/automation-resources/regenerate-automations")
+def generate_profile_automation_resource_setups(
     profile_id: str,
     current_user: dict = Depends(get_current_user),
 ):
@@ -464,20 +469,20 @@ def generate_profile_lead_magnet_flows(
     generated = []
     try:
         check_profile_owner(conn, profile_id, current_user["user_id"])
-        lead_magnets = list_lead_magnets(conn, profile_id)
-        for lead_magnet in lead_magnets:
-            context = get_flow_resource_generation_context(conn, profile_id, lead_magnet)
-            flow = run_conversion_agent(context)
-            update_lead_magnet_flow(conn, lead_magnet["id"], profile_id, flow)
+        automation_resources = list_automation_resources(conn, profile_id)
+        for automation_resource in automation_resources:
+            context = get_automation_resource_generation_context(conn, profile_id, automation_resource)
+            flow = run_automation_agent(context)
+            update_automation_resource_setup(conn, automation_resource["id"], profile_id, flow)
             generated.append({
-                "lead_magnet_id": lead_magnet["id"],
-                "title": lead_magnet["title"],
+                "automation_resource_id": automation_resource["id"],
+                "title": automation_resource["title"],
                 "flow": flow,
             })
 
         conn.commit()
         return {
-            "status": "lead flows generated",
+            "status": "automations generated",
             "count": len(generated),
             "flows": generated,
         }
@@ -488,24 +493,25 @@ def generate_profile_lead_magnet_flows(
         conn.close()
 
 
-@app.delete("/user-profiles/{profile_id}/lead-magnets/{lead_magnet_id}")
-def delete_profile_lead_magnet(
+@app.delete("/user-profiles/{profile_id}/lead-magnets/{automation_resource_id}", include_in_schema=False)
+@app.delete("/user-profiles/{profile_id}/automation-resources/{automation_resource_id}")
+def delete_profile_automation_resource(
     profile_id: str,
-    lead_magnet_id: str,
+    automation_resource_id: str,
     current_user: dict = Depends(get_current_user),
 ):
     conn = psycopg.connect(os.getenv("DATABASE_URL"))
     try:
         check_profile_owner(conn, profile_id, current_user["user_id"])
-        delete_lead_magnet(conn, lead_magnet_id, profile_id)
+        delete_automation_resource(conn, automation_resource_id, profile_id)
         conn.commit()
         return {
-            "status": "lead magnet deleted",
-            "lead_magnet_id": lead_magnet_id,
+            "status": "automation resource deleted",
+            "automation_resource_id": automation_resource_id,
         }
     except ValueError:
         conn.rollback()
-        raise HTTPException(status_code=404, detail="Lead magnet not found")
+        raise HTTPException(status_code=404, detail="Automation resource not found")
     except Exception:
         conn.rollback()
         raise
@@ -753,13 +759,13 @@ def get_posts_for_profile(
                     pl.name AS platform,
                     pf.name AS post_format,
                     pg.name AS post_goal,
-                    p.lead_magnet_id,
-                    lm.title AS lead_magnet_title
+                    p.automation_resource_id,
+                    ar.title AS automation_resource_title
                 FROM posts p
                 JOIN platforms pl ON p.platform_id = pl.id
                 LEFT JOIN post_formats pf ON p.post_format_id = pf.id
                 LEFT JOIN post_goals pg ON p.post_goal_id = pg.id
-                LEFT JOIN lead_magnets lm ON p.lead_magnet_id = lm.id
+                LEFT JOIN automation_resources ar ON p.automation_resource_id = ar.id
                 WHERE p.user_profile_id = %s
             """, (profile_id,))
             rows = cur.fetchall()
@@ -772,7 +778,7 @@ def get_posts_for_profile(
             "instagram_content_type": row[4], "post_length": row[5],
             "is_favorite": row[6], "is_published": row[7],
             "platform": row[8], "post_format": row[9], "post_goal": row[10],
-            "lead_magnet_id": row[11], "lead_magnet_title": row[12],
+            "automation_resource_id": row[11], "automation_resource_title": row[12],
         }
         for row in rows
     ]
@@ -845,26 +851,26 @@ def generate_post(
         post_format = context.get("idea_post_format") or "how_to"
         post_format_id = get_lookup_id(conn, "post_formats", post_format)
         post_goal_id = get_lookup_id(conn, "post_goals", request["post_goal"])
-        lead_magnet = None
-        if request.get("lead_magnet_id"):
+        automation_resource = None
+        if request.get("automation_resource_id"):
             if request["platform"] != "instagram":
                 raise HTTPException(
                     status_code=400,
-                    detail="Flow resources can only be attached to Instagram posts",
+                    detail="DM resources can only be attached to Instagram posts",
                 )
             if request.get("instagram_content_type") == "story":
                 raise HTTPException(
                     status_code=400,
-                    detail="Comment-to-DM flow resources are only available for Instagram reels and carousels",
+                    detail="Comment-to-DM automations are only available for Instagram reels and carousels",
                 )
             try:
-                lead_magnet = get_lead_magnet(
+                automation_resource = get_automation_resource(
                     conn,
-                    request["lead_magnet_id"],
+                    request["automation_resource_id"],
                     context["user_profile_id"],
                 )
             except ValueError:
-                raise HTTPException(status_code=404, detail="Flow resource not found")
+                raise HTTPException(status_code=404, detail="DM resource not found")
 
         agent_input = {
             **context,
@@ -873,19 +879,19 @@ def generate_post(
             "post_length": request.get("post_length", "medium"),
             "post_format": post_format,
             "post_goal": request["post_goal"],
-            "lead_magnet_id": lead_magnet["id"] if lead_magnet else None,
-            "lead_magnet_title": lead_magnet["title"] if lead_magnet else None,
-            "lead_magnet_url": lead_magnet["url"] if lead_magnet else None,
-            "lead_magnet_description": lead_magnet["description"] if lead_magnet else None,
-            "lead_magnet_keyword": lead_magnet["suggested_keyword"] if lead_magnet else None,
-            "lead_magnet_trigger_type": lead_magnet.get("trigger_type") if lead_magnet else None,
-            "lead_magnet_public_comment_reply": lead_magnet.get("public_comment_reply") if lead_magnet else None,
-            "lead_magnet_delivery_message": lead_magnet["delivery_message"] if lead_magnet else None,
-            "lead_magnet_opening_dm_button_label": lead_magnet.get("opening_dm_button_label") if lead_magnet else None,
-            "lead_magnet_link_button_label": lead_magnet.get("link_button_label") if lead_magnet else None,
-            "lead_magnet_qualification_question": lead_magnet.get("qualification_question") if lead_magnet else None,
-            "lead_magnet_follow_up_cta": lead_magnet["follow_up_cta"] if lead_magnet else None,
-            "lead_magnet_preferred_post_goal": lead_magnet.get("preferred_post_goal") if lead_magnet else None,
+            "automation_resource_id": automation_resource["id"] if automation_resource else None,
+            "automation_resource_title": automation_resource["title"] if automation_resource else None,
+            "automation_resource_url": automation_resource["url"] if automation_resource else None,
+            "automation_resource_description": automation_resource["description"] if automation_resource else None,
+            "automation_resource_keyword": automation_resource["suggested_keyword"] if automation_resource else None,
+            "automation_resource_trigger_type": automation_resource.get("trigger_type") if automation_resource else None,
+            "automation_resource_public_comment_reply": automation_resource.get("public_comment_reply") if automation_resource else None,
+            "automation_resource_delivery_message": automation_resource["delivery_message"] if automation_resource else None,
+            "automation_resource_opening_dm_button_label": automation_resource.get("opening_dm_button_label") if automation_resource else None,
+            "automation_resource_link_button_label": automation_resource.get("link_button_label") if automation_resource else None,
+            "automation_resource_qualification_question": automation_resource.get("qualification_question") if automation_resource else None,
+            "automation_resource_follow_up_cta": automation_resource["follow_up_cta"] if automation_resource else None,
+            "automation_resource_preferred_post_goal": automation_resource.get("preferred_post_goal") if automation_resource else None,
         }
 
         generated_post = run_content_agent(agent_input)
@@ -896,7 +902,7 @@ def generate_post(
             "platform_id": platform_id,
             "post_format_id": post_format_id,
             "post_goal_id": post_goal_id,
-            "lead_magnet_id": agent_input["lead_magnet_id"],
+            "automation_resource_id": agent_input["automation_resource_id"],
             "instagram_content_type": agent_input["instagram_content_type"],
             "post_length": agent_input["post_length"],
         }
@@ -909,8 +915,8 @@ def generate_post(
             "post_id": post_id,
             "post": {
                 **generated_post,
-                "lead_magnet_id": agent_input["lead_magnet_id"],
-                "lead_magnet_title": lead_magnet["title"] if lead_magnet else None,
+                "automation_resource_id": agent_input["automation_resource_id"],
+                "automation_resource_title": automation_resource["title"] if automation_resource else None,
                 "platform": request["platform"],
                 "instagram_content_type": agent_input["instagram_content_type"],
                 "post_goal": request["post_goal"],
@@ -941,13 +947,13 @@ def get_post(
                     pl.name AS platform,
                     pf.name AS post_format,
                     pg.name AS post_goal,
-                    p.lead_magnet_id,
-                    lm.title AS lead_magnet_title
+                    p.automation_resource_id,
+                    ar.title AS automation_resource_title
                 FROM posts p
                 JOIN platforms pl ON p.platform_id = pl.id
                 LEFT JOIN post_formats pf ON p.post_format_id = pf.id
                 LEFT JOIN post_goals pg ON p.post_goal_id = pg.id
-                LEFT JOIN lead_magnets lm ON p.lead_magnet_id = lm.id
+                LEFT JOIN automation_resources ar ON p.automation_resource_id = ar.id
                 WHERE p.id = %s
             """, (post_id,))
             row = cur.fetchone()
@@ -962,7 +968,7 @@ def get_post(
         "final_text": row[4], "instagram_content_type": row[5], "post_length": row[6],
         "is_favorite": row[7], "is_published": row[8],
         "platform": row[9], "post_format": row[10], "post_goal": row[11],
-        "lead_magnet_id": row[12], "lead_magnet_title": row[13],
+        "automation_resource_id": row[12], "automation_resource_title": row[13],
     }
 
 
@@ -1059,44 +1065,45 @@ def delete_post(
     return {"status": "deleted", "post_id": post_id}
 
 
-@app.get("/posts/{post_id}/conversion")
-def get_conversion_flow(
+@app.get("/posts/{post_id}/conversion", include_in_schema=False)
+@app.get("/posts/{post_id}/automation")
+def get_post_automation_setup(
     post_id: str,
     current_user: dict = Depends(get_current_user),
 ):
     conn = psycopg.connect(os.getenv("DATABASE_URL"))
     try:
         check_post_owner(conn, post_id, current_user["user_id"])
-        context = get_conversion_context(conn, post_id)
+        context = get_automation_context(conn, post_id)
         if context.get("platform") != "instagram":
             raise HTTPException(
                 status_code=400,
-                detail="Lead flows are only available for Instagram posts",
+                detail="Comment-to-DM automations are only available for Instagram posts",
             )
         if context.get("instagram_content_type") == "story":
             raise HTTPException(
                 status_code=400,
-                detail="Comment-to-DM lead flows are only available for Instagram reels and carousels",
+                detail="Comment-to-DM automations are only available for Instagram reels and carousels",
             )
 
-        selected_lead_magnet_id = context.get("post_lead_magnet_id")
-        if not selected_lead_magnet_id:
-            return {"error": "No prepared lead flow is attached to this post"}
+        selected_resource_id = context.get("post_automation_resource_id")
+        if not selected_resource_id:
+            return {"error": "No prepared automation is attached to this post"}
 
         try:
-            lead_magnet = get_lead_magnet(
+            automation_resource = get_automation_resource(
                 conn,
-                selected_lead_magnet_id,
+                selected_resource_id,
                 context["user_profile_id"],
             )
         except ValueError:
-            return {"error": "Attached lead flow resource was not found"}
+            return {"error": "Attached automation resource was not found"}
 
         return {
-            **flow_from_lead_magnet(lead_magnet),
+            **flow_from_automation_resource(automation_resource),
             "id": None,
-            "lead_magnet_id": lead_magnet["id"],
-            "lead_magnet_title": lead_magnet["title"],
+            "automation_resource_id": automation_resource["id"],
+            "automation_resource_title": automation_resource["title"],
         }
     finally:
         conn.close()

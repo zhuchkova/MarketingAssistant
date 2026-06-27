@@ -13,7 +13,7 @@ def clean_optional_text(value: Optional[str]) -> Optional[str]:
     return value or None
 
 
-class LeadMagnetRequest(BaseModel):
+class AutomationResourceRequest(BaseModel):
     title: str
     url: Optional[str] = None
     description: Optional[str] = None

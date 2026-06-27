@@ -91,7 +91,7 @@ CREATE TABLE posts (
     final_text TEXT
 );
 
-CREATE TABLE lead_magnets (
+CREATE TABLE automation_resources (
     id UUID PRIMARY KEY,
     user_profile_id UUID NOT NULL
         REFERENCES user_profiles(id) ON DELETE CASCADE,
@@ -114,5 +114,5 @@ CREATE TABLE lead_magnets (
 );
 
 ALTER TABLE posts
-    ADD COLUMN IF NOT EXISTS lead_magnet_id UUID
-        REFERENCES lead_magnets(id) ON DELETE SET NULL;
+    ADD COLUMN IF NOT EXISTS automation_resource_id UUID
+        REFERENCES automation_resources(id) ON DELETE SET NULL;

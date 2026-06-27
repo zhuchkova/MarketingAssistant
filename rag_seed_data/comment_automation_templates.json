@@ -91,7 +91,7 @@
   },
   {
     "id": "manychat_flow_saved_guide_delivery",
-    "document": "ManyChat flow with saved lead magnet: Use the saved guide title and URL directly. Public reply: “Sent it to you.” First message: “Here’s the [guide title] I mentioned: [URL]. Start with the section that matches your situation.” Qualification question: “What are you trying to solve first?” Follow-up: “If you want help applying it, here is the next step: [offer or follow-up CTA].”",
+    "document": "ManyChat automation with saved DM resource: Use the saved guide title and URL directly. Public reply: “Sent it to you.” First message: “Here’s the [guide title] I mentioned: [URL]. Start with the section that matches your situation.” Qualification question: “What are you trying to solve first?” Follow-up: “If you want help applying it, here is the next step: [offer or follow-up CTA].”",
     "metadata": {
       "type": "flow_template",
       "goal": "download",
@@ -136,7 +136,7 @@
   },
   {
     "id": "manychat_reusable_flow_prepare_first",
-    "document": "Reusable flow architecture: Prepare the flow resource before drafting Instagram posts. A reusable flow should include a clear name, trigger keyword, public reply, first DM, follow-up, optional URL, and preferred goal. Posts can then reuse that flow so their CTA matches the actual keyword and promise.",
+    "document": "Reusable flow architecture: Prepare the DM resource before drafting Instagram posts. A reusable automation should include a clear name, trigger keyword, public reply, first DM, follow-up, optional URL, and preferred goal. Posts can then reuse that flow so their CTA matches the actual keyword and promise.",
     "metadata": {
       "type": "principle",
       "goal": "workflow",

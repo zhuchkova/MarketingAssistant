@@ -53,7 +53,7 @@ Content Agent
 Generated Posts
   │
   ▼
-Conversion Agent
+Automation Agent
   │
   ▼
 ManyChat Funnel
@@ -130,7 +130,7 @@ Draft controls:
 * `instagram_content_type`: `carousel`, `story`, or `reel` when platform is Instagram
 * `post_length`: `short`, `medium`, or `long`
 * `post_goal`: comment, DM keyword, save, follow, download, share, book/visit, or buy/order
-* optional `lead_magnet_id`: a saved Instagram flow resource that the CTA should use
+* optional `automation_resource_id`: a saved Instagram DM resource that the CTA should use
 
 Generates complete LinkedIn or Instagram posts.
 
@@ -140,7 +140,7 @@ Generates complete LinkedIn or Instagram posts.
 * Platform
 * Format
 * Goal
-* Optional saved flow resource for Instagram CTA alignment
+* Optional saved DM resource for Instagram CTA alignment
 
 #### Output
 
@@ -151,9 +151,9 @@ Generates complete LinkedIn or Instagram posts.
 
 ---
 
-### 4. Conversion Agent
+### 4. Automation Agent
 
-Creates reusable ManyChat-style Instagram comment-to-DM flows from lead resources.
+Creates reusable ManyChat-style Instagram comment-to-DM automations from DM resources.
 
 #### Output
 
@@ -205,21 +205,21 @@ Contains:
 
 ---
 
-### cta_conversion_knowledge
+### cta_patterns
 
-Used by the Conversion Agent.
+Used by the Automation Agent.
 
 Contains:
 
 * CTA best practices
-* Lead magnet strategies
+* DM resource strategies
 * Comment-to-DM patterns
 
 ---
 
-### manychat_funnel_templates
+### comment_automation_templates
 
-Used by the Conversion Agent.
+Used by the Automation Agent.
 
 Contains:
 
@@ -278,7 +278,7 @@ content_ideas
   ├── post_format
   └── is_favorite
 posts
-  ├── lead_magnet_id
+  ├── automation_resource_id
   ├── instagram_content_type
   ├── post_length
   ├── is_favorite
@@ -288,7 +288,7 @@ posts
   ├── body
   ├── cta
   └── final_text
-lead_magnets
+automation_resources
   ├── title
   ├── url
   ├── description
@@ -367,8 +367,8 @@ The seed script uses `upsert`, so rerunning it updates existing cards with the s
 * `positioning_knowledge/` for audience research, positioning, pains, desires, objections, and voice-of-customer patterns. This collection is split into smaller JSON files so editors can open them comfortably.
 * `idea_knowledge.json` for hook patterns, content angles, belief shifts, and audience-specific idea triggers.
 * `content_frameworks.json` for LinkedIn structures, Instagram carousel/story/Reel structures, and length rules.
-* `cta_conversion_knowledge.json` for comment, DM, save, follow, download, share, book/visit, buy/order, public reply, and no-guide fallback CTA patterns.
-* `manychat_funnel_templates.json` for keyword flows, public comment replies, first messages, qualifying questions, follow-ups, lead magnet delivery, no-guide fallbacks, and manual ManyChat setup JSON.
+* `cta_patterns.json` for comment, DM, save, follow, download, share, book/visit, buy/order, public reply, and no-guide fallback CTA patterns.
+* `comment_automation_templates.json` for keyword flows, public comment replies, first messages, qualifying questions, follow-ups, DM resource delivery, no-guide fallbacks, and manual ManyChat setup JSON.
 
 To inspect the current Chroma collections:
 
@@ -574,38 +574,38 @@ DELETE /posts/{post_id}
 
 ---
 
-### Conversion
+### Automations
 
-Lead flow setup is optional and happens after the main profile workflow. A user can create a profile, review audience analysis, generate ideas, and draft posts without adding any lead magnet or ManyChat resource.
+Automation setup is optional and happens after the main profile workflow. A user can create a profile, review audience analysis, generate ideas, and draft posts without adding any DM resource or ManyChat setup.
 
-In the frontend, reusable flow resources are managed from the **Lead Flows** dashboard tab. The intended workflow is:
+In the frontend, reusable DM resources are managed from the **Automations** dashboard tab. The intended workflow is:
 
 1. Add one or more resources, such as a guide, booking page, product page, class details, or a conversation offer.
-2. Generate one flow or regenerate all flows. The app prepares the keyword mode, keyword, public reply, opening DM, button labels, optional qualification question, follow-up, and ManyChat setup JSON.
-3. Draft Instagram reels/carousels and optionally select one prepared flow so the Content Agent writes the CTA around the real keyword and promise.
+2. Generate one automation or regenerate all automations. The app prepares the keyword mode, keyword, public reply, opening DM, button labels, optional qualification question, follow-up, and ManyChat setup JSON.
+3. Draft Instagram reels/carousels and optionally select one prepared automation so the Content Agent writes the CTA around the real keyword and promise.
 
 LinkedIn posts and Instagram Stories do not use comment-to-DM automation selectors.
 
-#### Profile Lead Magnets
+#### Profile DM Resources
 
 ```http
-GET /user-profiles/{profile_id}/lead-magnets
-POST /user-profiles/{profile_id}/lead-magnets
-POST /user-profiles/{profile_id}/lead-magnets/{lead_magnet_id}/generate-flow
-POST /user-profiles/{profile_id}/lead-magnets/generate-flows
-PUT /user-profiles/{profile_id}/lead-magnets/{lead_magnet_id}
-DELETE /user-profiles/{profile_id}/lead-magnets/{lead_magnet_id}
+GET /user-profiles/{profile_id}/automation-resources
+POST /user-profiles/{profile_id}/automation-resources
+POST /user-profiles/{profile_id}/automation-resources/{automation_resource_id}/generate-automation
+POST /user-profiles/{profile_id}/automation-resources/regenerate-automations
+PUT /user-profiles/{profile_id}/automation-resources/{automation_resource_id}
+DELETE /user-profiles/{profile_id}/automation-resources/{automation_resource_id}
 ```
 
-Lead magnets are optional reusable resources for Instagram comment-to-DM flows. The URL is optional so a flow can send a link, booking details, order instructions, or simply start a conversation. A generated flow can store trigger mode, keyword, public reply, first DM, opening button label, link button label, optional qualification question, optional follow-up, preferred post goal, and setup JSON.
+DM resources are optional reusable resources for Instagram comment-to-DM automations. The URL is optional so an automation can send a link, booking details, order instructions, or simply start a conversation. A generated automation can store trigger mode, keyword, public reply, first DM, opening button label, link button label, optional qualification question, optional follow-up, preferred post goal, and setup JSON.
 
-#### Get Conversion Flow
+#### Get Post Automation Setup
 
 ```http
-GET /posts/{post_id}/conversion
+GET /posts/{post_id}/automation
 ```
 
-This endpoint only previews the reusable lead flow already attached to the Instagram reel/carousel post through `posts.lead_magnet_id`. It does not generate or store a post-specific ManyChat flow.
+This endpoint only previews the reusable automation already attached to the Instagram reel/carousel post through `posts.automation_resource_id`. It does not generate or store a post-specific ManyChat flow.
 
 ---
 
@@ -708,7 +708,7 @@ Post format is inferred from the selected content idea's `post_format`.
 Use `instagram_content_type` only when `platform` is `instagram`.
 Allowed `post_goal` values are `comment`, `dm_keyword`, `follow`, `download`, `share`, `save`, `book_visit`, and `buy_order`.
 Allowed `post_length` values are `short`, `medium`, and `long`.
-Use `lead_magnet_id` only for Instagram posts when the CTA should reuse a saved flow resource.
+Use `automation_resource_id` only for Instagram posts when the CTA should reuse a saved DM resource.
 
 ```json
 {
@@ -717,7 +717,7 @@ Use `lead_magnet_id` only for Instagram posts when the CTA should reuse a saved 
   "instagram_content_type": "carousel",
   "post_goal": "share",
   "post_length": "medium",
-  "lead_magnet_id": "55555555-5555-5555-5555-555555555555"
+  "automation_resource_id": "55555555-5555-5555-5555-555555555555"
 }
 ```
 
@@ -732,12 +732,12 @@ Use `lead_magnet_id` only for Instagram posts when the CTA should reuse a saved 
     "body": "They need a repeatable system for turning expertise into useful posts.",
     "cta": "Comment SYSTEM and I will send you the workflow.",
     "final_text": "Most founders do not need more content ideas.\n\nThey need a repeatable system for turning expertise into useful posts.\n\nComment SYSTEM and I will send you the workflow.",
-    "lead_magnet_id": "55555555-5555-5555-5555-555555555555"
+    "automation_resource_id": "55555555-5555-5555-5555-555555555555"
   }
 }
 ```
 
-### Get Attached Lead Flow Response
+### Get Attached Automation Setup Response
 
 ```json
 {
@@ -753,8 +753,8 @@ Use `lead_magnet_id` only for Instagram posts when the CTA should reuse a saved 
   "link_button_label": "Open",
   "qualification_question": "Are you building this for yourself or for clients?",
   "follow_up": "Start with the simple version first, then automate the repeatable parts.",
-  "lead_magnet_id": "55555555-5555-5555-5555-555555555555",
-  "lead_magnet_title": "Workflow guide",
+  "automation_resource_id": "55555555-5555-5555-5555-555555555555",
+  "automation_resource_title": "Workflow guide",
   "manychat_setup": {
     "manual_required": true,
     "comment_trigger_mode": "specific_word",
@@ -769,8 +769,8 @@ Use `lead_magnet_id` only for Instagram posts when the CTA should reuse a saved 
     "opening_dm_button_label": "Send me the link",
     "link_button_label": "Open",
     "flow_type": "instagram_comment_to_dm",
-    "lead_magnet_used": true,
-    "lead_magnet_url": "https://example.com/guide",
+    "resource_used": true,
+    "automation_resource_url": "https://example.com/guide",
     "setup_steps": [
       "Create an Instagram Comments automation in ManyChat.",
       "Set the comment trigger to a specific word or reaction.",
@@ -814,7 +814,7 @@ Passwords are hashed with bcrypt before storage. The app never returns password 
 
 Profile ownership is enforced on profile-level endpoints. A signed-in user can only load, update, list posts for, or read generated audience/content data for profiles owned by their user account.
 
-Post ownership is enforced through the post's parent marketing profile. A signed-in user cannot generate a post from another user's content idea, read another user's post, delete another user's post, or create/read conversion flows for another user's post. Conversion flows are limited to Instagram posts.
+Post ownership is enforced through the post's parent marketing profile. A signed-in user cannot generate a post from another user's content idea, read another user's post, delete another user's post, or create/read automation setups for another user's post. Automation setups are limited to Instagram posts.
 
 Sign out is client-side because JWTs are stateless. The frontend removes the saved token and profile id from browser storage. Tokens expire after 7 days.
 
@@ -887,13 +887,13 @@ Idea Agent
         ▼
 Content Ideas
 
-User adds lead resource
+User adds DM resource
         │
         ▼
-Conversion Agent
+Automation Agent
         │
         ▼
-Reusable Lead Flow
+Reusable Automation Setup
 
 User selects content idea
         │

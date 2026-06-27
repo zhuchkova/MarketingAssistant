@@ -1,7 +1,7 @@
 import uuid
 from psycopg.types.json import Jsonb
 
-from db.lead_flow_builder import build_manychat_setup
+from db.manychat_setup_builder import build_manychat_setup
 
 
 def _has_flow_details(data: dict) -> bool:
@@ -18,7 +18,7 @@ def _has_flow_details(data: dict) -> bool:
     ))
 
 
-def list_lead_magnets(conn, profile_id: str) -> list:
+def list_automation_resources(conn, profile_id: str) -> list:
     with conn.cursor() as cur:
         cur.execute("""
             SELECT
@@ -38,7 +38,7 @@ def list_lead_magnets(conn, profile_id: str) -> list:
                 preferred_post_goal,
                 manychat_setup,
                 is_primary
-            FROM lead_magnets
+            FROM automation_resources
             WHERE user_profile_id = %s
             ORDER BY is_primary DESC, title
         """, (profile_id,))
@@ -67,7 +67,7 @@ def list_lead_magnets(conn, profile_id: str) -> list:
     ]
 
 
-def get_lead_magnet(conn, lead_magnet_id: str, profile_id: str) -> dict:
+def get_automation_resource(conn, automation_resource_id: str, profile_id: str) -> dict:
     with conn.cursor() as cur:
         cur.execute("""
             SELECT
@@ -87,13 +87,13 @@ def get_lead_magnet(conn, lead_magnet_id: str, profile_id: str) -> dict:
                 preferred_post_goal,
                 manychat_setup,
                 is_primary
-            FROM lead_magnets
+            FROM automation_resources
             WHERE id = %s AND user_profile_id = %s
-        """, (lead_magnet_id, profile_id))
+        """, (automation_resource_id, profile_id))
         row = cur.fetchone()
 
     if not row:
-        raise ValueError("Lead magnet not found")
+        raise ValueError("Automation resource not found")
 
     return {
         "id": row[0],
@@ -115,18 +115,18 @@ def get_lead_magnet(conn, lead_magnet_id: str, profile_id: str) -> dict:
     }
 
 
-def save_lead_magnet(conn, profile_id: str, data: dict, is_primary: bool = False) -> str:
-    lead_magnet_id = str(uuid.uuid4())
+def save_automation_resource(conn, profile_id: str, data: dict, is_primary: bool = False) -> str:
+    automation_resource_id = str(uuid.uuid4())
 
     with conn.cursor() as cur:
         if is_primary:
             cur.execute(
-                "UPDATE lead_magnets SET is_primary = FALSE WHERE user_profile_id = %s",
+                "UPDATE automation_resources SET is_primary = FALSE WHERE user_profile_id = %s",
                 (profile_id,),
             )
 
         cur.execute("""
-            INSERT INTO lead_magnets (
+            INSERT INTO automation_resources (
                 id,
                 user_profile_id,
                 title,
@@ -147,7 +147,7 @@ def save_lead_magnet(conn, profile_id: str, data: dict, is_primary: bool = False
             )
             VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
         """, (
-            lead_magnet_id,
+            automation_resource_id,
             profile_id,
             data["title"],
             data.get("url"),
@@ -166,13 +166,13 @@ def save_lead_magnet(conn, profile_id: str, data: dict, is_primary: bool = False
             is_primary,
         ))
 
-    return lead_magnet_id
+    return automation_resource_id
 
 
-def update_lead_magnet(conn, lead_magnet_id: str, profile_id: str, data: dict) -> None:
+def update_automation_resource(conn, automation_resource_id: str, profile_id: str, data: dict) -> None:
     with conn.cursor() as cur:
         cur.execute("""
-            UPDATE lead_magnets
+            UPDATE automation_resources
             SET title = %s,
                 url = %s,
                 description = %s,
@@ -203,25 +203,25 @@ def update_lead_magnet(conn, lead_magnet_id: str, profile_id: str, data: dict) -
             data.get("follow_up_cta"),
             data.get("preferred_post_goal"),
             Jsonb(build_manychat_setup(data) if _has_flow_details(data) else {}),
-            lead_magnet_id,
+            automation_resource_id,
             profile_id,
         ))
 
         if cur.rowcount == 0:
-            raise ValueError("Lead magnet not found")
+            raise ValueError("Automation resource not found")
 
 
-def update_lead_magnet_flow(conn, lead_magnet_id: str, profile_id: str, flow: dict) -> None:
+def update_automation_resource_setup(conn, automation_resource_id: str, profile_id: str, flow: dict) -> None:
     with conn.cursor() as cur:
         cur.execute("""
             SELECT title, url, description, preferred_post_goal
-            FROM lead_magnets
+            FROM automation_resources
             WHERE id = %s AND user_profile_id = %s
-        """, (lead_magnet_id, profile_id))
+        """, (automation_resource_id, profile_id))
         existing = cur.fetchone()
 
     if not existing:
-        raise ValueError("Lead magnet not found")
+        raise ValueError("Automation resource not found")
 
     final_data = {
         "title": existing[0],
@@ -243,7 +243,7 @@ def update_lead_magnet_flow(conn, lead_magnet_id: str, profile_id: str, flow: di
 
     with conn.cursor() as cur:
         cur.execute("""
-            UPDATE lead_magnets
+            UPDATE automation_resources
             SET suggested_keyword = %s,
                 trigger_type = %s,
                 public_comment_reply = %s,
@@ -266,19 +266,19 @@ def update_lead_magnet_flow(conn, lead_magnet_id: str, profile_id: str, flow: di
             final_data["qualification_question"],
             final_data["follow_up_cta"],
             Jsonb(setup),
-            lead_magnet_id,
+            automation_resource_id,
             profile_id,
         ))
 
         if cur.rowcount == 0:
-            raise ValueError("Lead magnet not found")
+            raise ValueError("Automation resource not found")
 
 
-def delete_lead_magnet(conn, lead_magnet_id: str, profile_id: str) -> None:
+def delete_automation_resource(conn, automation_resource_id: str, profile_id: str) -> None:
     with conn.cursor() as cur:
         cur.execute(
-            "DELETE FROM lead_magnets WHERE id = %s AND user_profile_id = %s",
-            (lead_magnet_id, profile_id),
+            "DELETE FROM automation_resources WHERE id = %s AND user_profile_id = %s",
+            (automation_resource_id, profile_id),
         )
         if cur.rowcount == 0:
-            raise ValueError("Lead magnet not found")
+            raise ValueError("Automation resource not found")

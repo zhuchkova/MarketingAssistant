@@ -932,7 +932,7 @@
         }
         .copy-row-text { font-size: 14px; color: var(--success); font-weight: 600; }
 
-        /* Conversion flow */
+        /* Automation setup */
         .kw-badge {
             display: inline-flex; align-items: center; gap: 8px;
             background: var(--pink-soft); border: 1px solid #f7c8d9;
@@ -1333,10 +1333,11 @@
     <symbol id="icon-message" viewBox="0 0 24 24">
         <path d="M21 12a8 8 0 0 1-8 8H7l-4 2 1.4-4.2A8 8 0 1 1 21 12z"></path>
     </symbol>
-    <symbol id="icon-flow-waves" viewBox="0 0 24 24">
-        <path d="M3 7c3-3 6 3 9 0s6-3 9 0"></path>
-        <path d="M3 12c3-3 6 3 9 0s6-3 9 0"></path>
-        <path d="M3 17c3-3 6 3 9 0s6-3 9 0"></path>
+    <symbol id="icon-atom" viewBox="0 0 24 24">
+        <circle cx="12" cy="12" r="1.6"></circle>
+        <path d="M20.2 6.4c1.4 2.4-1.5 7-6.4 9.8s-9.8 3-11.2.6 1.5-7 6.4-9.8 9.8-3 11.2-.6Z"></path>
+        <path d="M3.8 6.4c-1.4 2.4 1.5 7 6.4 9.8s9.8 3 11.2.6-1.5-7-6.4-9.8-9.8-3-11.2-.6Z"></path>
+        <path d="M12 2.5c2.8 0 5 4.3 5 9.5s-2.2 9.5-5 9.5-5-4.3-5-9.5 2.2-9.5 5-9.5Z"></path>
     </symbol>
     <symbol id="icon-target" viewBox="0 0 24 24">
         <circle cx="12" cy="12" r="8"></circle><circle cx="12" cy="12" r="3"></circle><path d="M12 2v3M12 19v3M2 12h3M19 12h3"></path>
@@ -1593,7 +1594,7 @@
                     <path class="network-heart network-far" transform="translate(1106 286) scale(.58)" d="M24 37s-14-9-18-18a9 9 0 0 1 15-9 9 9 0 0 1 15 9c-4 9-18 18-18 18z"></path>
                 </svg>
                 <h1>Social Media Assistant</h1>
-                <p>Your social profiles, content ideas, posts, and lead flows in one quiet workspace.</p>
+                <p>Your social profiles, content ideas, posts, and automations in one quiet workspace.</p>
             </div>
             <div class="auth-card">
                 <div class="auth-tabs">
@@ -1649,7 +1650,7 @@
         <div class="setup-page">
             <div class="setup-hero">
                 <h1>Social Media Workspace</h1>
-                <p>Turn positioning, audience notes, and ideas into practical posts and simple lead flows.</p>
+                <p>Turn positioning, audience notes, and ideas into practical posts and simple automations.</p>
             </div>
 
             <div class="setup-tabs">
@@ -1783,7 +1784,7 @@
             <button class="tab-btn active" onclick="switchTab('pane-analysis', this)">Audience Notes</button>
             <button class="tab-btn" onclick="switchTab('pane-ideas', this)">Content Ideas</button>
             <button class="tab-btn" onclick="switchTab('pane-posts', this)">My Posts</button>
-            <button class="tab-btn" onclick="switchTab('pane-flows', this)">Lead Flows</button>
+            <button class="tab-btn" onclick="switchTab('pane-flows', this)">Automations</button>
         </div>
 
         <!-- AUDIENCE ANALYSIS -->
@@ -1865,17 +1866,17 @@
             <div id="posts-container"></div>
         </div>
 
-        <!-- LEAD FLOWS -->
+        <!-- AUTOMATIONS -->
         <div class="tab-pane" id="pane-flows">
             <div class="ideas-toolbar">
                 <div class="ideas-toolbar-left">
-                    <h3>Lead Flows</h3>
+                    <h3>Automations</h3>
                     <p>Optional Instagram comment-to-DM setup. Add a guide, booking link, or offer link when you are ready.</p>
                 </div>
                 <div class="ideas-toolbar-right">
-                    <span class="count-pill" id="lead-magnets-count">0 resources</span>
-                    <button class="btn btn-secondary btn-sm" id="btn-regenerate-all-flows" onclick="generateAllLeadFlows()" style="display:none">
-                        Regenerate All Flows
+                    <span class="count-pill" id="automation-resources-count">0 resources</span>
+                    <button class="btn btn-secondary btn-sm" id="btn-regenerate-all-flows" onclick="generateAllAutomations()" style="display:none">
+                        Regenerate Automations
                     </button>
                 </div>
             </div>
@@ -1957,10 +1958,10 @@
 
             <div class="form-group" id="instagram-flow-resource-group">
                 <label>Instagram Automation</label>
-                <select id="gen-lead-magnet" onchange="pickGenerationLeadMagnet(this.value)">
+                <select id="gen-automation-resource" onchange="pickGenerationAutomationResource(this.value)">
                     <option value="">No automation</option>
                 </select>
-                <span class="form-hint">Optional: choose a saved flow resource so the CTA uses its keyword and promise.</span>
+                <span class="form-hint">Optional: choose a saved DM resource so the CTA uses its keyword and promise.</span>
             </div>
 
             <div class="form-group">
@@ -1983,7 +1984,7 @@
                 <div class="divider"></div>
                 <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:14px;">
                     <h3 style="font-size:16px; font-weight:700;">Draft Post</h3>
-                    <button id="btn-gen-flow" class="btn btn-primary btn-sm" onclick="genConversionFlow()">View Lead Flow</button>
+                    <button id="btn-gen-flow" class="btn btn-primary btn-sm" onclick="viewGeneratedPostAutomation()">View Automation</button>
                 </div>
                 <div class="copy-row">
                     <span class="copy-row-text">✓ Post ready</span>
@@ -2058,7 +2059,7 @@
             <button class="btn btn-danger btn-sm" onclick="deleteDetailPost()">Delete</button>
             <button class="btn btn-secondary btn-sm" onclick="openPostEditModal(S.detailPostId)">Edit</button>
             <button class="btn btn-ghost" onclick="closeModal('modal-detail')">Close</button>
-            <button id="btn-detail-flow" class="btn btn-primary btn-sm" onclick="detailConversionFlow()">Lead Flow</button>
+            <button id="btn-detail-flow" class="btn btn-primary btn-sm" onclick="viewDetailPostAutomation()">Automation Setup</button>
         </div>
     </div>
 </div>
@@ -2101,14 +2102,14 @@
 <div class="backdrop" id="modal-flow">
     <div class="modal">
         <div class="modal-head">
-            <span class="modal-title">Lead Flow</span>
+            <span class="modal-title">Automation Setup</span>
             <button class="modal-close" onclick="closeModal('modal-flow')" aria-label="Close">
                 <svg class="flat-icon"><use href="#icon-x"></use></svg>
             </button>
         </div>
         <div class="modal-body">
             <p style="font-size:15px; color:var(--text-3); margin-bottom:18px;">
-                View the prepared reusable Instagram comment-to-DM flow.
+                View the prepared reusable Instagram comment-to-DM automation.
             </p>
             <div id="flow-post-context" class="flow-context-card"></div>
             <div id="flow-result">
@@ -2187,7 +2188,7 @@
         </div>
         <div class="modal-body">
             <div class="warn-banner">
-                Saving profile changes will refresh audience notes and add fresh ideas. Existing posts, favorite ideas, and lead flows will stay.
+                Saving profile changes will refresh audience notes and add fresh ideas. Existing posts, favorite ideas, and automations will stay.
             </div>
             <div class="form-group">
                 <label>Profile Name</label>
@@ -2269,9 +2270,9 @@ const S = {
     ideas:     [],
     posts:     [],
     profiles:  [],
-    leadMagnets: [],
+    automationResources: [],
     userEmail: null,
-    genOpts:   { platform: 'instagram', instagram_content_type: 'carousel', goal: 'comment', post_length: 'medium', lead_magnet_id: null },
+    genOpts:   { platform: 'instagram', instagram_content_type: 'carousel', goal: 'comment', post_length: 'medium', automation_resource_id: null },
     genIdeaIdx: null,
     genPostId:  null,
     genPost:    null,
@@ -2285,7 +2286,7 @@ const S = {
     postAutomationFilter: 'all',
     postEditId: null,
     postEditSyncing: false,
-    leadMagnetEditId: null,
+    automationResourceEditId: null,
     detailPostId: null,
     detailPost:   null,
     flowPostId:   null,
@@ -2602,19 +2603,19 @@ async function loadProfile(profileId) {
 
 // ─── DATA FETCHING ─────────────────────────────────
 async function fetchAllData(pid) {
-    const [profile, audience, ideas, posts, leadMagnets] = await Promise.all([
+    const [profile, audience, ideas, posts, automationResources] = await Promise.all([
         api('GET', `/user-profiles/${pid}`),
         api('GET', `/user-profiles/${pid}/audience-analysis`),
         api('GET', `/user-profiles/${pid}/content-ideas`),
         api('GET', `/user-profiles/${pid}/posts`),
-        api('GET', `/user-profiles/${pid}/lead-magnets`),
+        api('GET', `/user-profiles/${pid}/automation-resources`),
     ]);
     if (profile.error) throw new Error(profile.error);
     S.profile  = profile;
     S.audience = audience.error ? null : audience;
     S.ideas    = Array.isArray(ideas) ? ideas : [];
     S.posts    = Array.isArray(posts) ? posts : [];
-    S.leadMagnets = Array.isArray(leadMagnets) ? leadMagnets : [];
+    S.automationResources = Array.isArray(automationResources) ? automationResources : [];
 }
 
 async function refreshPosts() {
@@ -2714,23 +2715,23 @@ function renderLeadFlows() {
     const panel = document.getElementById('lead-flows-panel');
     if (!panel) return;
 
-    document.getElementById('lead-magnets-count').textContent = `${S.leadMagnets.length} ${S.leadMagnets.length === 1 ? 'resource' : 'resources'}`;
+    document.getElementById('automation-resources-count').textContent = `${S.automationResources.length} ${S.automationResources.length === 1 ? 'resource' : 'resources'}`;
     const regenerateAllButton = document.getElementById('btn-regenerate-all-flows');
-    if (regenerateAllButton) regenerateAllButton.style.display = S.leadMagnets.length ? '' : 'none';
-    const editing = S.leadMagnetEditId ? S.leadMagnets.find(item => String(item.id) === String(S.leadMagnetEditId)) : null;
+    if (regenerateAllButton) regenerateAllButton.style.display = S.automationResources.length ? '' : 'none';
+    const editing = S.automationResourceEditId ? S.automationResources.find(item => String(item.id) === String(S.automationResourceEditId)) : null;
 
     panel.innerHTML = `
         <div class="form-panel standalone" style="margin-bottom:18px">
             <div class="flow-form-head">
                 <div class="flow-form-heading">
-                    <div class="flow-form-icon">${iconSvg('icon-flow-waves')}</div>
+                    <div class="flow-form-icon">${iconSvg('icon-atom')}</div>
                     <div class="form-section-head" style="margin-bottom:0">
-                        <h2>${editing ? 'Edit Flow Resource' : 'Add Flow Resource'}</h2>
-                        <p>Add reusable resources first. Then generate Instagram comment-to-DM flows from them and reuse those flows while drafting posts.</p>
+                        <h2>${editing ? 'Edit DM Resource' : 'Add DM Resource'}</h2>
+                        <p>Add reusable resources first. Then generate Instagram comment-to-DM automations from them and reuse those flows while drafting posts.</p>
                     </div>
                 </div>
                 <div class="flow-form-actions">
-                    ${editing ? `<button class="btn btn-ghost btn-sm" onclick="cancelLeadMagnetEdit()">Cancel Edit</button>` : ''}
+                    ${editing ? `<button class="btn btn-ghost btn-sm" onclick="cancelAutomationResourceEdit()">Cancel Edit</button>` : ''}
                 </div>
             </div>
             <div class="grid-2">
@@ -2764,7 +2765,7 @@ function renderLeadFlows() {
             </div>
             <details class="flow-advanced" ${editing?.suggested_keyword || editing?.delivery_message ? 'open' : ''}>
                 <summary>Optional generated flow fields</summary>
-                <p class="form-hint" style="margin:8px 0 14px">You can leave these empty. Generate Flow will fill them, and you can edit later.</p>
+                <p class="form-hint" style="margin:8px 0 14px">You can leave these empty. Generate Automation will fill them, and you can edit later.</p>
             <div class="grid-2">
                 <div class="form-group">
                     <label>Keyword</label>
@@ -2827,14 +2828,14 @@ function renderLeadFlows() {
             </div>
             </details>
             <div class="flow-form-actions">
-                <button class="btn btn-primary btn-lg" onclick="saveLeadMagnet()">${editing ? 'Save Resource' : 'Add Resource'}</button>
-                <button class="btn btn-secondary btn-lg" onclick="saveLeadMagnet(true)">${editing ? 'Save + Regenerate Flow' : 'Add + Generate Flow'}</button>
+                <button class="btn btn-primary btn-lg" onclick="saveAutomationResource()">${editing ? 'Save Resource' : 'Add Resource'}</button>
+                <button class="btn btn-secondary btn-lg" onclick="saveAutomationResource(true)">${editing ? 'Save + Regenerate Automation' : 'Add + Generate Automation'}</button>
             </div>
         </div>
 
-        ${S.leadMagnets.length ? `
+        ${S.automationResources.length ? `
             <div class="ideas-grid">
-                ${S.leadMagnets.map(item => `
+                ${S.automationResources.map(item => `
                     <div class="idea-card lead-resource-card ${Number(item.is_primary) ? 'idea-green' : 'idea-pink'}">
                         ${item.suggested_keyword ? `<div class="lead-keyword-badge">${esc(item.suggested_keyword)}</div>` : ''}
                         <div class="idea-topic-badge">${esc(item.suggested_keyword || 'RESOURCE')}</div>
@@ -2847,24 +2848,24 @@ function renderLeadFlows() {
                         ${item.second_dm_message ? `<div class="idea-hook"><strong>Second DM:</strong> ${esc(item.second_dm_message)}</div>` : ''}
                         ${item.suggested_keyword && item.delivery_message ? `<div class="lead-card-hover-preview">${leadFlowCardPreviewHtml(item)}</div>` : ''}
                         <div class="idea-card-actions">
-                            <button class="btn btn-secondary btn-sm" onclick="viewLeadFlowResource('${esc(item.id)}')">View</button>
-                            <button class="btn btn-secondary btn-sm" onclick="editLeadMagnet('${esc(item.id)}')">Edit</button>
-                            <button class="btn btn-primary btn-sm" onclick="generateLeadFlow('${esc(item.id)}')">${item.suggested_keyword && item.delivery_message ? 'Regenerate' : 'Generate Flow'}</button>
-                            <button class="btn btn-danger btn-sm" onclick="deleteLeadMagnet('${esc(item.id)}')">Delete</button>
+                            <button class="btn btn-secondary btn-sm" onclick="viewAutomationResource('${esc(item.id)}')">View</button>
+                            <button class="btn btn-secondary btn-sm" onclick="editAutomationResource('${esc(item.id)}')">Edit</button>
+                            <button class="btn btn-primary btn-sm" onclick="generateAutomation('${esc(item.id)}')">${item.suggested_keyword && item.delivery_message ? 'Regenerate' : 'Generate Automation'}</button>
+                            <button class="btn btn-danger btn-sm" onclick="deleteAutomationResource('${esc(item.id)}')">Delete</button>
                         </div>
                     </div>
                 `).join('')}
             </div>
         ` : `
             <div class="empty">
-                <div class="empty-title">No flow resources yet</div>
+                <div class="empty-title">No DM resources yet</div>
                 <div class="empty-desc">Add a guide, booking page, product page, or conversation offer first. Then generate reusable Instagram flows from your resources.</div>
             </div>
         `}
     `;
 }
 
-function leadMagnetPayloadFromForm() {
+function automationResourcePayloadFromForm() {
     const url = val('flow-resource-url');
     const publicReplyOptions = [
         val('flow-resource-public-reply'),
@@ -2895,60 +2896,60 @@ function publicReplyOption(resource, index) {
     return options[index] || '';
 }
 
-async function refreshLeadMagnets() {
-    S.leadMagnets = await api('GET', `/user-profiles/${S.profileId}/lead-magnets`);
-    if (!Array.isArray(S.leadMagnets)) S.leadMagnets = [];
+async function refreshAutomationResources() {
+    S.automationResources = await api('GET', `/user-profiles/${S.profileId}/automation-resources`);
+    if (!Array.isArray(S.automationResources)) S.automationResources = [];
     renderLeadFlows();
-    renderGenerationLeadMagnetSelect();
+    renderGenerationAutomationResourceSelect();
 }
 
-async function saveLeadMagnet(generateAfterSave = false) {
-    const payload = leadMagnetPayloadFromForm();
+async function saveAutomationResource(generateAfterSave = false) {
+    const payload = automationResourcePayloadFromForm();
     if (!payload.title) {
         toast('Please add a resource title', 'error');
         return;
     }
 
-    const editingId = S.leadMagnetEditId;
+    const editingId = S.automationResourceEditId;
     const path = editingId
-        ? `/user-profiles/${S.profileId}/lead-magnets/${editingId}`
-        : `/user-profiles/${S.profileId}/lead-magnets`;
+        ? `/user-profiles/${S.profileId}/automation-resources/${editingId}`
+        : `/user-profiles/${S.profileId}/automation-resources`;
     const method = editingId ? 'PUT' : 'POST';
 
     try {
         const res = await api(method, path, payload);
         if (res.error) throw new Error(res.error);
-        const savedId = editingId || res.lead_magnet_id;
-        S.leadMagnetEditId = null;
-        await refreshLeadMagnets();
+        const savedId = editingId || res.automation_resource_id;
+        S.automationResourceEditId = null;
+        await refreshAutomationResources();
         toast(editingId ? 'Resource updated' : 'Resource added', 'success');
         if (generateAfterSave && savedId) {
-            await generateLeadFlow(savedId);
+            await generateAutomation(savedId);
         }
     } catch (e) {
         toast(e.message || 'Could not save resource', 'error');
     }
 }
 
-async function generateLeadFlow(id) {
-    const btns = Array.from(document.querySelectorAll(`button[onclick="generateLeadFlow('${id}')"]`));
+async function generateAutomation(id) {
+    const btns = Array.from(document.querySelectorAll(`button[onclick="generateAutomation('${id}')"]`));
     btns.forEach(btn => {
         btn.disabled = true;
         btn.textContent = 'Generating…';
     });
-    showLoading('Generating lead flow…', [
-        { label:'Reading flow resource', delay:0 },
+    showLoading('Generating automation…', [
+        { label:'Reading DM resource', delay:0 },
         { label:'Choosing keyword and public reply', delay:1700 },
         { label:'Writing opening DM', delay:3600 },
         { label:'Preparing ManyChat setup notes', delay:5600 },
     ], { logo: true, kind: 'flow' });
     try {
-        const res = await api('POST', `/user-profiles/${S.profileId}/lead-magnets/${id}/generate-flow`);
+        const res = await api('POST', `/user-profiles/${S.profileId}/automation-resources/${id}/generate-automation`);
         if (res.error) throw new Error(res.error);
-        await refreshLeadMagnets();
-        toast('Lead flow generated', 'success');
+        await refreshAutomationResources();
+        toast('Automation generated', 'success');
     } catch (e) {
-        toast(e.message || 'Could not generate lead flow', 'error');
+        toast(e.message || 'Could not generate automation', 'error');
     } finally {
         hideLoading();
         btns.forEach(btn => {
@@ -2958,34 +2959,34 @@ async function generateLeadFlow(id) {
     }
 }
 
-async function generateAllLeadFlows() {
-    if (!S.leadMagnets.length) {
-        toast('Add at least one flow resource first', 'error');
+async function generateAllAutomations() {
+    if (!S.automationResources.length) {
+        toast('Add at least one DM resource first', 'error');
         return;
     }
-    showLoading('Generating lead flows…', [
+    showLoading('Generating automations…', [
         { label:'Reading saved resources', delay:0 },
         { label:'Preparing keywords', delay:1900 },
         { label:'Writing opening DMs', delay:4200 },
         { label:'Building setup notes', delay:6500 },
-        { label:'Saving reusable flows', delay:8200 },
+        { label:'Saving reusable automations', delay:8200 },
     ], { logo: true, kind: 'flow' });
     try {
-        const res = await api('POST', `/user-profiles/${S.profileId}/lead-magnets/generate-flows`);
+        const res = await api('POST', `/user-profiles/${S.profileId}/automation-resources/regenerate-automations`);
         if (res.error) throw new Error(res.error);
-        await refreshLeadMagnets();
-        toast(`Generated ${res.count || 0} lead flows`, 'success');
+        await refreshAutomationResources();
+        toast(`Generated ${res.count || 0} automations`, 'success');
     } catch (e) {
-        toast(e.message || 'Could not generate lead flows', 'error');
+        toast(e.message || 'Could not generate automations', 'error');
     } finally {
         hideLoading();
     }
 }
 
-function viewLeadFlowResource(id) {
-    const resource = S.leadMagnets.find(item => String(item.id) === String(id));
+function viewAutomationResource(id) {
+    const resource = S.automationResources.find(item => String(item.id) === String(id));
     if (!resource) {
-        toast('Flow resource not found', 'error');
+        toast('DM resource not found', 'error');
         return;
     }
     S.flowPostId = null;
@@ -2994,25 +2995,25 @@ function viewLeadFlowResource(id) {
     openModal('modal-flow');
 }
 
-function editLeadMagnet(id) {
-    S.leadMagnetEditId = id;
+function editAutomationResource(id) {
+    S.automationResourceEditId = id;
     renderLeadFlows();
 }
 
-function cancelLeadMagnetEdit() {
-    S.leadMagnetEditId = null;
+function cancelAutomationResourceEdit() {
+    S.automationResourceEditId = null;
     renderLeadFlows();
 }
 
-async function deleteLeadMagnet(id) {
-    if (!confirm('Delete this flow resource?')) return;
-    const res = await api('DELETE', `/user-profiles/${S.profileId}/lead-magnets/${id}`);
+async function deleteAutomationResource(id) {
+    if (!confirm('Delete this DM resource?')) return;
+    const res = await api('DELETE', `/user-profiles/${S.profileId}/automation-resources/${id}`);
     if (res.error) {
         toast(res.error || 'Could not delete resource', 'error');
         return;
     }
-    if (String(S.leadMagnetEditId) === String(id)) S.leadMagnetEditId = null;
-    await refreshLeadMagnets();
+    if (String(S.automationResourceEditId) === String(id)) S.automationResourceEditId = null;
+    await refreshAutomationResources();
     toast('Resource deleted', 'success');
 }
 
@@ -3254,9 +3255,9 @@ function renderPosts() {
     cont.innerHTML = `<div class="posts-list">${visiblePosts.map(p => `
         <div class="post-row" id="pr-${p.id}">
             <div class="post-status-actions">
-                ${p.lead_magnet_title ? `
-                    <span class="post-flow-indicator" title="${esc(p.lead_magnet_title)}" aria-label="Automation: ${esc(p.lead_magnet_title)}">
-                        <svg class="flat-icon"><use href="#icon-flow-waves"></use></svg>
+                ${p.automation_resource_title ? `
+                    <span class="post-flow-indicator" title="${esc(p.automation_resource_title)}" aria-label="Automation: ${esc(p.automation_resource_title)}">
+                        <svg class="flat-icon"><use href="#icon-atom"></use></svg>
                     </span>
                 ` : ''}
                 <button class="card-mark-btn ${p.is_favorite ? 'active' : ''}" onclick="togglePostFavorite(event, '${p.id}')" aria-label="${p.is_favorite ? 'Remove from favorite posts' : 'Add to favorite posts'}">♥</button>
@@ -3291,7 +3292,7 @@ function filteredPosts() {
             || (S.postStatusFilter === 'favorite' && post.is_favorite)
             || (S.postStatusFilter === 'published' && post.is_published);
         const automationOk = S.postAutomationFilter === 'all'
-            || (S.postAutomationFilter.startsWith('flow:') && String(post.lead_magnet_id || '') === S.postAutomationFilter.slice(5));
+            || (S.postAutomationFilter.startsWith('flow:') && String(post.automation_resource_id || '') === S.postAutomationFilter.slice(5));
         return platformOk && typeOk && statusOk && automationOk;
     });
 }
@@ -3322,12 +3323,12 @@ function syncPostFilters() {
 
 function postAutomationFilterOptions() {
     const flowMap = new Map();
-    S.leadMagnets.forEach(flow => {
+    S.automationResources.forEach(flow => {
         if (flow.id) flowMap.set(String(flow.id), flow.title || 'Untitled flow');
     });
     S.posts.forEach(post => {
-        if (post.lead_magnet_id) {
-            flowMap.set(String(post.lead_magnet_id), post.lead_magnet_title || flowMap.get(String(post.lead_magnet_id)) || 'Untitled flow');
+        if (post.automation_resource_id) {
+            flowMap.set(String(post.automation_resource_id), post.automation_resource_title || flowMap.get(String(post.automation_resource_id)) || 'Untitled flow');
         }
     });
 
@@ -3377,7 +3378,7 @@ function openGenModal(idx) {
     document.getElementById('gen-result').style.display = 'none';
 
     // Reset options to defaults
-    S.genOpts = { platform: 'instagram', instagram_content_type: 'carousel', goal: 'comment', post_length: 'medium', lead_magnet_id: null };
+    S.genOpts = { platform: 'instagram', instagram_content_type: 'carousel', goal: 'comment', post_length: 'medium', automation_resource_id: null };
     document.querySelectorAll('#modal-generate .opt-btn').forEach(b => {
         const isDefault = (
             (b.dataset.group === 'platform' && b.dataset.val === 'instagram') ||
@@ -3388,7 +3389,7 @@ function openGenModal(idx) {
     });
     const instagramType = document.getElementById('instagram-content-type');
     if (instagramType) instagramType.value = 'carousel';
-    renderGenerationLeadMagnetSelect();
+    renderGenerationAutomationResourceSelect();
     updateInstagramTypeVisibility();
 
     const btn = document.getElementById('btn-gen');
@@ -3412,9 +3413,9 @@ function pickInstagramType(value) {
     updateInstagramTypeVisibility();
 }
 
-function pickGenerationLeadMagnet(value) {
-    S.genOpts.lead_magnet_id = value || null;
-    const flow = S.leadMagnets.find(item => String(item.id) === String(value));
+function pickGenerationAutomationResource(value) {
+    S.genOpts.automation_resource_id = value || null;
+    const flow = S.automationResources.find(item => String(item.id) === String(value));
     if (flow?.preferred_post_goal) {
         S.genOpts.goal = flow.preferred_post_goal;
         document.querySelectorAll('#modal-generate .opt-btn[data-group="goal"]').forEach(button => {
@@ -3423,17 +3424,17 @@ function pickGenerationLeadMagnet(value) {
     }
 }
 
-function renderGenerationLeadMagnetSelect() {
-    const select = document.getElementById('gen-lead-magnet');
+function renderGenerationAutomationResourceSelect() {
+    const select = document.getElementById('gen-automation-resource');
     if (!select) return;
     select.innerHTML = `
         <option value="">No automation</option>
-        ${S.leadMagnets.map(flow => `
+        ${S.automationResources.map(flow => `
             <option value="${esc(flow.id)}" ${flow.suggested_keyword && flow.delivery_message ? '' : 'disabled'}>
                 ${esc(flow.title)}${flow.suggested_keyword ? ` - ${esc(flow.suggested_keyword)}` : ' - generate flow first'}
             </option>
         `).join('')}`;
-    select.value = S.genOpts.lead_magnet_id || '';
+    select.value = S.genOpts.automation_resource_id || '';
 }
 
 function updateInstagramTypeVisibility() {
@@ -3448,8 +3449,8 @@ function updateInstagramTypeVisibility() {
         S.genOpts.instagram_content_type = 'carousel';
     }
     if (!allowsAutomation) {
-        S.genOpts.lead_magnet_id = null;
-        const select = document.getElementById('gen-lead-magnet');
+        S.genOpts.automation_resource_id = null;
+        const select = document.getElementById('gen-automation-resource');
         if (select) select.value = '';
     }
 }
@@ -3474,7 +3475,7 @@ async function generatePost() {
             post_goal:   S.genOpts.goal,
             instagram_content_type: S.genOpts.platform === 'instagram' ? S.genOpts.instagram_content_type : null,
             post_length: S.genOpts.post_length,
-            lead_magnet_id: S.genOpts.platform === 'instagram' && S.genOpts.instagram_content_type !== 'story' ? S.genOpts.lead_magnet_id : null,
+            automation_resource_id: S.genOpts.platform === 'instagram' && S.genOpts.instagram_content_type !== 'story' ? S.genOpts.automation_resource_id : null,
         });
 
         S.genPost   = data.post;
@@ -3487,7 +3488,7 @@ async function generatePost() {
         document.getElementById('r-final').textContent = data.post.final_text || '';
 
         const flowButton = document.getElementById('btn-gen-flow');
-        if (flowButton) flowButton.style.display = S.genPostPlatform === 'instagram' && data.post.instagram_content_type !== 'story' && data.post.lead_magnet_id ? '' : 'none';
+        if (flowButton) flowButton.style.display = S.genPostPlatform === 'instagram' && data.post.instagram_content_type !== 'story' && data.post.automation_resource_id ? '' : 'none';
 
         document.getElementById('gen-result').style.display = 'block';
         document.getElementById('gen-result').scrollIntoView({ behavior:'smooth', block:'nearest' });
@@ -3510,9 +3511,9 @@ function copyGenPost() {
     if (S.genPostId) markPostPublished(S.genPostId);
 }
 
-async function genConversionFlow() {
+async function viewGeneratedPostAutomation() {
     if (S.genPostPlatform !== 'instagram' || S.genPost?.instagram_content_type === 'story') {
-        toast('Lead flows are available for Instagram reels and carousels only', 'error');
+        toast('Automations are available for Instagram reels and carousels only', 'error');
         return;
     }
     if (S.genPostId) await showFlow(S.genPostId);
@@ -3531,7 +3532,7 @@ async function openDetailModal(postId) {
         ${p.post_length ? `<span class="tag tag-format">${esc(p.post_length)}</span>` : ''}
         <span class="tag tag-format">${esc(p.post_format||'')}</span>
         <span class="tag tag-goal">${esc(p.post_goal||'')}</span>
-        ${p.lead_magnet_title ? `<span class="tag tag-goal">${esc(p.lead_magnet_title)}</span>` : ''}`;
+        ${p.automation_resource_title ? `<span class="tag tag-goal">${esc(p.automation_resource_title)}</span>` : ''}`;
 
     document.getElementById('d-hook').textContent  = p.hook       || '';
     document.getElementById('d-body').textContent  = p.body       || '';
@@ -3539,7 +3540,7 @@ async function openDetailModal(postId) {
     document.getElementById('d-final').textContent = p.final_text || '';
 
     const flowButton = document.getElementById('btn-detail-flow');
-    if (flowButton) flowButton.style.display = p.platform === 'instagram' && p.instagram_content_type !== 'story' && p.lead_magnet_id ? '' : 'none';
+    if (flowButton) flowButton.style.display = p.platform === 'instagram' && p.instagram_content_type !== 'story' && p.automation_resource_id ? '' : 'none';
 
     openModal('modal-detail');
 }
@@ -3675,29 +3676,29 @@ async function deleteDetailPost() {
     closeModal('modal-detail');
 }
 
-async function detailConversionFlow() {
+async function viewDetailPostAutomation() {
     if (S.detailPost && (S.detailPost.platform !== 'instagram' || S.detailPost.instagram_content_type === 'story')) {
-        toast('Lead flows are available for Instagram reels and carousels only', 'error');
+        toast('Automations are available for Instagram reels and carousels only', 'error');
         return;
     }
     if (S.detailPostId) await showFlow(S.detailPostId);
 }
 
-// ─── CONVERSION FLOW ───────────────────────────────
+// ─── AUTOMATION SETUP ───────────────────────────────
 async function showFlow(postId) {
     const post = S.posts.find(p => String(p.id) === String(postId))
         || (S.detailPost && String(S.detailPost.id) === String(postId) ? S.detailPost : null);
     if (post && (post.platform !== 'instagram' || post.instagram_content_type === 'story')) {
-        toast('Lead flows are available for Instagram reels and carousels only', 'error');
+        toast('Automations are available for Instagram reels and carousels only', 'error');
         return;
     }
 
     S.flowPostId = postId;
     S.flowData = null;
 
-    let flow = await api('GET', `/posts/${postId}/conversion`);
+    let flow = await api('GET', `/posts/${postId}/automation`);
     if (flow.error) {
-        toast(flow.error || 'No prepared lead flow is attached to this post', 'error');
+        toast(flow.error || 'No prepared automation is attached to this post', 'error');
         return;
     }
 
@@ -3726,7 +3727,7 @@ function leadFlowFromResource(resource) {
         publicReply,
         ...((setup.public_comment_reply_options || []).filter(Boolean)),
     ]).slice(0, 3);
-    const url = setup.lead_magnet_url || resource.url || '';
+    const url = setup.automation_resource_url || setup.lead_magnet_url || resource.url || '';
     const openingButton = resource.opening_dm_button_label || setup.opening_dm_button_label || '';
     const linkButton = url ? (resource.link_button_label || setup.link_button_label || '') : '';
     const firstMessage = resource.delivery_message || setup.opening_dm_text || '';
@@ -3735,8 +3736,8 @@ function leadFlowFromResource(resource) {
     const followUp = resource.follow_up_cta || '';
     const normalizedSetup = hasSetup ? {
         ...setup,
-        lead_magnet_url: url,
-        lead_magnet_used: Boolean(url),
+        automation_resource_url: url,
+        resource_used: Boolean(url),
         link_button_label: linkButton,
     } : {
         manual_required: true,
@@ -3749,8 +3750,8 @@ function leadFlowFromResource(resource) {
         opening_dm_button_label: openingButton,
         link_button_label: linkButton,
         flow_type: 'instagram_comment_to_dm',
-        lead_magnet_used: Boolean(url),
-        lead_magnet_url: url,
+        resource_used: Boolean(url),
+        automation_resource_url: url,
         setup_steps: [
             'Create an Instagram Comments automation in ManyChat.',
             `Set the comment trigger to ${resource.trigger_type === 'any_word' ? 'any word or reaction' : 'a specific word or reaction'}.`,
@@ -3776,8 +3777,8 @@ function leadFlowFromResource(resource) {
         qualification_question: question,
         follow_up: followUp,
         manychat_setup: normalizedSetup,
-        lead_magnet_id: resource.id,
-        lead_magnet_title: resource.title,
+        automation_resource_id: resource.id,
+        automation_resource_title: resource.title,
     };
 }
 
@@ -3790,11 +3791,11 @@ function leadFlowPreviewHtml(flow) {
     const secondMessage = flow.second_message || setup.second_dm_text || '';
     const question = flow.qualification_question || '';
     const followUp = flow.follow_up || '';
-    const url = setup.lead_magnet_url || '';
+    const url = setup.automation_resource_url || setup.lead_magnet_url || '';
     const linkButton = url ? (flow.link_button_label || setup.link_button_label || '') : '';
     return `
         ${flowBadgesHtml(keyword, publicReply)}
-        ${flowPhoneHtml({ firstMessage, secondMessage, openingButton, linkButton, url, question, followUp, title: flow.lead_magnet_title })}`;
+        ${flowPhoneHtml({ firstMessage, secondMessage, openingButton, linkButton, url, question, followUp, title: flow.automation_resource_title })}`;
 }
 
 function leadFlowCardPreviewHtml(resource) {
@@ -3804,8 +3805,8 @@ function leadFlowCardPreviewHtml(resource) {
         firstMessage: flow.first_message,
         secondMessage: flow.second_message,
         openingButton: flow.opening_dm_button_label || setup.opening_dm_button_label,
-        url: setup.lead_magnet_url || '',
-        linkButton: setup.lead_magnet_url ? (flow.link_button_label || setup.link_button_label) : '',
+        url: setup.automation_resource_url || setup.lead_magnet_url || '',
+        linkButton: (setup.automation_resource_url || setup.lead_magnet_url) ? (flow.link_button_label || setup.link_button_label) : '',
         question: null,
         followUp: null,
         title: resource.title,
@@ -3904,8 +3905,8 @@ function renderFlowPostContext(flow = null) {
     const post = flowPost();
     if (!post) {
         box.innerHTML = `
-            <div class="flow-context-title">${esc(flow?.lead_magnet_title || 'Prepared lead flow')}</div>
-            <div class="flow-context-text">This is a reusable Instagram comment-to-DM flow. Select it while drafting an Instagram reel or carousel so the post CTA matches this keyword and promise.</div>`;
+            <div class="flow-context-title">${esc(flow?.automation_resource_title || 'Prepared automation')}</div>
+            <div class="flow-context-text">This is a reusable Instagram comment-to-DM automation. Select it while drafting an Instagram reel or carousel so the post CTA matches this keyword and promise.</div>`;
         return;
     }
 
@@ -3931,7 +3932,7 @@ function copyFlow() {
         `Trigger Keyword: ${flow.trigger_keyword || setup.trigger_keyword || ''}`,
         `\nPublic Reply Options:\n${publicReplies.map((reply, index) => `${index + 1}. ${reply}`).join('\n')}`,
         flow.opening_dm_button_label || setup.opening_dm_button_label ? `\nOpening Button:\n${flow.opening_dm_button_label || setup.opening_dm_button_label || ''}` : '',
-        setup.lead_magnet_url && (flow.link_button_label || setup.link_button_label) ? `\nLink Button:\n${flow.link_button_label || setup.link_button_label || ''}` : '',
+        (setup.automation_resource_url || setup.lead_magnet_url) && (flow.link_button_label || setup.link_button_label) ? `\nLink Button:\n${flow.link_button_label || setup.link_button_label || ''}` : '',
         `\nOpening DM:\n${flow.first_message || ''}`,
         `\nSecond DM:\n${flow.second_message || setup.second_dm_text || ''}`,
         `\nQualification Question:\n${flow.qualification_question || ''}`,
