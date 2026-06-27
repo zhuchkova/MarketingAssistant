@@ -38,9 +38,9 @@ def retrieve_content_frameworks(
     Platform: {content_idea.get("platform")}
     Instagram content type: {content_idea.get("instagram_content_type")}
     Post length: {content_idea.get("post_length")}
-    Selected flow resource: {content_idea.get("lead_magnet_title")}
-    Flow trigger keyword: {content_idea.get("lead_magnet_keyword")}
-    Flow preferred goal: {content_idea.get("lead_magnet_preferred_post_goal")}
+    Selected DM resource: {content_idea.get("automation_resource_title")}
+    Automation trigger keyword: {content_idea.get("automation_resource_keyword")}
+    Automation preferred goal: {content_idea.get("automation_resource_preferred_post_goal")}
     """
 
     results = collection.query(

@@ -24,6 +24,7 @@ class GeneratePostRequest(BaseModel):
     post_goal: str
     instagram_content_type: Optional[str] = None
     post_length: str = "medium"
+    automation_resource_id: Optional[str] = None
     lead_magnet_id: Optional[str] = None
 
     @field_validator("content_idea_id")
@@ -34,9 +35,19 @@ class GeneratePostRequest(BaseModel):
         except ValueError:
             raise ValueError("content_idea_id must be a valid UUID")
 
+    @field_validator("automation_resource_id")
+    @classmethod
+    def validate_automation_resource_id(cls, value: Optional[str]) -> Optional[str]:
+        if value is None or str(value).strip() == "":
+            return None
+        try:
+            return str(UUID(str(value)))
+        except ValueError:
+            raise ValueError("automation_resource_id must be a valid UUID")
+
     @field_validator("lead_magnet_id")
     @classmethod
-    def validate_lead_magnet_id(cls, value: Optional[str]) -> Optional[str]:
+    def validate_legacy_lead_magnet_id(cls, value: Optional[str]) -> Optional[str]:
         if value is None or str(value).strip() == "":
             return None
         try:
@@ -82,6 +93,12 @@ class GeneratePostRequest(BaseModel):
             raise ValueError(f"post_length must be one of: {', '.join(sorted(ALLOWED_POST_LENGTHS))}")
         return value
 
+    @model_validator(mode="after")
+    def map_legacy_resource_id(self):
+        if not self.automation_resource_id and self.lead_magnet_id:
+            self.automation_resource_id = self.lead_magnet_id
+        return self
+
     model_config = ConfigDict(
         json_schema_extra={
             "example": {
@@ -90,7 +107,7 @@ class GeneratePostRequest(BaseModel):
                 "instagram_content_type": "carousel",
                 "post_goal": "comment",
                 "post_length": "medium",
-                "lead_magnet_id": "55555555-5555-5555-5555-555555555555"
+                "automation_resource_id": "55555555-5555-5555-5555-555555555555"
             }
         }
     )

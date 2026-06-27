@@ -1,1 +1,1 @@
--- manychat_flows was removed. Reusable flow fields now live on lead_magnets.
+-- manychat_flows was removed. Reusable flow fields now live on automation_resources.

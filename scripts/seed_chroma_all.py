@@ -5,8 +5,8 @@ COLLECTIONS = [
     ("positioning_knowledge", "positioning_knowledge"),
     ("idea_knowledge", "idea_knowledge.json"),
     ("content_frameworks", "content_frameworks.json"),
-    ("cta_conversion_knowledge", "cta_conversion_knowledge.json"),
-    ("manychat_funnel_templates", "manychat_funnel_templates.json"),
+    ("cta_patterns", "cta_patterns.json"),
+    ("comment_automation_templates", "comment_automation_templates.json"),
 ]
 
 

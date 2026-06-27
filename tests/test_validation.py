@@ -4,7 +4,7 @@ from pydantic import ValidationError
 
 from schemas.auth import LoginRequest, RegisterRequest
 from schemas.content_idea import ContentIdeaRequest
-from schemas.lead_magnet import LeadMagnetRequest
+from schemas.automation_resource import AutomationResourceRequest
 from schemas.post_generation import GeneratePostRequest, UpdatePostRequest
 from schemas.user_profile import CreateUserProfileRequest
 
@@ -103,22 +103,22 @@ class ValidationTests(unittest.TestCase):
             instagram_content_type="carousel",
             post_goal="share",
             post_length="long",
-            lead_magnet_id="55555555-5555-5555-5555-555555555555",
+            automation_resource_id="55555555-5555-5555-5555-555555555555",
         )
 
         self.assertEqual(request.post_goal, "share")
         self.assertEqual(request.instagram_content_type, "carousel")
         self.assertEqual(request.post_length, "long")
-        self.assertEqual(request.lead_magnet_id, "55555555-5555-5555-5555-555555555555")
+        self.assertEqual(request.automation_resource_id, "55555555-5555-5555-5555-555555555555")
 
-    def test_generate_post_rejects_invalid_lead_magnet_id(self):
+    def test_generate_post_rejects_invalid_automation_resource_id(self):
         with self.assertRaises(ValidationError):
             GeneratePostRequest(
                 content_idea_id="22222222-2222-2222-2222-222222222444",
                 platform="instagram",
                 instagram_content_type="carousel",
                 post_goal="comment",
-                lead_magnet_id="not-a-uuid",
+                automation_resource_id="not-a-uuid",
             )
 
     def test_generate_post_rejects_unknown_instagram_type(self):
@@ -159,8 +159,8 @@ class ValidationTests(unittest.TestCase):
                 final_text="   ",
             )
 
-    def test_lead_magnet_accepts_reusable_flow_fields(self):
-        request = LeadMagnetRequest(
+    def test_automation_resource_accepts_reusable_flow_fields(self):
+        request = AutomationResourceRequest(
             title=" Bouquet Guide ",
             url=" https://example.com/guide ",
             suggested_keyword=" GUIDE ",
@@ -181,16 +181,16 @@ class ValidationTests(unittest.TestCase):
         self.assertEqual(request.link_button_label, "Open")
         self.assertEqual(request.preferred_post_goal, "download")
 
-    def test_lead_magnet_rejects_unknown_trigger_type(self):
+    def test_automation_resource_rejects_unknown_trigger_type(self):
         with self.assertRaises(ValidationError):
-            LeadMagnetRequest(
+            AutomationResourceRequest(
                 title="Guide",
                 trigger_type="everyone",
             )
 
-    def test_lead_magnet_rejects_unknown_preferred_goal(self):
+    def test_automation_resource_rejects_unknown_preferred_goal(self):
         with self.assertRaises(ValidationError):
-            LeadMagnetRequest(
+            AutomationResourceRequest(
                 title="Guide",
                 preferred_post_goal="subscribe",
             )

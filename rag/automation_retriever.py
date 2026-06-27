@@ -3,15 +3,15 @@ import chromadb
 client = chromadb.PersistentClient(path="./chroma_db")
 
 cta_collection = client.get_or_create_collection(
-    name="cta_conversion_knowledge"
+    name="cta_patterns"
 )
 
 manychat_collection = client.get_or_create_collection(
-    name="manychat_funnel_templates"
+    name="comment_automation_templates"
 )
 
 
-def retrieve_conversion_knowledge(context: dict, n_results: int = 4) -> dict:
+def retrieve_automation_knowledge(context: dict, n_results: int = 4) -> dict:
     query = f"""
     Niche: {context.get("niche")}
     Offer: {context.get("offer")}

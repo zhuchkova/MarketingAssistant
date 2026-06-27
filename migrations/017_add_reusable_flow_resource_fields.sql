@@ -1,4 +1,4 @@
-ALTER TABLE lead_magnets
+ALTER TABLE automation_resources
     ADD COLUMN IF NOT EXISTS public_comment_reply TEXT,
     ADD COLUMN IF NOT EXISTS preferred_post_goal TEXT,
     ADD COLUMN IF NOT EXISTS trigger_type TEXT DEFAULT 'specific_word',
@@ -8,5 +8,5 @@ ALTER TABLE lead_magnets
     ADD COLUMN IF NOT EXISTS manychat_setup JSONB DEFAULT '{}'::jsonb;
 
 ALTER TABLE posts
-    ADD COLUMN IF NOT EXISTS lead_magnet_id UUID
-        REFERENCES lead_magnets(id) ON DELETE SET NULL;
+    ADD COLUMN IF NOT EXISTS automation_resource_id UUID
+        REFERENCES automation_resources(id) ON DELETE SET NULL;

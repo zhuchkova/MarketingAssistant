@@ -1,6 +1,6 @@
-def default_opening_dm(lead_magnet: dict) -> str:
-    title = (lead_magnet.get("title") or "this").strip()
-    description = (lead_magnet.get("description") or "").strip()
+def default_opening_dm(automation_resource: dict) -> str:
+    title = (automation_resource.get("title") or "this").strip()
+    description = (automation_resource.get("description") or "").strip()
 
     if title and description:
         return (
@@ -20,11 +20,11 @@ def default_opening_dm(lead_magnet: dict) -> str:
     )
 
 
-def build_manychat_setup(lead_magnet: dict) -> dict:
-    trigger_type = lead_magnet.get("trigger_type") or "specific_word"
-    trigger_keyword = lead_magnet.get("suggested_keyword") or ""
-    public_reply = lead_magnet.get("public_comment_reply") or ""
-    reply_options = lead_magnet.get("public_comment_reply_options") or []
+def build_manychat_setup(automation_resource: dict) -> dict:
+    trigger_type = automation_resource.get("trigger_type") or "specific_word"
+    trigger_keyword = automation_resource.get("suggested_keyword") or ""
+    public_reply = automation_resource.get("public_comment_reply") or ""
+    reply_options = automation_resource.get("public_comment_reply_options") or []
     reply_options = [option for option in reply_options if option]
     if public_reply and public_reply not in reply_options:
         reply_options = [public_reply, *reply_options]
@@ -33,13 +33,13 @@ def build_manychat_setup(lead_magnet: dict) -> dict:
             "Just sent it your way.",
             "Thanks for commenting. Check your DMs.",
         ])[:3]
-    url = lead_magnet.get("url") or ""
-    opening_button = lead_magnet.get("opening_dm_button_label") or ""
-    link_button = (lead_magnet.get("link_button_label") or "") if url else ""
-    first_message = lead_magnet.get("delivery_message") or ""
-    second_message = lead_magnet.get("second_dm_message") or ""
-    qualification_question = lead_magnet.get("qualification_question") or ""
-    follow_up = lead_magnet.get("follow_up_cta") or ""
+    url = automation_resource.get("url") or ""
+    opening_button = automation_resource.get("opening_dm_button_label") or ""
+    link_button = (automation_resource.get("link_button_label") or "") if url else ""
+    first_message = automation_resource.get("delivery_message") or ""
+    second_message = automation_resource.get("second_dm_message") or ""
+    qualification_question = automation_resource.get("qualification_question") or ""
+    follow_up = automation_resource.get("follow_up_cta") or ""
 
     setup_steps = [
         "Create an Instagram Comments automation in ManyChat.",
@@ -93,8 +93,8 @@ def build_manychat_setup(lead_magnet: dict) -> dict:
         "opening_dm_button_label": opening_button,
         "link_button_label": link_button,
         "flow_type": "instagram_comment_to_dm",
-        "lead_magnet_used": bool(url),
-        "lead_magnet_url": url,
+        "resource_used": bool(url),
+        "automation_resource_url": url,
         "setup_steps": setup_steps,
         "api_supported_parts": [
             "Account metadata",
@@ -104,17 +104,17 @@ def build_manychat_setup(lead_magnet: dict) -> dict:
     }
 
 
-def flow_from_lead_magnet(lead_magnet: dict) -> dict:
-    setup = build_manychat_setup(lead_magnet)
+def flow_from_automation_resource(automation_resource: dict) -> dict:
+    setup = build_manychat_setup(automation_resource)
     return {
         "trigger_keyword": setup["trigger_keyword"],
         "public_comment_reply": setup["public_comment_reply"],
         "public_comment_reply_options": setup["public_comment_reply_options"],
-        "first_message": lead_magnet.get("delivery_message") or setup.get("opening_dm_text") or "",
-        "second_message": lead_magnet.get("second_dm_message") or setup.get("second_dm_text") or "",
+        "first_message": automation_resource.get("delivery_message") or setup.get("opening_dm_text") or "",
+        "second_message": automation_resource.get("second_dm_message") or setup.get("second_dm_text") or "",
         "opening_dm_button_label": setup["opening_dm_button_label"],
         "link_button_label": setup["link_button_label"],
-        "qualification_question": lead_magnet.get("qualification_question") or "",
-        "follow_up": lead_magnet.get("follow_up_cta") or "",
+        "qualification_question": automation_resource.get("qualification_question") or "",
+        "follow_up": automation_resource.get("follow_up_cta") or "",
         "manychat_setup": setup,
     }
