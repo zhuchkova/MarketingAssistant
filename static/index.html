@@ -1125,8 +1125,8 @@
         }
         .lead-keyword-badge {
             position: absolute;
-            top: 18px;
-            right: 18px;
+            top: 16px;
+            right: 16px;
             background: var(--pink-soft);
             border: 1px solid #f7c8d9;
             color: var(--warning);
@@ -1136,6 +1136,17 @@
             font-weight: 900;
             letter-spacing: .04em;
             text-transform: uppercase;
+            z-index: 2;
+        }
+        .lead-resource-title-badge {
+            display: block;
+            width: 100%;
+            min-height: 32px;
+            box-sizing: border-box;
+            padding-right: 104px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
         }
         .lead-card-hover-preview {
             display: none;
@@ -2838,8 +2849,7 @@ function renderLeadFlows() {
                 ${S.automationResources.map(item => `
                     <div class="idea-card lead-resource-card ${Number(item.is_primary) ? 'idea-green' : 'idea-pink'}">
                         ${item.suggested_keyword ? `<div class="lead-keyword-badge">${esc(item.suggested_keyword)}</div>` : ''}
-                        <div class="idea-topic-badge">${esc(item.suggested_keyword || 'RESOURCE')}</div>
-                        <div class="idea-title">${esc(item.title || 'Untitled resource')}</div>
+                        <div class="idea-topic-badge lead-resource-title-badge">${esc(item.title || 'Untitled resource')}</div>
                         <div class="idea-hook">${esc(item.description || item.delivery_message || 'Use this as an optional Instagram DM resource.')}</div>
                         ${item.preferred_post_goal ? `<div class="idea-angle">${esc(item.preferred_post_goal.replace(/_/g, ' '))}</div>` : ''}
                         ${item.url ? `<div class="lead-resource-url">${esc(item.url)}</div>` : ''}
