@@ -100,6 +100,8 @@ Rules:
 - Make ideas specific to this audience
 - Avoid generic marketing advice
 - Each idea needs a strong hook
+- Prefer psychology hook patterns from RAG when choosing hooks, especially expectation breaks, real-talk observations, immediate value, myth breaking, pragmatic framing, insider insight, and number-based proof
+- Do not reuse the same hook structure across the set; psychology patterns should make hooks sharper, not repetitive
 - Each idea should connect to one clear audience pain, desire, or objection
 - Use these fields clearly:
   - post_format = the structure of the post. Use exactly one of: personal_story, mistakes, day_in_life, contrarian, how_to, checklist, myth_busting, client_example, behind_scenes, objection_handling

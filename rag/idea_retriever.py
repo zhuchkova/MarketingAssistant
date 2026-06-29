@@ -40,5 +40,23 @@ def retrieve_idea_knowledge(
     )
 
     docs = results.get("documents", [[]])[0]
+    psychology_docs = collection.query(
+        query_texts=[query],
+        n_results=5,
+        where={"label": "psychology"},
+    ).get("documents", [[]])[0]
 
-    return "\n".join(f"- {doc}" for doc in docs)
+    prioritized_docs = dedupe_docs(psychology_docs + docs)
+
+    return "\n".join(f"- {doc}" for doc in prioritized_docs)
+
+
+def dedupe_docs(docs: list[str]) -> list[str]:
+    seen = set()
+    unique_docs = []
+    for doc in docs:
+        if doc in seen:
+            continue
+        seen.add(doc)
+        unique_docs.append(doc)
+    return unique_docs

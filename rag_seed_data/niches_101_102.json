@@ -1,0 +1,1202 @@
+[
+  {
+    "id": "voc_youtube_channel_creator_pain_1",
+    "document": "Voice-of-customer card for YouTube channel creator: Audience says, I know I need help with planning, filming, packaging, and improving a YouTube channel, but I keep postponing it because it feels like one more thing to manage. Content should open with empathy before advice.",
+    "metadata": {
+      "type": "voice_of_customer",
+      "agent": "audience_agent",
+      "topic": "pain",
+      "niche": "youtube_channel_creator",
+      "niche_name": "YouTube channel creator",
+      "audience": "creators who want to grow a channel with clearer positioning, better videos, stronger retention, and less content burnout"
+    }
+  },
+  {
+    "id": "voc_youtube_channel_creator_pain_2",
+    "document": "Voice-of-customer card for YouTube channel creator: Audience feels frustrated because they have tried to handle planning, filming, packaging, and improving a YouTube channel alone and the result still feels inconsistent. Content should name the failed DIY cycle.",
+    "metadata": {
+      "type": "voice_of_customer",
+      "agent": "audience_agent",
+      "topic": "pain",
+      "niche": "youtube_channel_creator",
+      "niche_name": "YouTube channel creator",
+      "audience": "creators who want to grow a channel with clearer positioning, better videos, stronger retention, and less content burnout"
+    }
+  },
+  {
+    "id": "voc_youtube_channel_creator_pain_3",
+    "document": "Voice-of-customer card for YouTube channel creator: Audience worries that if they do not solve planning, filming, packaging, and improving a YouTube channel, the problem will keep costing time, confidence, money, or emotional energy. Content should show the cost of staying stuck.",
+    "metadata": {
+      "type": "voice_of_customer",
+      "agent": "audience_agent",
+      "topic": "pain",
+      "niche": "youtube_channel_creator",
+      "niche_name": "YouTube channel creator",
+      "audience": "creators who want to grow a channel with clearer positioning, better videos, stronger retention, and less content burnout"
+    }
+  },
+  {
+    "id": "voc_youtube_channel_creator_pain_4",
+    "document": "Voice-of-customer card for YouTube channel creator: Audience often feels embarrassed that this still feels hard, especially when planning, filming, packaging, and improving a YouTube channel looks simple from the outside. Content should normalize the struggle and explain why it is common.",
+    "metadata": {
+      "type": "voice_of_customer",
+      "agent": "audience_agent",
+      "topic": "pain",
+      "niche": "youtube_channel_creator",
+      "niche_name": "YouTube channel creator",
+      "audience": "creators who want to grow a channel with clearer positioning, better videos, stronger retention, and less content burnout"
+    }
+  },
+  {
+    "id": "voc_youtube_channel_creator_pain_5",
+    "document": "Voice-of-customer card for YouTube channel creator: Audience is tired of generic advice about planning, filming, packaging, and improving a YouTube channel. Content should use concrete examples from their daily creative workflow instead of broad motivational language.",
+    "metadata": {
+      "type": "voice_of_customer",
+      "agent": "audience_agent",
+      "topic": "pain",
+      "niche": "youtube_channel_creator",
+      "niche_name": "YouTube channel creator",
+      "audience": "creators who want to grow a channel with clearer positioning, better videos, stronger retention, and less content burnout"
+    }
+  },
+  {
+    "id": "voc_youtube_channel_creator_desire_1",
+    "document": "Voice-of-customer card for YouTube channel creator: Audience wants a channel that attracts the right viewers, earns trust, and turns attention into subscribers, leads, or sales, but they want the path to feel realistic. Content should make the transformation feel achievable, not perfect.",
+    "metadata": {
+      "type": "voice_of_customer",
+      "agent": "audience_agent",
+      "topic": "desire",
+      "niche": "youtube_channel_creator",
+      "niche_name": "YouTube channel creator",
+      "audience": "creators who want to grow a channel with clearer positioning, better videos, stronger retention, and less content burnout"
+    }
+  },
+  {
+    "id": "voc_youtube_channel_creator_desire_2",
+    "document": "Voice-of-customer card for YouTube channel creator: Audience wants to feel proud of the outcome, not just complete the task. Content should connect a channel that attracts the right viewers, earns trust, and turns attention into subscribers, leads, or sales to identity, confidence, or relief.",
+    "metadata": {
+      "type": "voice_of_customer",
+      "agent": "audience_agent",
+      "topic": "desire",
+      "niche": "youtube_channel_creator",
+      "niche_name": "YouTube channel creator",
+      "audience": "creators who want to grow a channel with clearer positioning, better videos, stronger retention, and less content burnout"
+    }
+  },
+  {
+    "id": "voc_youtube_channel_creator_desire_3",
+    "document": "Voice-of-customer card for YouTube channel creator: Audience wants a provider who understands their context without needing every detail explained. Content should show familiarity with creators who want to grow a channel with clearer positioning, better videos, stronger retention, and less content burnout.",
+    "metadata": {
+      "type": "voice_of_customer",
+      "agent": "audience_agent",
+      "topic": "desire",
+      "niche": "youtube_channel_creator",
+      "niche_name": "YouTube channel creator",
+      "audience": "creators who want to grow a channel with clearer positioning, better videos, stronger retention, and less content burnout"
+    }
+  },
+  {
+    "id": "voc_youtube_channel_creator_desire_4",
+    "document": "Voice-of-customer card for YouTube channel creator: Audience wants less decision fatigue around planning, filming, packaging, and improving a YouTube channel. Content should simplify choices and give clear criteria for what matters most.",
+    "metadata": {
+      "type": "voice_of_customer",
+      "agent": "audience_agent",
+      "topic": "desire",
+      "niche": "youtube_channel_creator",
+      "niche_name": "YouTube channel creator",
+      "audience": "creators who want to grow a channel with clearer positioning, better videos, stronger retention, and less content burnout"
+    }
+  },
+  {
+    "id": "voc_youtube_channel_creator_desire_5",
+    "document": "Voice-of-customer card for YouTube channel creator: Audience wants visible progress. Content should describe the small signs that a channel that attracts the right viewers, earns trust, and turns attention into subscribers, leads, or sales is starting to happen.",
+    "metadata": {
+      "type": "voice_of_customer",
+      "agent": "audience_agent",
+      "topic": "desire",
+      "niche": "youtube_channel_creator",
+      "niche_name": "YouTube channel creator",
+      "audience": "creators who want to grow a channel with clearer positioning, better videos, stronger retention, and less content burnout"
+    }
+  },
+  {
+    "id": "voc_youtube_channel_creator_objection_1",
+    "document": "Voice-of-customer card for YouTube channel creator: Common objection: Is channel audit, content strategy, thumbnails, scripts, editing workflow, or growth coaching worth it for me right now? Content should explain when it is worth paying for and when a smaller first step is enough.",
+    "metadata": {
+      "type": "voice_of_customer",
+      "agent": "audience_agent",
+      "topic": "objection",
+      "niche": "youtube_channel_creator",
+      "niche_name": "YouTube channel creator",
+      "audience": "creators who want to grow a channel with clearer positioning, better videos, stronger retention, and less content burnout"
+    }
+  },
+  {
+    "id": "voc_youtube_channel_creator_objection_2",
+    "document": "Voice-of-customer card for YouTube channel creator: Common objection: What if I pay and nothing changes? Content should use watch-time screenshots, title and thumbnail tests, retention graphs, before-after channel audits, and sample video outlines to make expected progress concrete.",
+    "metadata": {
+      "type": "voice_of_customer",
+      "agent": "audience_agent",
+      "topic": "objection",
+      "niche": "youtube_channel_creator",
+      "niche_name": "YouTube channel creator",
+      "audience": "creators who want to grow a channel with clearer positioning, better videos, stronger retention, and less content burnout"
+    }
+  },
+  {
+    "id": "voc_youtube_channel_creator_objection_3",
+    "document": "Voice-of-customer card for YouTube channel creator: Common objection: I should be able to figure this out myself. Content should separate learnable skills from the strategic outside perspective that saves time.",
+    "metadata": {
+      "type": "voice_of_customer",
+      "agent": "audience_agent",
+      "topic": "objection",
+      "niche": "youtube_channel_creator",
+      "niche_name": "YouTube channel creator",
+      "audience": "creators who want to grow a channel with clearer positioning, better videos, stronger retention, and less content burnout"
+    }
+  },
+  {
+    "id": "voc_youtube_channel_creator_objection_4",
+    "document": "Voice-of-customer card for YouTube channel creator: Common objection: I do not want to lose my voice or creative control. Content should show how guidance can clarify the creator\u2019s own voice instead of replacing it.",
+    "metadata": {
+      "type": "voice_of_customer",
+      "agent": "audience_agent",
+      "topic": "objection",
+      "niche": "youtube_channel_creator",
+      "niche_name": "YouTube channel creator",
+      "audience": "creators who want to grow a channel with clearer positioning, better videos, stronger retention, and less content burnout"
+    }
+  },
+  {
+    "id": "voc_youtube_channel_creator_objection_5",
+    "document": "Voice-of-customer card for YouTube channel creator: Common objection: I do not have enough time. Content should show the smallest useful next step and why it still creates momentum.",
+    "metadata": {
+      "type": "voice_of_customer",
+      "agent": "audience_agent",
+      "topic": "objection",
+      "niche": "youtube_channel_creator",
+      "niche_name": "YouTube channel creator",
+      "audience": "creators who want to grow a channel with clearer positioning, better videos, stronger retention, and less content burnout"
+    }
+  },
+  {
+    "id": "voc_youtube_channel_creator_trigger_1",
+    "document": "Voice-of-customer card for YouTube channel creator: Trigger moment: They start looking for help when planning, filming, packaging, and improving a YouTube channel has stayed stuck through several attempts. Content should speak to the moment when frustration becomes urgency.",
+    "metadata": {
+      "type": "voice_of_customer",
+      "agent": "audience_agent",
+      "topic": "trigger",
+      "niche": "youtube_channel_creator",
+      "niche_name": "YouTube channel creator",
+      "audience": "creators who want to grow a channel with clearer positioning, better videos, stronger retention, and less content burnout"
+    }
+  },
+  {
+    "id": "voc_youtube_channel_creator_trigger_2",
+    "document": "Voice-of-customer card for YouTube channel creator: Trigger moment: They have a launch, deadline, season, or public commitment coming up. Content should show what to fix first under time pressure.",
+    "metadata": {
+      "type": "voice_of_customer",
+      "agent": "audience_agent",
+      "topic": "trigger",
+      "niche": "youtube_channel_creator",
+      "niche_name": "YouTube channel creator",
+      "audience": "creators who want to grow a channel with clearer positioning, better videos, stronger retention, and less content burnout"
+    }
+  },
+  {
+    "id": "voc_youtube_channel_creator_trigger_3",
+    "document": "Voice-of-customer card for YouTube channel creator: Trigger moment: They compare themselves with peers and realize their work is not being understood or discovered. Content should address comparison without shame.",
+    "metadata": {
+      "type": "voice_of_customer",
+      "agent": "audience_agent",
+      "topic": "trigger",
+      "niche": "youtube_channel_creator",
+      "niche_name": "YouTube channel creator",
+      "audience": "creators who want to grow a channel with clearer positioning, better videos, stronger retention, and less content burnout"
+    }
+  },
+  {
+    "id": "voc_youtube_channel_creator_trigger_4",
+    "document": "Voice-of-customer card for YouTube channel creator: Trigger moment: They receive confusing feedback from their audience, readers, viewers, or buyers. Content should help interpret what that feedback really means.",
+    "metadata": {
+      "type": "voice_of_customer",
+      "agent": "audience_agent",
+      "topic": "trigger",
+      "niche": "youtube_channel_creator",
+      "niche_name": "YouTube channel creator",
+      "audience": "creators who want to grow a channel with clearer positioning, better videos, stronger retention, and less content burnout"
+    }
+  },
+  {
+    "id": "voc_youtube_channel_creator_trigger_5",
+    "document": "Voice-of-customer card for YouTube channel creator: Trigger moment: They are about to invest in tools, production, ads, editing, or promotion. Content should help them avoid spending before the strategy is clear.",
+    "metadata": {
+      "type": "voice_of_customer",
+      "agent": "audience_agent",
+      "topic": "trigger",
+      "niche": "youtube_channel_creator",
+      "niche_name": "YouTube channel creator",
+      "audience": "creators who want to grow a channel with clearer positioning, better videos, stronger retention, and less content burnout"
+    }
+  },
+  {
+    "id": "voc_youtube_channel_creator_comparison_1",
+    "document": "Voice-of-customer card for YouTube channel creator: Comparison card: Audience compares professional support with DIY tutorials. Content should explain what free advice cannot see about their specific audience, promise, and constraints.",
+    "metadata": {
+      "type": "voice_of_customer",
+      "agent": "audience_agent",
+      "topic": "comparison",
+      "niche": "youtube_channel_creator",
+      "niche_name": "YouTube channel creator",
+      "audience": "creators who want to grow a channel with clearer positioning, better videos, stronger retention, and less content burnout"
+    }
+  },
+  {
+    "id": "voc_youtube_channel_creator_comparison_2",
+    "document": "Voice-of-customer card for YouTube channel creator: Comparison card: Audience compares this with hiring a cheaper generalist. Content should show why niche-specific context matters for planning, filming, packaging, and improving a YouTube channel.",
+    "metadata": {
+      "type": "voice_of_customer",
+      "agent": "audience_agent",
+      "topic": "comparison",
+      "niche": "youtube_channel_creator",
+      "niche_name": "YouTube channel creator",
+      "audience": "creators who want to grow a channel with clearer positioning, better videos, stronger retention, and less content burnout"
+    }
+  },
+  {
+    "id": "voc_youtube_channel_creator_comparison_3",
+    "document": "Voice-of-customer card for YouTube channel creator: Comparison card: Audience considers waiting until they feel more ready. Content should show the hidden cost of delaying clarity and momentum.",
+    "metadata": {
+      "type": "voice_of_customer",
+      "agent": "audience_agent",
+      "topic": "comparison",
+      "niche": "youtube_channel_creator",
+      "niche_name": "YouTube channel creator",
+      "audience": "creators who want to grow a channel with clearer positioning, better videos, stronger retention, and less content burnout"
+    }
+  },
+  {
+    "id": "voc_youtube_channel_creator_comparison_4",
+    "document": "Voice-of-customer card for YouTube channel creator: Comparison card: Audience asks friends or peers for feedback. Content should explain when friendly feedback helps and when it creates more confusion.",
+    "metadata": {
+      "type": "voice_of_customer",
+      "agent": "audience_agent",
+      "topic": "comparison",
+      "niche": "youtube_channel_creator",
+      "niche_name": "YouTube channel creator",
+      "audience": "creators who want to grow a channel with clearer positioning, better videos, stronger retention, and less content burnout"
+    }
+  },
+  {
+    "id": "voc_youtube_channel_creator_comparison_5",
+    "document": "Voice-of-customer card for YouTube channel creator: Comparison card: Audience compares different offers and does not know what to choose. Content should provide a decision checklist for the next best step.",
+    "metadata": {
+      "type": "voice_of_customer",
+      "agent": "audience_agent",
+      "topic": "comparison",
+      "niche": "youtube_channel_creator",
+      "niche_name": "YouTube channel creator",
+      "audience": "creators who want to grow a channel with clearer positioning, better videos, stronger retention, and less content burnout"
+    }
+  },
+  {
+    "id": "voc_youtube_channel_creator_proof_1",
+    "document": "Voice-of-customer card for YouTube channel creator: Proof card: Strong proof for this niche includes watch-time screenshots, title and thumbnail tests, retention graphs, before-after channel audits, and sample video outlines. Content should make the process visible before asking the audience to trust the promise.",
+    "metadata": {
+      "type": "voice_of_customer",
+      "agent": "audience_agent",
+      "topic": "proof",
+      "niche": "youtube_channel_creator",
+      "niche_name": "YouTube channel creator",
+      "audience": "creators who want to grow a channel with clearer positioning, better videos, stronger retention, and less content burnout"
+    }
+  },
+  {
+    "id": "voc_youtube_channel_creator_proof_2",
+    "document": "Voice-of-customer card for YouTube channel creator: Proof card: Before-after examples should show the starting point, the decision made, and the result. Avoid vague transformation claims.",
+    "metadata": {
+      "type": "voice_of_customer",
+      "agent": "audience_agent",
+      "topic": "proof",
+      "niche": "youtube_channel_creator",
+      "niche_name": "YouTube channel creator",
+      "audience": "creators who want to grow a channel with clearer positioning, better videos, stronger retention, and less content burnout"
+    }
+  },
+  {
+    "id": "voc_youtube_channel_creator_proof_3",
+    "document": "Voice-of-customer card for YouTube channel creator: Proof card: The audience needs evidence that the provider understands both craft and distribution. Content should connect creative quality with audience response.",
+    "metadata": {
+      "type": "voice_of_customer",
+      "agent": "audience_agent",
+      "topic": "proof",
+      "niche": "youtube_channel_creator",
+      "niche_name": "YouTube channel creator",
+      "audience": "creators who want to grow a channel with clearer positioning, better videos, stronger retention, and less content burnout"
+    }
+  },
+  {
+    "id": "voc_youtube_channel_creator_proof_4",
+    "document": "Voice-of-customer card for YouTube channel creator: Proof card: Risk goes down when the provider explains the reasoning behind recommendations. Content should teach the why, not only show the final result.",
+    "metadata": {
+      "type": "voice_of_customer",
+      "agent": "audience_agent",
+      "topic": "proof",
+      "niche": "youtube_channel_creator",
+      "niche_name": "YouTube channel creator",
+      "audience": "creators who want to grow a channel with clearer positioning, better videos, stronger retention, and less content burnout"
+    }
+  },
+  {
+    "id": "voc_youtube_channel_creator_proof_5",
+    "document": "Voice-of-customer card for YouTube channel creator: Proof card: Mini case studies should include a constraint, a choice, and a measurable or emotionally recognizable improvement.",
+    "metadata": {
+      "type": "voice_of_customer",
+      "agent": "audience_agent",
+      "topic": "proof",
+      "niche": "youtube_channel_creator",
+      "niche_name": "YouTube channel creator",
+      "audience": "creators who want to grow a channel with clearer positioning, better videos, stronger retention, and less content burnout"
+    }
+  },
+  {
+    "id": "voc_youtube_channel_creator_emotion_1",
+    "document": "Voice-of-customer card for YouTube channel creator: Emotion card: The deeper desire is not only a channel that attracts the right viewers, earns trust, and turns attention into subscribers, leads, or sales. It is the relief of knowing the work has a clear place in people\u2019s lives.",
+    "metadata": {
+      "type": "voice_of_customer",
+      "agent": "audience_agent",
+      "topic": "emotion",
+      "niche": "youtube_channel_creator",
+      "niche_name": "YouTube channel creator",
+      "audience": "creators who want to grow a channel with clearer positioning, better videos, stronger retention, and less content burnout"
+    }
+  },
+  {
+    "id": "voc_youtube_channel_creator_emotion_2",
+    "document": "Voice-of-customer card for YouTube channel creator: Emotion card: The audience may feel exposed because creative work feels personal. Content should respect that vulnerability.",
+    "metadata": {
+      "type": "voice_of_customer",
+      "agent": "audience_agent",
+      "topic": "emotion",
+      "niche": "youtube_channel_creator",
+      "niche_name": "YouTube channel creator",
+      "audience": "creators who want to grow a channel with clearer positioning, better videos, stronger retention, and less content burnout"
+    }
+  },
+  {
+    "id": "voc_youtube_channel_creator_emotion_3",
+    "document": "Voice-of-customer card for YouTube channel creator: Emotion card: The audience wants momentum without becoming someone they are not. Content should validate ambition and authenticity together.",
+    "metadata": {
+      "type": "voice_of_customer",
+      "agent": "audience_agent",
+      "topic": "emotion",
+      "niche": "youtube_channel_creator",
+      "niche_name": "YouTube channel creator",
+      "audience": "creators who want to grow a channel with clearer positioning, better videos, stronger retention, and less content burnout"
+    }
+  },
+  {
+    "id": "voc_youtube_channel_creator_emotion_4",
+    "document": "Voice-of-customer card for YouTube channel creator: Emotion card: The audience fears being ignored more than being criticized. Content should speak to visibility, relevance, and trust.",
+    "metadata": {
+      "type": "voice_of_customer",
+      "agent": "audience_agent",
+      "topic": "emotion",
+      "niche": "youtube_channel_creator",
+      "niche_name": "YouTube channel creator",
+      "audience": "creators who want to grow a channel with clearer positioning, better videos, stronger retention, and less content burnout"
+    }
+  },
+  {
+    "id": "voc_youtube_channel_creator_emotion_5",
+    "document": "Voice-of-customer card for YouTube channel creator: Emotion card: The audience wants someone to translate messy creative ambition into a clear next step. Content should feel grounding and specific.",
+    "metadata": {
+      "type": "voice_of_customer",
+      "agent": "audience_agent",
+      "topic": "emotion",
+      "niche": "youtube_channel_creator",
+      "niche_name": "YouTube channel creator",
+      "audience": "creators who want to grow a channel with clearer positioning, better videos, stronger retention, and less content burnout"
+    }
+  },
+  {
+    "id": "voc_youtube_channel_creator_content_angle_1",
+    "document": "Voice-of-customer card for YouTube channel creator: Content angle: What I would fix first if you wanted a channel that attracts the right viewers, earns trust, and turns attention into subscribers, leads, or sales. This creates practical authority and gives the audience a starting point.",
+    "metadata": {
+      "type": "voice_of_customer",
+      "agent": "audience_agent",
+      "topic": "content_angle",
+      "niche": "youtube_channel_creator",
+      "niche_name": "YouTube channel creator",
+      "audience": "creators who want to grow a channel with clearer positioning, better videos, stronger retention, and less content burnout"
+    }
+  },
+  {
+    "id": "voc_youtube_channel_creator_content_angle_2",
+    "document": "Voice-of-customer card for YouTube channel creator: Content angle: The mistake most people make with planning, filming, packaging, and improving a YouTube channel is solving the visible symptom before the positioning problem. This works well for myth-busting posts.",
+    "metadata": {
+      "type": "voice_of_customer",
+      "agent": "audience_agent",
+      "topic": "content_angle",
+      "niche": "youtube_channel_creator",
+      "niche_name": "YouTube channel creator",
+      "audience": "creators who want to grow a channel with clearer positioning, better videos, stronger retention, and less content burnout"
+    }
+  },
+  {
+    "id": "voc_youtube_channel_creator_content_angle_3",
+    "document": "Voice-of-customer card for YouTube channel creator: Content angle: Behind the scenes of how a stronger idea becomes clearer, easier to package, and easier for the audience to understand.",
+    "metadata": {
+      "type": "voice_of_customer",
+      "agent": "audience_agent",
+      "topic": "content_angle",
+      "niche": "youtube_channel_creator",
+      "niche_name": "YouTube channel creator",
+      "audience": "creators who want to grow a channel with clearer positioning, better videos, stronger retention, and less content burnout"
+    }
+  },
+  {
+    "id": "voc_youtube_channel_creator_content_angle_4",
+    "document": "Voice-of-customer card for YouTube channel creator: Content angle: Signs you are ready for channel audit, content strategy, thumbnails, scripts, editing workflow, or growth coaching. This helps people self-identify without pressure.",
+    "metadata": {
+      "type": "voice_of_customer",
+      "agent": "audience_agent",
+      "topic": "content_angle",
+      "niche": "youtube_channel_creator",
+      "niche_name": "YouTube channel creator",
+      "audience": "creators who want to grow a channel with clearer positioning, better videos, stronger retention, and less content burnout"
+    }
+  },
+  {
+    "id": "voc_youtube_channel_creator_content_angle_5",
+    "document": "Voice-of-customer card for YouTube channel creator: Content angle: A personal story about learning that creative quality alone is not enough; the right people also need the right framing.",
+    "metadata": {
+      "type": "voice_of_customer",
+      "agent": "audience_agent",
+      "topic": "content_angle",
+      "niche": "youtube_channel_creator",
+      "niche_name": "YouTube channel creator",
+      "audience": "creators who want to grow a channel with clearer positioning, better videos, stronger retention, and less content burnout"
+    }
+  },
+  {
+    "id": "voc_youtube_channel_creator_language_1",
+    "document": "Voice-of-customer card for YouTube channel creator: Language card: Use plain words the audience might say, like I have ideas but no clear direction, I am posting but nothing is landing, or I do not know what to fix first.",
+    "metadata": {
+      "type": "voice_of_customer",
+      "agent": "audience_agent",
+      "topic": "language",
+      "niche": "youtube_channel_creator",
+      "niche_name": "YouTube channel creator",
+      "audience": "creators who want to grow a channel with clearer positioning, better videos, stronger retention, and less content burnout"
+    }
+  },
+  {
+    "id": "voc_youtube_channel_creator_language_2",
+    "document": "Voice-of-customer card for YouTube channel creator: Language card: Avoid expert jargon unless the post explains it simply. The audience should feel understood before they feel educated.",
+    "metadata": {
+      "type": "voice_of_customer",
+      "agent": "audience_agent",
+      "topic": "language",
+      "niche": "youtube_channel_creator",
+      "niche_name": "YouTube channel creator",
+      "audience": "creators who want to grow a channel with clearer positioning, better videos, stronger retention, and less content burnout"
+    }
+  },
+  {
+    "id": "voc_youtube_channel_creator_language_3",
+    "document": "Voice-of-customer card for YouTube channel creator: Language card: Strong captions should name the audience\u2019s actual decision, not just the creator\u2019s service. Say what they are trying to choose, avoid, or improve.",
+    "metadata": {
+      "type": "voice_of_customer",
+      "agent": "audience_agent",
+      "topic": "language",
+      "niche": "youtube_channel_creator",
+      "niche_name": "YouTube channel creator",
+      "audience": "creators who want to grow a channel with clearer positioning, better videos, stronger retention, and less content burnout"
+    }
+  },
+  {
+    "id": "voc_youtube_channel_creator_language_4",
+    "document": "Voice-of-customer card for YouTube channel creator: Language card: Mirror the tension between wanting growth and not wanting to become performative. This tension is highly relevant for creative niches.",
+    "metadata": {
+      "type": "voice_of_customer",
+      "agent": "audience_agent",
+      "topic": "language",
+      "niche": "youtube_channel_creator",
+      "niche_name": "YouTube channel creator",
+      "audience": "creators who want to grow a channel with clearer positioning, better videos, stronger retention, and less content burnout"
+    }
+  },
+  {
+    "id": "voc_youtube_channel_creator_language_5",
+    "document": "Voice-of-customer card for YouTube channel creator: Language card: Use concrete nouns from the workflow: drafts, titles, outlines, thumbnails, chapters, launches, comments, subscribers, readers, reviews, and deadlines.",
+    "metadata": {
+      "type": "voice_of_customer",
+      "agent": "audience_agent",
+      "topic": "language",
+      "niche": "youtube_channel_creator",
+      "niche_name": "YouTube channel creator",
+      "audience": "creators who want to grow a channel with clearer positioning, better videos, stronger retention, and less content burnout"
+    }
+  },
+  {
+    "id": "voc_youtube_channel_creator_positioning_1",
+    "document": "Voice-of-customer card for YouTube channel creator: Positioning card: A strong niche promise connects audience, problem, timing, and result. For YouTube channel creator, avoid being everything to everyone.",
+    "metadata": {
+      "type": "voice_of_customer",
+      "agent": "audience_agent",
+      "topic": "positioning",
+      "niche": "youtube_channel_creator",
+      "niche_name": "YouTube channel creator",
+      "audience": "creators who want to grow a channel with clearer positioning, better videos, stronger retention, and less content burnout"
+    }
+  },
+  {
+    "id": "voc_youtube_channel_creator_positioning_2",
+    "document": "Voice-of-customer card for YouTube channel creator: Positioning card: Lead with the transformation the audience can recognize, then explain the method. Do not lead only with credentials or tools.",
+    "metadata": {
+      "type": "voice_of_customer",
+      "agent": "audience_agent",
+      "topic": "positioning",
+      "niche": "youtube_channel_creator",
+      "niche_name": "YouTube channel creator",
+      "audience": "creators who want to grow a channel with clearer positioning, better videos, stronger retention, and less content burnout"
+    }
+  },
+  {
+    "id": "voc_youtube_channel_creator_positioning_3",
+    "document": "Voice-of-customer card for YouTube channel creator: Positioning card: The offer becomes stronger when it names the audience\u2019s constraint: limited time, unclear direction, low visibility, inconsistent feedback, or launch pressure.",
+    "metadata": {
+      "type": "voice_of_customer",
+      "agent": "audience_agent",
+      "topic": "positioning",
+      "niche": "youtube_channel_creator",
+      "niche_name": "YouTube channel creator",
+      "audience": "creators who want to grow a channel with clearer positioning, better videos, stronger retention, and less content burnout"
+    }
+  },
+  {
+    "id": "voc_youtube_channel_creator_positioning_4",
+    "document": "Voice-of-customer card for YouTube channel creator: Positioning card: Good positioning should make the audience think, this is for someone exactly like me, at this specific stage.",
+    "metadata": {
+      "type": "voice_of_customer",
+      "agent": "audience_agent",
+      "topic": "positioning",
+      "niche": "youtube_channel_creator",
+      "niche_name": "YouTube channel creator",
+      "audience": "creators who want to grow a channel with clearer positioning, better videos, stronger retention, and less content burnout"
+    }
+  },
+  {
+    "id": "voc_youtube_channel_creator_positioning_5",
+    "document": "Voice-of-customer card for YouTube channel creator: Positioning card: Content should repeatedly connect craft, audience understanding, and business outcome so the creator does not sound like a generic advisor.",
+    "metadata": {
+      "type": "voice_of_customer",
+      "agent": "audience_agent",
+      "topic": "positioning",
+      "niche": "youtube_channel_creator",
+      "niche_name": "YouTube channel creator",
+      "audience": "creators who want to grow a channel with clearer positioning, better videos, stronger retention, and less content burnout"
+    }
+  },
+  {
+    "id": "voc_book_author_pain_1",
+    "document": "Voice-of-customer card for Book author: Audience says, I know I need help with writing, positioning, launching, and promoting a book, but I keep postponing it because it feels like one more thing to manage. Content should open with empathy before advice.",
+    "metadata": {
+      "type": "voice_of_customer",
+      "agent": "audience_agent",
+      "topic": "pain",
+      "niche": "book_author",
+      "niche_name": "Book author",
+      "audience": "writers and authors who want to finish, launch, and promote a book without feeling invisible or overly salesy"
+    }
+  },
+  {
+    "id": "voc_book_author_pain_2",
+    "document": "Voice-of-customer card for Book author: Audience feels frustrated because they have tried to handle writing, positioning, launching, and promoting a book alone and the result still feels inconsistent. Content should name the failed DIY cycle.",
+    "metadata": {
+      "type": "voice_of_customer",
+      "agent": "audience_agent",
+      "topic": "pain",
+      "niche": "book_author",
+      "niche_name": "Book author",
+      "audience": "writers and authors who want to finish, launch, and promote a book without feeling invisible or overly salesy"
+    }
+  },
+  {
+    "id": "voc_book_author_pain_3",
+    "document": "Voice-of-customer card for Book author: Audience worries that if they do not solve writing, positioning, launching, and promoting a book, the problem will keep costing time, confidence, money, or emotional energy. Content should show the cost of staying stuck.",
+    "metadata": {
+      "type": "voice_of_customer",
+      "agent": "audience_agent",
+      "topic": "pain",
+      "niche": "book_author",
+      "niche_name": "Book author",
+      "audience": "writers and authors who want to finish, launch, and promote a book without feeling invisible or overly salesy"
+    }
+  },
+  {
+    "id": "voc_book_author_pain_4",
+    "document": "Voice-of-customer card for Book author: Audience often feels embarrassed that this still feels hard, especially when writing, positioning, launching, and promoting a book looks simple from the outside. Content should normalize the struggle and explain why it is common.",
+    "metadata": {
+      "type": "voice_of_customer",
+      "agent": "audience_agent",
+      "topic": "pain",
+      "niche": "book_author",
+      "niche_name": "Book author",
+      "audience": "writers and authors who want to finish, launch, and promote a book without feeling invisible or overly salesy"
+    }
+  },
+  {
+    "id": "voc_book_author_pain_5",
+    "document": "Voice-of-customer card for Book author: Audience is tired of generic advice about writing, positioning, launching, and promoting a book. Content should use concrete examples from their daily creative workflow instead of broad motivational language.",
+    "metadata": {
+      "type": "voice_of_customer",
+      "agent": "audience_agent",
+      "topic": "pain",
+      "niche": "book_author",
+      "niche_name": "Book author",
+      "audience": "writers and authors who want to finish, launch, and promote a book without feeling invisible or overly salesy"
+    }
+  },
+  {
+    "id": "voc_book_author_desire_1",
+    "document": "Voice-of-customer card for Book author: Audience wants a book that reaches the right readers, communicates its promise clearly, and supports the author\u2019s reputation or business, but they want the path to feel realistic. Content should make the transformation feel achievable, not perfect.",
+    "metadata": {
+      "type": "voice_of_customer",
+      "agent": "audience_agent",
+      "topic": "desire",
+      "niche": "book_author",
+      "niche_name": "Book author",
+      "audience": "writers and authors who want to finish, launch, and promote a book without feeling invisible or overly salesy"
+    }
+  },
+  {
+    "id": "voc_book_author_desire_2",
+    "document": "Voice-of-customer card for Book author: Audience wants to feel proud of the outcome, not just complete the task. Content should connect a book that reaches the right readers, communicates its promise clearly, and supports the author\u2019s reputation or business to identity, confidence, or relief.",
+    "metadata": {
+      "type": "voice_of_customer",
+      "agent": "audience_agent",
+      "topic": "desire",
+      "niche": "book_author",
+      "niche_name": "Book author",
+      "audience": "writers and authors who want to finish, launch, and promote a book without feeling invisible or overly salesy"
+    }
+  },
+  {
+    "id": "voc_book_author_desire_3",
+    "document": "Voice-of-customer card for Book author: Audience wants a provider who understands their context without needing every detail explained. Content should show familiarity with writers and authors who want to finish, launch, and promote a book without feeling invisible or overly salesy.",
+    "metadata": {
+      "type": "voice_of_customer",
+      "agent": "audience_agent",
+      "topic": "desire",
+      "niche": "book_author",
+      "niche_name": "Book author",
+      "audience": "writers and authors who want to finish, launch, and promote a book without feeling invisible or overly salesy"
+    }
+  },
+  {
+    "id": "voc_book_author_desire_4",
+    "document": "Voice-of-customer card for Book author: Audience wants less decision fatigue around writing, positioning, launching, and promoting a book. Content should simplify choices and give clear criteria for what matters most.",
+    "metadata": {
+      "type": "voice_of_customer",
+      "agent": "audience_agent",
+      "topic": "desire",
+      "niche": "book_author",
+      "niche_name": "Book author",
+      "audience": "writers and authors who want to finish, launch, and promote a book without feeling invisible or overly salesy"
+    }
+  },
+  {
+    "id": "voc_book_author_desire_5",
+    "document": "Voice-of-customer card for Book author: Audience wants visible progress. Content should describe the small signs that a book that reaches the right readers, communicates its promise clearly, and supports the author\u2019s reputation or business is starting to happen.",
+    "metadata": {
+      "type": "voice_of_customer",
+      "agent": "audience_agent",
+      "topic": "desire",
+      "niche": "book_author",
+      "niche_name": "Book author",
+      "audience": "writers and authors who want to finish, launch, and promote a book without feeling invisible or overly salesy"
+    }
+  },
+  {
+    "id": "voc_book_author_objection_1",
+    "document": "Voice-of-customer card for Book author: Common objection: Is book positioning, manuscript coaching, launch strategy, reader community, author platform, or publicity support worth it for me right now? Content should explain when it is worth paying for and when a smaller first step is enough.",
+    "metadata": {
+      "type": "voice_of_customer",
+      "agent": "audience_agent",
+      "topic": "objection",
+      "niche": "book_author",
+      "niche_name": "Book author",
+      "audience": "writers and authors who want to finish, launch, and promote a book without feeling invisible or overly salesy"
+    }
+  },
+  {
+    "id": "voc_book_author_objection_2",
+    "document": "Voice-of-customer card for Book author: Common objection: What if I pay and nothing changes? Content should use reader reviews, excerpt samples, chapter before-after edits, launch timelines, testimonials, and behind-the-scenes writing process to make expected progress concrete.",
+    "metadata": {
+      "type": "voice_of_customer",
+      "agent": "audience_agent",
+      "topic": "objection",
+      "niche": "book_author",
+      "niche_name": "Book author",
+      "audience": "writers and authors who want to finish, launch, and promote a book without feeling invisible or overly salesy"
+    }
+  },
+  {
+    "id": "voc_book_author_objection_3",
+    "document": "Voice-of-customer card for Book author: Common objection: I should be able to figure this out myself. Content should separate learnable skills from the strategic outside perspective that saves time.",
+    "metadata": {
+      "type": "voice_of_customer",
+      "agent": "audience_agent",
+      "topic": "objection",
+      "niche": "book_author",
+      "niche_name": "Book author",
+      "audience": "writers and authors who want to finish, launch, and promote a book without feeling invisible or overly salesy"
+    }
+  },
+  {
+    "id": "voc_book_author_objection_4",
+    "document": "Voice-of-customer card for Book author: Common objection: I do not want to lose my voice or creative control. Content should show how guidance can clarify the creator\u2019s own voice instead of replacing it.",
+    "metadata": {
+      "type": "voice_of_customer",
+      "agent": "audience_agent",
+      "topic": "objection",
+      "niche": "book_author",
+      "niche_name": "Book author",
+      "audience": "writers and authors who want to finish, launch, and promote a book without feeling invisible or overly salesy"
+    }
+  },
+  {
+    "id": "voc_book_author_objection_5",
+    "document": "Voice-of-customer card for Book author: Common objection: I do not have enough time. Content should show the smallest useful next step and why it still creates momentum.",
+    "metadata": {
+      "type": "voice_of_customer",
+      "agent": "audience_agent",
+      "topic": "objection",
+      "niche": "book_author",
+      "niche_name": "Book author",
+      "audience": "writers and authors who want to finish, launch, and promote a book without feeling invisible or overly salesy"
+    }
+  },
+  {
+    "id": "voc_book_author_trigger_1",
+    "document": "Voice-of-customer card for Book author: Trigger moment: They start looking for help when writing, positioning, launching, and promoting a book has stayed stuck through several attempts. Content should speak to the moment when frustration becomes urgency.",
+    "metadata": {
+      "type": "voice_of_customer",
+      "agent": "audience_agent",
+      "topic": "trigger",
+      "niche": "book_author",
+      "niche_name": "Book author",
+      "audience": "writers and authors who want to finish, launch, and promote a book without feeling invisible or overly salesy"
+    }
+  },
+  {
+    "id": "voc_book_author_trigger_2",
+    "document": "Voice-of-customer card for Book author: Trigger moment: They have a launch, deadline, season, or public commitment coming up. Content should show what to fix first under time pressure.",
+    "metadata": {
+      "type": "voice_of_customer",
+      "agent": "audience_agent",
+      "topic": "trigger",
+      "niche": "book_author",
+      "niche_name": "Book author",
+      "audience": "writers and authors who want to finish, launch, and promote a book without feeling invisible or overly salesy"
+    }
+  },
+  {
+    "id": "voc_book_author_trigger_3",
+    "document": "Voice-of-customer card for Book author: Trigger moment: They compare themselves with peers and realize their work is not being understood or discovered. Content should address comparison without shame.",
+    "metadata": {
+      "type": "voice_of_customer",
+      "agent": "audience_agent",
+      "topic": "trigger",
+      "niche": "book_author",
+      "niche_name": "Book author",
+      "audience": "writers and authors who want to finish, launch, and promote a book without feeling invisible or overly salesy"
+    }
+  },
+  {
+    "id": "voc_book_author_trigger_4",
+    "document": "Voice-of-customer card for Book author: Trigger moment: They receive confusing feedback from their audience, readers, viewers, or buyers. Content should help interpret what that feedback really means.",
+    "metadata": {
+      "type": "voice_of_customer",
+      "agent": "audience_agent",
+      "topic": "trigger",
+      "niche": "book_author",
+      "niche_name": "Book author",
+      "audience": "writers and authors who want to finish, launch, and promote a book without feeling invisible or overly salesy"
+    }
+  },
+  {
+    "id": "voc_book_author_trigger_5",
+    "document": "Voice-of-customer card for Book author: Trigger moment: They are about to invest in tools, production, ads, editing, or promotion. Content should help them avoid spending before the strategy is clear.",
+    "metadata": {
+      "type": "voice_of_customer",
+      "agent": "audience_agent",
+      "topic": "trigger",
+      "niche": "book_author",
+      "niche_name": "Book author",
+      "audience": "writers and authors who want to finish, launch, and promote a book without feeling invisible or overly salesy"
+    }
+  },
+  {
+    "id": "voc_book_author_comparison_1",
+    "document": "Voice-of-customer card for Book author: Comparison card: Audience compares professional support with DIY tutorials. Content should explain what free advice cannot see about their specific audience, promise, and constraints.",
+    "metadata": {
+      "type": "voice_of_customer",
+      "agent": "audience_agent",
+      "topic": "comparison",
+      "niche": "book_author",
+      "niche_name": "Book author",
+      "audience": "writers and authors who want to finish, launch, and promote a book without feeling invisible or overly salesy"
+    }
+  },
+  {
+    "id": "voc_book_author_comparison_2",
+    "document": "Voice-of-customer card for Book author: Comparison card: Audience compares this with hiring a cheaper generalist. Content should show why niche-specific context matters for writing, positioning, launching, and promoting a book.",
+    "metadata": {
+      "type": "voice_of_customer",
+      "agent": "audience_agent",
+      "topic": "comparison",
+      "niche": "book_author",
+      "niche_name": "Book author",
+      "audience": "writers and authors who want to finish, launch, and promote a book without feeling invisible or overly salesy"
+    }
+  },
+  {
+    "id": "voc_book_author_comparison_3",
+    "document": "Voice-of-customer card for Book author: Comparison card: Audience considers waiting until they feel more ready. Content should show the hidden cost of delaying clarity and momentum.",
+    "metadata": {
+      "type": "voice_of_customer",
+      "agent": "audience_agent",
+      "topic": "comparison",
+      "niche": "book_author",
+      "niche_name": "Book author",
+      "audience": "writers and authors who want to finish, launch, and promote a book without feeling invisible or overly salesy"
+    }
+  },
+  {
+    "id": "voc_book_author_comparison_4",
+    "document": "Voice-of-customer card for Book author: Comparison card: Audience asks friends or peers for feedback. Content should explain when friendly feedback helps and when it creates more confusion.",
+    "metadata": {
+      "type": "voice_of_customer",
+      "agent": "audience_agent",
+      "topic": "comparison",
+      "niche": "book_author",
+      "niche_name": "Book author",
+      "audience": "writers and authors who want to finish, launch, and promote a book without feeling invisible or overly salesy"
+    }
+  },
+  {
+    "id": "voc_book_author_comparison_5",
+    "document": "Voice-of-customer card for Book author: Comparison card: Audience compares different offers and does not know what to choose. Content should provide a decision checklist for the next best step.",
+    "metadata": {
+      "type": "voice_of_customer",
+      "agent": "audience_agent",
+      "topic": "comparison",
+      "niche": "book_author",
+      "niche_name": "Book author",
+      "audience": "writers and authors who want to finish, launch, and promote a book without feeling invisible or overly salesy"
+    }
+  },
+  {
+    "id": "voc_book_author_proof_1",
+    "document": "Voice-of-customer card for Book author: Proof card: Strong proof for this niche includes reader reviews, excerpt samples, chapter before-after edits, launch timelines, testimonials, and behind-the-scenes writing process. Content should make the process visible before asking the audience to trust the promise.",
+    "metadata": {
+      "type": "voice_of_customer",
+      "agent": "audience_agent",
+      "topic": "proof",
+      "niche": "book_author",
+      "niche_name": "Book author",
+      "audience": "writers and authors who want to finish, launch, and promote a book without feeling invisible or overly salesy"
+    }
+  },
+  {
+    "id": "voc_book_author_proof_2",
+    "document": "Voice-of-customer card for Book author: Proof card: Before-after examples should show the starting point, the decision made, and the result. Avoid vague transformation claims.",
+    "metadata": {
+      "type": "voice_of_customer",
+      "agent": "audience_agent",
+      "topic": "proof",
+      "niche": "book_author",
+      "niche_name": "Book author",
+      "audience": "writers and authors who want to finish, launch, and promote a book without feeling invisible or overly salesy"
+    }
+  },
+  {
+    "id": "voc_book_author_proof_3",
+    "document": "Voice-of-customer card for Book author: Proof card: The audience needs evidence that the provider understands both craft and distribution. Content should connect creative quality with audience response.",
+    "metadata": {
+      "type": "voice_of_customer",
+      "agent": "audience_agent",
+      "topic": "proof",
+      "niche": "book_author",
+      "niche_name": "Book author",
+      "audience": "writers and authors who want to finish, launch, and promote a book without feeling invisible or overly salesy"
+    }
+  },
+  {
+    "id": "voc_book_author_proof_4",
+    "document": "Voice-of-customer card for Book author: Proof card: Risk goes down when the provider explains the reasoning behind recommendations. Content should teach the why, not only show the final result.",
+    "metadata": {
+      "type": "voice_of_customer",
+      "agent": "audience_agent",
+      "topic": "proof",
+      "niche": "book_author",
+      "niche_name": "Book author",
+      "audience": "writers and authors who want to finish, launch, and promote a book without feeling invisible or overly salesy"
+    }
+  },
+  {
+    "id": "voc_book_author_proof_5",
+    "document": "Voice-of-customer card for Book author: Proof card: Mini case studies should include a constraint, a choice, and a measurable or emotionally recognizable improvement.",
+    "metadata": {
+      "type": "voice_of_customer",
+      "agent": "audience_agent",
+      "topic": "proof",
+      "niche": "book_author",
+      "niche_name": "Book author",
+      "audience": "writers and authors who want to finish, launch, and promote a book without feeling invisible or overly salesy"
+    }
+  },
+  {
+    "id": "voc_book_author_emotion_1",
+    "document": "Voice-of-customer card for Book author: Emotion card: The deeper desire is not only a book that reaches the right readers, communicates its promise clearly, and supports the author\u2019s reputation or business. It is the relief of knowing the work has a clear place in people\u2019s lives.",
+    "metadata": {
+      "type": "voice_of_customer",
+      "agent": "audience_agent",
+      "topic": "emotion",
+      "niche": "book_author",
+      "niche_name": "Book author",
+      "audience": "writers and authors who want to finish, launch, and promote a book without feeling invisible or overly salesy"
+    }
+  },
+  {
+    "id": "voc_book_author_emotion_2",
+    "document": "Voice-of-customer card for Book author: Emotion card: The audience may feel exposed because creative work feels personal. Content should respect that vulnerability.",
+    "metadata": {
+      "type": "voice_of_customer",
+      "agent": "audience_agent",
+      "topic": "emotion",
+      "niche": "book_author",
+      "niche_name": "Book author",
+      "audience": "writers and authors who want to finish, launch, and promote a book without feeling invisible or overly salesy"
+    }
+  },
+  {
+    "id": "voc_book_author_emotion_3",
+    "document": "Voice-of-customer card for Book author: Emotion card: The audience wants momentum without becoming someone they are not. Content should validate ambition and authenticity together.",
+    "metadata": {
+      "type": "voice_of_customer",
+      "agent": "audience_agent",
+      "topic": "emotion",
+      "niche": "book_author",
+      "niche_name": "Book author",
+      "audience": "writers and authors who want to finish, launch, and promote a book without feeling invisible or overly salesy"
+    }
+  },
+  {
+    "id": "voc_book_author_emotion_4",
+    "document": "Voice-of-customer card for Book author: Emotion card: The audience fears being ignored more than being criticized. Content should speak to visibility, relevance, and trust.",
+    "metadata": {
+      "type": "voice_of_customer",
+      "agent": "audience_agent",
+      "topic": "emotion",
+      "niche": "book_author",
+      "niche_name": "Book author",
+      "audience": "writers and authors who want to finish, launch, and promote a book without feeling invisible or overly salesy"
+    }
+  },
+  {
+    "id": "voc_book_author_emotion_5",
+    "document": "Voice-of-customer card for Book author: Emotion card: The audience wants someone to translate messy creative ambition into a clear next step. Content should feel grounding and specific.",
+    "metadata": {
+      "type": "voice_of_customer",
+      "agent": "audience_agent",
+      "topic": "emotion",
+      "niche": "book_author",
+      "niche_name": "Book author",
+      "audience": "writers and authors who want to finish, launch, and promote a book without feeling invisible or overly salesy"
+    }
+  },
+  {
+    "id": "voc_book_author_content_angle_1",
+    "document": "Voice-of-customer card for Book author: Content angle: What I would fix first if you wanted a book that reaches the right readers, communicates its promise clearly, and supports the author\u2019s reputation or business. This creates practical authority and gives the audience a starting point.",
+    "metadata": {
+      "type": "voice_of_customer",
+      "agent": "audience_agent",
+      "topic": "content_angle",
+      "niche": "book_author",
+      "niche_name": "Book author",
+      "audience": "writers and authors who want to finish, launch, and promote a book without feeling invisible or overly salesy"
+    }
+  },
+  {
+    "id": "voc_book_author_content_angle_2",
+    "document": "Voice-of-customer card for Book author: Content angle: The mistake most people make with writing, positioning, launching, and promoting a book is solving the visible symptom before the positioning problem. This works well for myth-busting posts.",
+    "metadata": {
+      "type": "voice_of_customer",
+      "agent": "audience_agent",
+      "topic": "content_angle",
+      "niche": "book_author",
+      "niche_name": "Book author",
+      "audience": "writers and authors who want to finish, launch, and promote a book without feeling invisible or overly salesy"
+    }
+  },
+  {
+    "id": "voc_book_author_content_angle_3",
+    "document": "Voice-of-customer card for Book author: Content angle: Behind the scenes of how a stronger idea becomes clearer, easier to package, and easier for the audience to understand.",
+    "metadata": {
+      "type": "voice_of_customer",
+      "agent": "audience_agent",
+      "topic": "content_angle",
+      "niche": "book_author",
+      "niche_name": "Book author",
+      "audience": "writers and authors who want to finish, launch, and promote a book without feeling invisible or overly salesy"
+    }
+  },
+  {
+    "id": "voc_book_author_content_angle_4",
+    "document": "Voice-of-customer card for Book author: Content angle: Signs you are ready for book positioning, manuscript coaching, launch strategy, reader community, author platform, or publicity support. This helps people self-identify without pressure.",
+    "metadata": {
+      "type": "voice_of_customer",
+      "agent": "audience_agent",
+      "topic": "content_angle",
+      "niche": "book_author",
+      "niche_name": "Book author",
+      "audience": "writers and authors who want to finish, launch, and promote a book without feeling invisible or overly salesy"
+    }
+  },
+  {
+    "id": "voc_book_author_content_angle_5",
+    "document": "Voice-of-customer card for Book author: Content angle: A personal story about learning that creative quality alone is not enough; the right people also need the right framing.",
+    "metadata": {
+      "type": "voice_of_customer",
+      "agent": "audience_agent",
+      "topic": "content_angle",
+      "niche": "book_author",
+      "niche_name": "Book author",
+      "audience": "writers and authors who want to finish, launch, and promote a book without feeling invisible or overly salesy"
+    }
+  },
+  {
+    "id": "voc_book_author_language_1",
+    "document": "Voice-of-customer card for Book author: Language card: Use plain words the audience might say, like I have ideas but no clear direction, I am posting but nothing is landing, or I do not know what to fix first.",
+    "metadata": {
+      "type": "voice_of_customer",
+      "agent": "audience_agent",
+      "topic": "language",
+      "niche": "book_author",
+      "niche_name": "Book author",
+      "audience": "writers and authors who want to finish, launch, and promote a book without feeling invisible or overly salesy"
+    }
+  },
+  {
+    "id": "voc_book_author_language_2",
+    "document": "Voice-of-customer card for Book author: Language card: Avoid expert jargon unless the post explains it simply. The audience should feel understood before they feel educated.",
+    "metadata": {
+      "type": "voice_of_customer",
+      "agent": "audience_agent",
+      "topic": "language",
+      "niche": "book_author",
+      "niche_name": "Book author",
+      "audience": "writers and authors who want to finish, launch, and promote a book without feeling invisible or overly salesy"
+    }
+  },
+  {
+    "id": "voc_book_author_language_3",
+    "document": "Voice-of-customer card for Book author: Language card: Strong captions should name the audience\u2019s actual decision, not just the creator\u2019s service. Say what they are trying to choose, avoid, or improve.",
+    "metadata": {
+      "type": "voice_of_customer",
+      "agent": "audience_agent",
+      "topic": "language",
+      "niche": "book_author",
+      "niche_name": "Book author",
+      "audience": "writers and authors who want to finish, launch, and promote a book without feeling invisible or overly salesy"
+    }
+  },
+  {
+    "id": "voc_book_author_language_4",
+    "document": "Voice-of-customer card for Book author: Language card: Mirror the tension between wanting growth and not wanting to become performative. This tension is highly relevant for creative niches.",
+    "metadata": {
+      "type": "voice_of_customer",
+      "agent": "audience_agent",
+      "topic": "language",
+      "niche": "book_author",
+      "niche_name": "Book author",
+      "audience": "writers and authors who want to finish, launch, and promote a book without feeling invisible or overly salesy"
+    }
+  },
+  {
+    "id": "voc_book_author_language_5",
+    "document": "Voice-of-customer card for Book author: Language card: Use concrete nouns from the workflow: drafts, titles, outlines, thumbnails, chapters, launches, comments, subscribers, readers, reviews, and deadlines.",
+    "metadata": {
+      "type": "voice_of_customer",
+      "agent": "audience_agent",
+      "topic": "language",
+      "niche": "book_author",
+      "niche_name": "Book author",
+      "audience": "writers and authors who want to finish, launch, and promote a book without feeling invisible or overly salesy"
+    }
+  },
+  {
+    "id": "voc_book_author_positioning_1",
+    "document": "Voice-of-customer card for Book author: Positioning card: A strong niche promise connects audience, problem, timing, and result. For Book author, avoid being everything to everyone.",
+    "metadata": {
+      "type": "voice_of_customer",
+      "agent": "audience_agent",
+      "topic": "positioning",
+      "niche": "book_author",
+      "niche_name": "Book author",
+      "audience": "writers and authors who want to finish, launch, and promote a book without feeling invisible or overly salesy"
+    }
+  },
+  {
+    "id": "voc_book_author_positioning_2",
+    "document": "Voice-of-customer card for Book author: Positioning card: Lead with the transformation the audience can recognize, then explain the method. Do not lead only with credentials or tools.",
+    "metadata": {
+      "type": "voice_of_customer",
+      "agent": "audience_agent",
+      "topic": "positioning",
+      "niche": "book_author",
+      "niche_name": "Book author",
+      "audience": "writers and authors who want to finish, launch, and promote a book without feeling invisible or overly salesy"
+    }
+  },
+  {
+    "id": "voc_book_author_positioning_3",
+    "document": "Voice-of-customer card for Book author: Positioning card: The offer becomes stronger when it names the audience\u2019s constraint: limited time, unclear direction, low visibility, inconsistent feedback, or launch pressure.",
+    "metadata": {
+      "type": "voice_of_customer",
+      "agent": "audience_agent",
+      "topic": "positioning",
+      "niche": "book_author",
+      "niche_name": "Book author",
+      "audience": "writers and authors who want to finish, launch, and promote a book without feeling invisible or overly salesy"
+    }
+  },
+  {
+    "id": "voc_book_author_positioning_4",
+    "document": "Voice-of-customer card for Book author: Positioning card: Good positioning should make the audience think, this is for someone exactly like me, at this specific stage.",
+    "metadata": {
+      "type": "voice_of_customer",
+      "agent": "audience_agent",
+      "topic": "positioning",
+      "niche": "book_author",
+      "niche_name": "Book author",
+      "audience": "writers and authors who want to finish, launch, and promote a book without feeling invisible or overly salesy"
+    }
+  },
+  {
+    "id": "voc_book_author_positioning_5",
+    "document": "Voice-of-customer card for Book author: Positioning card: Content should repeatedly connect craft, audience understanding, and business outcome so the creator does not sound like a generic advisor.",
+    "metadata": {
+      "type": "voice_of_customer",
+      "agent": "audience_agent",
+      "topic": "positioning",
+      "niche": "book_author",
+      "niche_name": "Book author",
+      "audience": "writers and authors who want to finish, launch, and promote a book without feeling invisible or overly salesy"
+    }
+  }
+]

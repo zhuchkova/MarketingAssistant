@@ -29,7 +29,7 @@ Good documents to add:
 The `positioning_knowledge/` collection is split into smaller files:
 
 * `base.json`: core positioning principles.
-* `niches_001_025.json`, `niches_026_050.json`, `niches_051_075.json`, `niches_076_100.json`: voice-of-customer cards for the 100 included niches.
+* `niches_001_025.json`, `niches_026_050.json`, `niches_051_075.json`, `niches_076_100.json`, `niches_101_102.json`: voice-of-customer cards for the 102 included niches.
 
 The `idea_knowledge.json` collection includes 60 audience-led hook patterns:
 
@@ -162,6 +162,8 @@ python scripts/seed_chroma_all.py
 98. Martial arts school
 99. Surf school
 100. Influencer or creator coach
+101. YouTube channel creator
+102. Book author
 
 ## Positioning Voice-Of-Customer Card Types
 

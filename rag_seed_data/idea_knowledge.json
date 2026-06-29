@@ -816,5 +816,89 @@
       "title": "Audience mirror",
       "source_fields": "audience_language"
     }
+  },
+  {
+    "id": "idea_hook_psychology_controversial_expectation_break",
+    "document": "Hook pattern: Break a common expectation, then replace it with the factor that actually matters. Use when the audience is over-focusing on timing, tools, credentials, or perfect conditions. Example: Stop obsessing over the best time to post. The real difference is whether your message names a problem people already feel.",
+    "metadata": {
+      "type": "hook_pattern",
+      "agent": "idea_agent",
+      "label": "psychology",
+      "angle": "contrarian",
+      "title": "Controversial expectation break",
+      "source_fields": "objections, audience_language"
+    }
+  },
+  {
+    "id": "idea_hook_psychology_real_talk_substance",
+    "document": "Hook pattern: Start with a blunt real-talk observation, then immediately add useful substance. Use when the audience needs relief from perfectionism or overcomplication. Example: Waiting until you feel ready is costing you more than imperfect action. Here is the smallest move that creates progress this week.",
+    "metadata": {
+      "type": "hook_pattern",
+      "agent": "idea_agent",
+      "label": "psychology",
+      "angle": "reality_check",
+      "title": "Real-talk plus substance",
+      "source_fields": "pains, objections, trigger_moments"
+    }
+  },
+  {
+    "id": "idea_hook_psychology_immediate_value",
+    "document": "Hook pattern: Promise a useful result the reader can apply immediately. Make the value narrow, practical, and low-friction. Example: Save yourself one hour of guessing: use this three-step checklist before you choose your next offer, outfit, workout, bouquet, or post topic.",
+    "metadata": {
+      "type": "hook_pattern",
+      "agent": "idea_agent",
+      "label": "psychology",
+      "angle": "how_to",
+      "title": "Immediate value",
+      "source_fields": "desires, trigger_moments"
+    }
+  },
+  {
+    "id": "idea_hook_psychology_myth_breaker",
+    "document": "Hook pattern: Name the industry myth, then show the real reason people fail or hesitate. Use when the audience believes a visible excuse is the core problem. Example: The myth is that people do not buy because they need more information. Often they need less risk, clearer proof, and one obvious next step.",
+    "metadata": {
+      "type": "hook_pattern",
+      "agent": "idea_agent",
+      "label": "psychology",
+      "angle": "myth_busting",
+      "title": "Myth breaker",
+      "source_fields": "objections, proof_points"
+    }
+  },
+  {
+    "id": "idea_hook_psychology_pragmatist",
+    "document": "Hook pattern: Remove drama and focus on what works in real life. Use when the audience is busy, skeptical, or tired of guru-style advice. Example: You do not need a perfect system. You need one repeatable action that still works on a messy Tuesday.",
+    "metadata": {
+      "type": "hook_pattern",
+      "agent": "idea_agent",
+      "label": "psychology",
+      "angle": "pragmatic",
+      "title": "Pragmatist hook",
+      "source_fields": "pains, market_context, audience_language"
+    }
+  },
+  {
+    "id": "idea_hook_psychology_insider_vibe",
+    "document": "Hook pattern: Create an insider feeling by revealing the overlooked lever experts quietly know. Keep it useful, not gatekeeping. Example: Almost nobody talks about the tiny decision that makes clients trust you faster: showing the process before asking them to believe the promise.",
+    "metadata": {
+      "type": "hook_pattern",
+      "agent": "idea_agent",
+      "label": "psychology",
+      "angle": "behind_scenes",
+      "title": "Insider vibe",
+      "source_fields": "known_for, proof_points, content_angles"
+    }
+  },
+  {
+    "id": "idea_hook_psychology_numbers_based_proof",
+    "document": "Hook pattern: Use a number, statistic, count, or measurable comparison to make the post feel concrete. The number should reduce uncertainty or reveal a surprising constraint. Example: You do not need 30 content ideas. You need 3 repeatable angles that answer the objections blocking most buyers.",
+    "metadata": {
+      "type": "hook_pattern",
+      "agent": "idea_agent",
+      "label": "psychology",
+      "angle": "proof",
+      "title": "Numbers-based proof",
+      "source_fields": "proof_points, objections, desires"
+    }
   }
 ]
