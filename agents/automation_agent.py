@@ -4,6 +4,7 @@ from dotenv import load_dotenv
 from langchain.chat_models import init_chat_model
 from langchain_core.prompts import ChatPromptTemplate
 
+from agents.model_config import AUTOMATION_AGENT_MODEL
 from rag.automation_retriever import retrieve_automation_knowledge
 
 load_dotenv()
@@ -46,7 +47,7 @@ class ManyChatFlowResult(BaseModel):
 
 
 model = init_chat_model(
-    model="openai:gpt-4o-mini",
+    model=AUTOMATION_AGENT_MODEL,
     temperature=0.7,
 )
 

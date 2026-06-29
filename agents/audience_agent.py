@@ -3,6 +3,7 @@ from pydantic import BaseModel, Field
 from dotenv import load_dotenv
 from langchain.chat_models import init_chat_model
 from langchain_core.prompts import ChatPromptTemplate
+from agents.model_config import AUDIENCE_AGENT_MODEL
 from rag.positioning_retriever import retrieve_positioning_knowledge
 
 load_dotenv()
@@ -24,7 +25,7 @@ class AudienceAnalysis(BaseModel):
 
 
 model = init_chat_model(
-    model="openai:gpt-4o-mini",
+    model=AUDIENCE_AGENT_MODEL,
     temperature=0.7,
 )
 

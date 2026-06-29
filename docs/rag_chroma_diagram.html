@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MarketingAssistant RAG and ChromaDB Map</title>
+<style>
+    :root {
+        --bg: #fbfaf4;
+        --ink: #1f3327;
+        --muted: #6e7d6e;
+        --line: #9ebb7c;
+        --green: #2f7d35;
+        --green-soft: #eef6df;
+        --pink: #f47fa2;
+        --pink-soft: #fde2ec;
+        --gold: #b0701f;
+        --card: rgba(255, 255, 252, 0.96);
+        --border: #d9ebc8;
+        --shadow: 0 22px 55px rgba(31, 51, 39, 0.12);
+        font-family: Urbanist, Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+        margin: 0;
+        background:
+            radial-gradient(circle at 13% 7%, rgba(244, 127, 162, 0.18), transparent 27%),
+            radial-gradient(circle at 88% 5%, rgba(158, 187, 124, 0.22), transparent 27%),
+            linear-gradient(180deg, #fffdf8 0%, var(--bg) 100%);
+        color: var(--ink);
+    }
+
+    .page {
+        width: 1980px;
+        min-height: 1520px;
+        margin: 0 auto;
+        padding: 56px 56px 72px;
+    }
+
+    header {
+        display: flex;
+        justify-content: space-between;
+        gap: 32px;
+        align-items: flex-start;
+        margin-bottom: 34px;
+    }
+
+    h1 {
+        margin: 0;
+        font-size: 48px;
+        line-height: 1;
+        letter-spacing: 0;
+    }
+
+    .subtitle {
+        max-width: 760px;
+        margin: 14px 0 0;
+        color: var(--muted);
+        font-size: 20px;
+        line-height: 1.55;
+    }
+
+    .legend {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+        gap: 10px;
+        max-width: 470px;
+    }
+
+    .legend span {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 9px 13px;
+        border: 1px solid var(--border);
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.72);
+        color: var(--muted);
+        font-weight: 700;
+        font-size: 13px;
+        text-transform: uppercase;
+        letter-spacing: 0.07em;
+    }
+
+    .dot {
+        width: 11px;
+        height: 11px;
+        border-radius: 50%;
+        background: var(--green);
+    }
+
+    .dot.pink { background: var(--pink); }
+    .dot.gold { background: var(--gold); }
+
+    .diagram {
+        position: relative;
+        width: 1868px;
+        height: 1320px;
+        border: 1px solid rgba(158, 187, 124, 0.35);
+        border-radius: 28px;
+        background:
+            linear-gradient(rgba(158, 187, 124, 0.08) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(158, 187, 124, 0.08) 1px, transparent 1px),
+            rgba(255, 255, 252, 0.52);
+        background-size: 42px 42px;
+        box-shadow: var(--shadow);
+        overflow: hidden;
+    }
+
+    .connections {
+        position: absolute;
+        inset: 0;
+        z-index: 1;
+        pointer-events: none;
+    }
+
+    .connections path {
+        fill: none;
+        stroke: var(--line);
+        stroke-width: 3;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+    }
+
+    .connections path.soft {
+        stroke: rgba(244, 127, 162, 0.74);
+    }
+
+    .connections path.gold {
+        stroke: rgba(176, 112, 31, 0.62);
+    }
+
+    .connection-label {
+        fill: var(--muted);
+        font-size: 13px;
+        font-weight: 800;
+        letter-spacing: 0.02em;
+    }
+
+    .card {
+        position: absolute;
+        z-index: 2;
+        width: 340px;
+        border: 1px solid var(--border);
+        border-radius: 18px;
+        background: var(--card);
+        box-shadow: 0 16px 36px rgba(31, 51, 39, 0.10);
+        overflow: hidden;
+    }
+
+    .card.seed { border-color: #f4bbcf; }
+    .card.chroma { border-color: #c9e5b2; }
+    .card.agent { border-color: #f4bbcf; }
+    .card.tool { border-style: dashed; background: rgba(255, 255, 252, 0.90); }
+    .card.note {
+        background: var(--pink-soft);
+        border-color: #f4bbcf;
+        color: #b54866;
+    }
+
+    .card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+        padding: 13px 16px;
+        background: var(--green-soft);
+        border-bottom: 1px solid var(--border);
+    }
+
+    .seed .card-header,
+    .agent .card-header,
+    .note .card-header {
+        background: var(--pink-soft);
+        border-color: #f4bbcf;
+    }
+
+    .tool .card-header { background: #f7f1e7; }
+
+    .card-title {
+        font-weight: 900;
+        font-size: 18px;
+        letter-spacing: 0.01em;
+        min-width: 0;
+    }
+
+    .card-kind {
+        color: var(--muted);
+        font-size: 10px;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.10em;
+        white-space: nowrap;
+    }
+
+    .rows {
+        padding: 14px 16px 16px;
+        display: grid;
+        gap: 10px;
+    }
+
+    .row {
+        display: grid;
+        grid-template-columns: 18px 1fr;
+        gap: 10px;
+        align-items: start;
+        color: var(--muted);
+        font-size: 14px;
+        line-height: 1.36;
+    }
+
+    .row strong {
+        color: var(--ink);
+        font-weight: 850;
+    }
+
+    .pill {
+        display: inline-grid;
+        place-items: center;
+        width: 18px;
+        height: 18px;
+        border-radius: 6px;
+        color: var(--green);
+        background: var(--green-soft);
+        border: 1px solid #c9e5b2;
+        font-size: 10px;
+        font-weight: 900;
+    }
+
+    .seed .pill,
+    .agent .pill {
+        color: #c84f73;
+        background: var(--pink-soft);
+        border-color: #f4bbcf;
+    }
+
+    .wide { width: 380px; }
+    .small { width: 248px; }
+
+    .seed-positioning { left: 70px; top: 80px; width: 360px; }
+    .seed-idea { left: 70px; top: 326px; width: 360px; }
+    .seed-frameworks { left: 70px; top: 572px; width: 360px; }
+    .seed-automation { left: 70px; top: 840px; width: 360px; }
+
+    .seed-script { left: 500px; top: 92px; width: 420px; }
+    .chroma-db { left: 500px; top: 410px; width: 420px; }
+    .debug-tools { left: 520px; top: 780px; width: 360px; }
+
+    .collection-positioning { left: 1010px; top: 70px; width: 360px; }
+    .collection-idea { left: 1010px; top: 300px; width: 360px; }
+    .collection-frameworks { left: 1010px; top: 530px; width: 360px; }
+    .collection-cta { left: 1010px; top: 760px; width: 360px; }
+    .collection-comment { left: 1010px; top: 990px; width: 430px; }
+
+    .agent-audience { left: 1470px; top: 88px; width: 340px; }
+    .agent-idea { left: 1470px; top: 322px; width: 340px; }
+    .agent-content { left: 1470px; top: 556px; width: 340px; }
+    .agent-automation { left: 1470px; top: 890px; width: 340px; }
+
+    .runtime-note { left: 520px; top: 1056px; width: 420px; }
+
+    @media print {
+        body { background: #fff; }
+        .page { padding: 20px; }
+        .diagram { box-shadow: none; }
+    }
+</style>
+</head>
+<body>
+<main class="page">
+    <header>
+        <div>
+            <h1>MarketingAssistant RAG and ChromaDB Map</h1>
+            <p class="subtitle">How editable knowledge cards are seeded into local ChromaDB collections, retrieved by narrow retrievers, and injected into the agents that create audience notes, ideas, posts, and Instagram comment-to-DM automation resources.</p>
+        </div>
+        <div class="legend" aria-label="Diagram legend">
+            <span><i class="dot pink"></i>Editable JSON seed data</span>
+            <span><i class="dot"></i>Chroma collections</span>
+            <span><i class="dot gold"></i>Scripts and local storage</span>
+            <span>RAG = retrieval added to prompts</span>
+        </div>
+    </header>
+
+    <section class="diagram" aria-label="MarketingAssistant RAG and ChromaDB architecture diagram">
+        <svg class="connections" viewBox="0 0 1868 1320" preserveAspectRatio="none">
+            <defs>
+                <marker id="arrow-green" markerWidth="12" markerHeight="12" refX="9" refY="6" orient="auto" markerUnits="strokeWidth">
+                    <path d="M 0 0 L 10 6 L 0 12 z" fill="#9ebb7c"></path>
+                </marker>
+                <marker id="arrow-pink" markerWidth="12" markerHeight="12" refX="9" refY="6" orient="auto" markerUnits="strokeWidth">
+                    <path d="M 0 0 L 10 6 L 0 12 z" fill="#f47fa2"></path>
+                </marker>
+                <marker id="arrow-gold" markerWidth="12" markerHeight="12" refX="9" refY="6" orient="auto" markerUnits="strokeWidth">
+                    <path d="M 0 0 L 10 6 L 0 12 z" fill="#b0701f"></path>
+                </marker>
+            </defs>
+
+            <path class="soft" d="M430 168 C462 168 468 132 500 132" marker-end="url(#arrow-pink)"></path>
+            <path class="soft" d="M430 414 C486 414 462 174 500 174" marker-end="url(#arrow-pink)"></path>
+            <path class="soft" d="M430 662 C494 662 462 216 500 216" marker-end="url(#arrow-pink)"></path>
+            <path class="soft" d="M430 928 C502 928 458 258 500 258" marker-end="url(#arrow-pink)"></path>
+
+            <path class="gold" d="M710 324 L710 410" marker-end="url(#arrow-gold)"></path>
+            <text class="connection-label" x="734" y="372">upsert</text>
+
+            <path d="M920 472 C958 472 962 156 1010 156" marker-end="url(#arrow-green)"></path>
+            <path d="M920 514 C958 514 962 386 1010 386" marker-end="url(#arrow-green)"></path>
+            <path d="M920 556 C958 556 962 616 1010 616" marker-end="url(#arrow-green)"></path>
+            <path d="M920 598 C958 598 962 846 1010 846" marker-end="url(#arrow-green)"></path>
+            <path d="M920 640 C958 640 962 1076 1010 1076" marker-end="url(#arrow-green)"></path>
+
+            <path d="M1370 156 C1410 156 1426 174 1470 174" marker-end="url(#arrow-green)"></path>
+
+            <path d="M1370 386 C1410 386 1426 408 1470 408" marker-end="url(#arrow-green)"></path>
+
+            <path d="M1370 616 C1410 616 1426 642 1470 642" marker-end="url(#arrow-green)"></path>
+
+            <path d="M1370 846 C1418 846 1424 934 1470 948" marker-end="url(#arrow-green)"></path>
+            <path d="M1370 1076 C1422 1076 1420 1000 1470 984" marker-end="url(#arrow-green)"></path>
+
+            <path class="gold" d="M710 780 L710 646" marker-end="url(#arrow-gold)"></path>
+            <text class="connection-label" x="734" y="720">inspect / reset</text>
+        </svg>
+
+        <article class="card seed seed-positioning">
+            <div class="card-header"><span class="card-title">positioning_knowledge/</span><span class="card-kind">seed</span></div>
+            <div class="rows">
+                <div class="row"><span class="pill">J</span><span><strong>base.json</strong> for core positioning principles.</span></div>
+                <div class="row"><span class="pill">J</span><span><strong>niches_001_100</strong> for 100 niche voice-of-customer sets.</span></div>
+                <div class="row"><span class="pill">M</span><span>Pains, desires, objections, proof, market context, audience language.</span></div>
+            </div>
+        </article>
+
+        <article class="card seed seed-idea">
+            <div class="card-header"><span class="card-title">idea_knowledge.json</span><span class="card-kind">seed</span></div>
+            <div class="rows">
+                <div class="row"><span class="pill">H</span><span><strong>60 audience-led hook cards</strong> for pains, desires, objections, triggers, proof, and language.</span></div>
+                <div class="row"><span class="pill">A</span><span>Content angle and belief-shift guidance for idea generation.</span></div>
+            </div>
+        </article>
+
+        <article class="card seed seed-frameworks">
+            <div class="card-header"><span class="card-title">content_frameworks.json</span><span class="card-kind">seed</span></div>
+            <div class="rows">
+                <div class="row"><span class="pill">L</span><span><strong>LinkedIn structures</strong> with concrete post frameworks.</span></div>
+                <div class="row"><span class="pill">I</span><span><strong>Instagram carousel, story, and reel frameworks</strong>.</span></div>
+                <div class="row"><span class="pill">S</span><span>Short, medium, and long post length rules.</span></div>
+            </div>
+        </article>
+
+        <article class="card seed seed-automation">
+            <div class="card-header"><span class="card-title">automation + CTA seeds</span><span class="card-kind">seed</span></div>
+            <div class="rows">
+                <div class="row"><span class="pill">C</span><span><strong>cta_patterns.json</strong> for comment, DM, save, follow, download, share, book, and buy CTAs.</span></div>
+                <div class="row"><span class="pill">M</span><span><strong>comment_automation_templates.json</strong> for ManyChat comment-to-DM examples.</span></div>
+            </div>
+        </article>
+
+        <article class="card tool seed-script">
+            <div class="card-header"><span class="card-title">scripts/seed_chroma_all.py</span><span class="card-kind">script</span></div>
+            <div class="rows">
+                <div class="row"><span class="pill">1</span><span>Loads each JSON file or folder from <strong>rag_seed_data/</strong>.</span></div>
+                <div class="row"><span class="pill">2</span><span>Calls <strong>seed_collection()</strong> for every collection.</span></div>
+                <div class="row"><span class="pill">3</span><span>Uses Chroma <strong>upsert</strong>, so stable IDs update existing cards.</span></div>
+            </div>
+        </article>
+
+        <article class="card chroma chroma-db">
+            <div class="card-header"><span class="card-title">chroma_db/</span><span class="card-kind">local vector db</span></div>
+            <div class="rows">
+                <div class="row"><span class="pill">P</span><span><strong>PersistentClient(path="./chroma_db")</strong> stores embeddings locally.</span></div>
+                <div class="row"><span class="pill">D</span><span>Documents are short original guidance cards, not copied long articles.</span></div>
+                <div class="row"><span class="pill">Q</span><span>Retrievers build query text from profile, audience, idea, post, trend, and automation context.</span></div>
+            </div>
+        </article>
+
+        <article class="card tool debug-tools">
+            <div class="card-header"><span class="card-title">debug + reset scripts</span><span class="card-kind">tools</span></div>
+            <div class="rows">
+                <div class="row"><span class="pill">D</span><span><strong>scripts/debug_chroma.py</strong> lists collections and inspects stored metadata.</span></div>
+                <div class="row"><span class="pill">R</span><span><strong>scripts/reset_chroma.py</strong> deletes the positioning collection only.</span></div>
+            </div>
+        </article>
+
+        <article class="card note runtime-note">
+            <div class="card-header"><span class="card-title">RAG lives outside Postgres</span><span class="card-kind">note</span></div>
+            <div class="rows">
+                <div class="row"><span class="pill">!</span><span>Postgres stores users, profiles, audience notes, ideas, posts, and automation resources.</span></div>
+                <div class="row"><span class="pill">!</span><span>Chroma stores reusable marketing knowledge used to enrich prompts at generation time.</span></div>
+            </div>
+        </article>
+
+        <article class="card chroma collection-positioning">
+            <div class="card-header"><span class="card-title">positioning_knowledge</span><span class="card-kind">collection</span></div>
+            <div class="rows">
+                <div class="row"><span class="pill">A</span><span>Queried from profile details: niche, offer, audience, expertise, market, currency, goal.</span></div>
+                <div class="row"><span class="pill">5</span><span>Default retrieval: <strong>5</strong> documents.</span></div>
+            </div>
+        </article>
+
+        <article class="card chroma collection-idea">
+            <div class="card-header"><span class="card-title">idea_knowledge</span><span class="card-kind">collection</span></div>
+            <div class="rows">
+                <div class="row"><span class="pill">I</span><span>Queried from profile, audience analysis, content angles, market context, and trend context.</span></div>
+                <div class="row"><span class="pill">8</span><span>Default retrieval: <strong>8</strong> documents.</span></div>
+            </div>
+        </article>
+
+        <article class="card chroma collection-frameworks">
+            <div class="card-header"><span class="card-title">content_frameworks</span><span class="card-kind">collection</span></div>
+            <div class="rows">
+                <div class="row"><span class="pill">P</span><span>Queried from the selected idea, platform, Instagram type, length, trend, and automation resource.</span></div>
+                <div class="row"><span class="pill">7</span><span>Default retrieval: <strong>7</strong> documents.</span></div>
+            </div>
+        </article>
+
+        <article class="card chroma collection-cta">
+            <div class="card-header"><span class="card-title">cta_patterns</span><span class="card-kind">collection</span></div>
+            <div class="rows">
+                <div class="row"><span class="pill">C</span><span>CTA guidance for post goals and automation-friendly comment CTAs.</span></div>
+                <div class="row"><span class="pill">4</span><span>Default retrieval: <strong>4</strong> documents.</span></div>
+            </div>
+        </article>
+
+        <article class="card chroma collection-comment">
+            <div class="card-header"><span class="card-title">comment_automation_templates</span><span class="card-kind">collection</span></div>
+            <div class="rows">
+                <div class="row"><span class="pill">M</span><span>Public replies, opening DMs, second DMs, questions, follow-ups, setup JSON, and manual setup steps.</span></div>
+                <div class="row"><span class="pill">4</span><span>Default retrieval: <strong>4</strong> documents.</span></div>
+            </div>
+        </article>
+
+        <article class="card agent agent-audience">
+            <div class="card-header"><span class="card-title">Audience Agent</span><span class="card-kind">agent</span></div>
+            <div class="rows">
+                <div class="row"><span class="pill">O</span><span>Creates audience profile, pains, desires, objections, trigger moments, proof points, audience language, and market context.</span></div>
+            </div>
+        </article>
+
+        <article class="card agent agent-idea">
+            <div class="card-header"><span class="card-title">Idea Agent</span><span class="card-kind">agent</span></div>
+            <div class="rows">
+                <div class="row"><span class="pill">20</span><span>Creates content ideas with title, hook, idea framing, topic, post format, and optional trend context.</span></div>
+            </div>
+        </article>
+
+        <article class="card agent agent-content">
+            <div class="card-header"><span class="card-title">Content Agent</span><span class="card-kind">agent</span></div>
+            <div class="rows">
+                <div class="row"><span class="pill">P</span><span>Drafts and revises posts using the selected idea, audience notes, trend, platform, length, and automation resource.</span></div>
+            </div>
+        </article>
+
+        <article class="card agent agent-automation">
+            <div class="card-header"><span class="card-title">Automation Agent</span><span class="card-kind">agent</span></div>
+            <div class="rows">
+                <div class="row"><span class="pill">DM</span><span>Generates reusable Instagram comment-to-DM automation resources and ManyChat setup details.</span></div>
+            </div>
+        </article>
+    </section>
+</main>
+</body>
+</html>

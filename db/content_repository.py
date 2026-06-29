@@ -52,6 +52,7 @@ def get_content_generation_context(conn, content_idea_id: str) -> dict:
                 ci.hook,
                 ci.angle,
                 ci.topic,
+                ci.trend_context,
                 COALESCE(ci.post_format, ci.content_style) AS post_format
             FROM content_ideas ci
             JOIN user_profiles up
@@ -95,7 +96,8 @@ def get_content_generation_context(conn, content_idea_id: str) -> dict:
             "idea_hook": row[25],
             "idea_angle": row[26],
             "idea_topic": row[27],
-            "idea_post_format": row[28],
+            "idea_trend_context": row[28],
+            "idea_post_format": row[29],
         }
 
 

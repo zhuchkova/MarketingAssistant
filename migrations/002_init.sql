@@ -48,6 +48,7 @@ CREATE TABLE content_ideas (
     hook TEXT,
     angle TEXT,
     topic TEXT,
+    trend_context TEXT,
     post_format TEXT,
     content_style TEXT,
     created_at TIMESTAMP DEFAULT NOW(),

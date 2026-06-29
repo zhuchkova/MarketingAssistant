@@ -1,4 +1,4 @@
-from typing import Literal
+from typing import Literal, Optional
 from uuid import UUID
 from pydantic import BaseModel, ConfigDict, field_validator, model_validator
 
@@ -75,11 +75,20 @@ class ContentIdeaRequest(BaseModel):
     angle: str
     topic: str
     post_format: PostFormat
+    trend_context: Optional[str] = None
 
     @field_validator("title", "hook", "angle", "topic")
     @classmethod
     def validate_required_text(cls, value: str) -> str:
         return capitalize_first(clean_required_text(value))
+
+    @field_validator("trend_context")
+    @classmethod
+    def clean_trend_context(cls, value: Optional[str]) -> Optional[str]:
+        if value is None:
+            return None
+        value = value.strip()
+        return capitalize_first(value) if value else None
 
     @field_validator("post_format")
     @classmethod
@@ -103,6 +112,7 @@ class ContentIdeaRequest(BaseModel):
                 "angle": "A personal lesson about making content more specific",
                 "topic": "content positioning",
                 "post_format": "personal_story",
+                "trend_context": "People are reacting to generic AI-written posts.",
             }
         }
     )
@@ -110,6 +120,7 @@ class ContentIdeaRequest(BaseModel):
 
 class GenerateIdeasRequest(BaseModel):
     count: int = 10
+    trend_context: Optional[str] = None
 
     @field_validator("count")
     @classmethod
@@ -117,3 +128,11 @@ class GenerateIdeasRequest(BaseModel):
         if value < 1 or value > 30:
             raise ValueError("count must be between 1 and 30")
         return value
+
+    @field_validator("trend_context")
+    @classmethod
+    def clean_generation_trend_context(cls, value: Optional[str]) -> Optional[str]:
+        if value is None:
+            return None
+        value = value.strip()
+        return value or None

@@ -719,6 +719,18 @@
             color: var(--primary); background: var(--surface-3);
             padding: 2px 7px; border-radius: 4px; margin-bottom: 9px;
         }
+        .idea-card-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            min-height: 25px;
+            padding-right: 78px;
+            margin-bottom: 9px;
+        }
+        .idea-card-header .idea-topic-badge {
+            margin-bottom: 0;
+            flex: 0 0 auto;
+        }
         .idea-title { font-size: 17px; font-weight: 700; line-height: 1.35; margin-bottom: 7px; }
         .idea-time {
             font-size: 12px;
@@ -729,6 +741,37 @@
             font-size: 15px; color: var(--text-3); line-height: 1.65;
             margin-bottom: 12px;
             flex: 1;
+        }
+        .idea-trend-preview {
+            display: flex;
+            gap: 7px;
+            align-items: flex-start;
+            font-size: 13px;
+            line-height: 1.45;
+            color: #9c5162;
+            background: var(--pink-soft);
+            border: 1px solid #f7c8d9;
+            border-radius: var(--r-xs);
+            padding: 8px 10px;
+            margin: 0 0 12px;
+        }
+        .idea-card-header .idea-trend-preview {
+            flex: 1;
+            min-width: 0;
+            align-items: center;
+            padding: 4px 8px;
+            margin: 0;
+        }
+        .idea-card-header .idea-trend-preview span {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .idea-trend-preview .flat-icon {
+            width: 15px;
+            height: 15px;
+            flex-shrink: 0;
+            margin-top: 2px;
         }
         .idea-foot {
             display: flex; align-items: center; justify-content: space-between;
@@ -799,6 +842,9 @@
         .post-flow-indicator .flat-icon {
             width: 18px;
             height: 18px;
+        }
+        .post-trend-indicator {
+            color: var(--danger);
         }
         .card-check-btn:hover,
         .card-check-btn.active {
@@ -980,6 +1026,17 @@
             background: var(--pink-soft);
             border-color: #f7c8d9;
             color: #5b2e3a;
+        }
+        .revision-box {
+            background: #fff8fb;
+            border: 1px solid #f7c8d9;
+            border-radius: var(--r-sm);
+            padding: 14px;
+            margin-top: 18px;
+        }
+        .revision-box textarea {
+            min-height: 84px;
+            margin-top: 8px;
         }
         .copy-row {
             display: flex; align-items: center; justify-content: space-between;
@@ -1469,6 +1526,9 @@
     <symbol id="icon-download" viewBox="0 0 24 24">
         <path d="M12 3v12"></path><path d="m7 10 5 5 5-5"></path><path d="M5 21h14"></path>
     </symbol>
+    <symbol id="icon-trend" viewBox="0 0 24 24">
+        <path d="M3 17l6-6 4 4 7-8"></path><path d="M14 7h6v6"></path>
+    </symbol>
 </svg>
 
 <!-- ── HEADER ──────────────────────────────────────── -->
@@ -1892,7 +1952,7 @@
                     <div class="ideas-toolbar-left"></div>
                     <div class="ideas-toolbar-right">
                         <div class="idea-filter-control">
-                            <label for="idea-format-filter">Filter</label>
+                            <label for="idea-format-filter">Formats</label>
                             <select id="idea-format-filter" onchange="setIdeaFilter(this.value)"></select>
                         </div>
                         <div class="idea-filter-control">
@@ -1901,6 +1961,10 @@
                                 <option value="all">All</option>
                                 <option value="favorite">Favorites</option>
                             </select>
+                        </div>
+                        <div class="idea-filter-control">
+                            <label for="idea-trend-filter">Trends</label>
+                            <select id="idea-trend-filter" onchange="setIdeaTrendFilter(this.value)"></select>
                         </div>
                     </div>
                 </div>
@@ -2002,6 +2066,7 @@
                 <div class="idea-chip-title" id="gen-title"></div>
                 <div class="idea-chip-hook" id="gen-hook"></div>
                 <div class="idea-angle" id="gen-style" style="margin-top:8px;"></div>
+                <div class="idea-trend-preview" id="gen-trend" style="display:none; margin-top:10px; margin-bottom:0;"></div>
             </div>
 
             <div class="form-group">
@@ -2025,7 +2090,7 @@
                 </select>
             </div>
 
-            <div class="form-group">
+            <div class="form-group" id="post-goal-group">
                 <label>Post Goal</label>
                 <div class="option-grid">
                     <button class="opt-btn sel" data-group="goal" data-val="comment" onclick="pickOpt(this)">
@@ -2061,6 +2126,12 @@
                     <option value="">No automation</option>
                 </select>
                 <span class="form-hint">Optional: choose a saved DM resource so the CTA uses its keyword and promise.</span>
+            </div>
+
+            <div class="form-group">
+                <label>Extra Context</label>
+                <textarea id="gen-extra-context" placeholder="Optional: add a note for this draft, e.g. make it about yesterday's event, avoid selling, or mention a client question."></textarea>
+                <span class="form-hint">Use this when the idea inspired you, but you want the draft to go in a more specific direction.</span>
             </div>
 
             <div class="form-group">
@@ -2107,6 +2178,11 @@
                 <div class="result-section">
                     <div class="result-label">Full Post</div>
                     <div class="result-content full-text" id="r-final"></div>
+                </div>
+                <div class="revision-box">
+                    <div class="result-label">Change This Draft</div>
+                    <textarea id="gen-revision-prompt" placeholder="E.g. make it warmer, add more personal story, shorten it, or make the CTA softer."></textarea>
+                    <button class="btn btn-primary btn-sm" id="btn-revise-post" onclick="reviseGeneratedPost()">Revise Draft</button>
                 </div>
             </div>
         </div>
@@ -2268,6 +2344,11 @@
                 <input type="text" id="idea-topic" placeholder="E.g. Content positioning" />
                 <span class="form-hint">The subject the post is about.</span>
             </div>
+            <div class="form-group">
+                <label>Trend Context</label>
+                <textarea id="idea-trend-context" placeholder="Optional: E.g. people are tired of generic AI posts, a local event is trending, or a seasonal behavior is changing."></textarea>
+                <span class="form-hint">Add only if this idea should react to a timely trend, news item, meme, season, or audience conversation.</span>
+            </div>
         </div>
         <div class="modal-foot">
             <button class="btn btn-ghost" onclick="closeModal('modal-idea')">Cancel</button>
@@ -2380,6 +2461,7 @@ const S = {
     genPostPlatform: null,
     ideaFilter: 'all',
     ideaFavoriteFilter: 'all',
+    ideaTrendFilter: 'all',
     ideaSearch: '',
     ideaSort: 'newest',
     ideaPage: 1,
@@ -3150,10 +3232,14 @@ function renderIdeas() {
     grid.innerHTML = pageIdeas.map((idea) => {
         const i = S.ideas.findIndex(item => item.id === idea.id);
         const format = ideaFormat(idea);
+        const trend = String(idea.trend_context || '').trim();
         return `
         <div class="idea-card ${i % 2 === 0 ? 'idea-green' : 'idea-pink'}" onclick="openGenModal(${i})">
             <button class="card-mark-btn ${idea.is_favorite ? 'active' : ''}" onclick="toggleIdeaFavorite(event, '${idea.id}')" aria-label="${idea.is_favorite ? 'Remove from favorite ideas' : 'Add to favorite ideas'}">♥</button>
-            <div class="idea-topic-badge">${esc(formatLabel(format))}</div>
+            <div class="idea-card-header">
+                <div class="idea-topic-badge">${esc(formatLabel(format))}</div>
+                ${trend ? `<div class="idea-trend-preview"><svg class="flat-icon"><use href="#icon-trend"></use></svg><span>${esc(trend)}</span></div>` : ''}
+            </div>
             <div class="idea-title">${esc(idea.title)}</div>
             <div class="idea-time">${esc(ideaTimestampText(idea))}</div>
             <div class="idea-hook">${esc(idea.hook)}</div>
@@ -3184,15 +3270,20 @@ function filteredIdeas() {
     return [...S.ideas].filter(idea => {
         const formatOk = S.ideaFilter === 'all' || ideaFormat(idea) === S.ideaFilter;
         const favoriteOk = S.ideaFavoriteFilter === 'all' || idea.is_favorite;
+        const trend = String(idea.trend_context || '').trim();
+        const trendOk = S.ideaTrendFilter === 'all'
+            || (S.ideaTrendFilter === 'evergreen' && !trend)
+            || (S.ideaTrendFilter.startsWith('trend:') && trend === S.ideaTrendFilter.slice(6));
         const haystack = [
             idea.title,
             idea.hook,
             idea.angle,
             idea.topic,
+            idea.trend_context,
             ideaFormat(idea),
             formatLabel(ideaFormat(idea)),
         ].filter(Boolean).join(' ').toLowerCase();
-        return formatOk && favoriteOk && (!query || haystack.includes(query));
+        return formatOk && favoriteOk && trendOk && (!query || haystack.includes(query));
     }).sort(compareIdeas);
 }
 
@@ -3221,6 +3312,20 @@ function renderIdeaFormatFilter() {
     select.value = S.ideaFilter;
     const favoriteSelect = document.getElementById('idea-favorite-filter');
     if (favoriteSelect) favoriteSelect.value = S.ideaFavoriteFilter;
+    const trendSelect = document.getElementById('idea-trend-filter');
+    if (trendSelect) {
+        const trends = [...new Set(S.ideas.map(idea => String(idea.trend_context || '').trim()).filter(Boolean))]
+            .sort((a, b) => a.localeCompare(b));
+        const options = [
+            '<option value="all">All</option>',
+            '<option value="evergreen">Evergreen</option>',
+            ...trends.map(trend => `<option value="trend:${esc(trend)}">${esc(trend)}</option>`),
+        ];
+        trendSelect.innerHTML = options.join('');
+        const values = new Set(['all', 'evergreen', ...trends.map(trend => `trend:${trend}`)]);
+        if (!values.has(S.ideaTrendFilter)) S.ideaTrendFilter = 'all';
+        trendSelect.value = S.ideaTrendFilter;
+    }
     const search = document.getElementById('idea-search');
     if (search && search.value !== S.ideaSearch) search.value = S.ideaSearch;
     const sort = document.getElementById('idea-sort');
@@ -3235,6 +3340,12 @@ function setIdeaFilter(format) {
 
 function setIdeaFavoriteFilter(value) {
     S.ideaFavoriteFilter = value;
+    S.ideaPage = 1;
+    renderIdeas();
+}
+
+function setIdeaTrendFilter(value) {
+    S.ideaTrendFilter = value;
     S.ideaPage = 1;
     renderIdeas();
 }
@@ -3305,6 +3416,7 @@ function openIdeaModal(ideaId = null) {
     document.getElementById('idea-hook').value = capitalizeFirst(idea?.hook);
     document.getElementById('idea-angle').value = capitalizeFirst(idea?.angle);
     document.getElementById('idea-topic').value = capitalizeFirst(idea?.topic);
+    document.getElementById('idea-trend-context').value = capitalizeFirst(idea?.trend_context);
     openModal('modal-idea');
 }
 
@@ -3315,9 +3427,10 @@ async function saveIdea() {
         hook: capitalizeFirst(val('idea-hook')),
         angle: capitalizeFirst(val('idea-angle')),
         topic: capitalizeFirst(val('idea-topic')),
+        trend_context: capitalizeFirst(val('idea-trend-context')),
     };
 
-    if (Object.values(body).some(v => !v)) {
+    if ([body.post_format, body.title, body.hook, body.angle, body.topic].some(v => !v)) {
         toast('Please fill in all idea fields', 'error');
         return;
     }
@@ -3371,6 +3484,8 @@ async function toggleIdeaFavorite(event, ideaId) {
 }
 
 async function generateMoreIdeas() {
+    const trendContext = prompt('Optional trend or timely context for the next ideas. Leave empty for evergreen ideas.', '');
+    if (trendContext === null) return;
     showLoading('Creating more ideas…', [
         { label:'Reading audience notes', delay:0 },
         { label:'Keeping favorite ideas', delay:2500 },
@@ -3379,7 +3494,10 @@ async function generateMoreIdeas() {
     ], { logo: true, kind: 'ideas' });
 
     try {
-        const res = await api('POST', `/user-profiles/${S.profileId}/content-ideas/generate-more`, { count: 10 });
+        const res = await api('POST', `/user-profiles/${S.profileId}/content-ideas/generate-more`, {
+            count: 10,
+            trend_context: trendContext.trim() || null,
+        });
         if (res.error) throw new Error(res.error);
         await refreshIdeas();
         hideLoading();
@@ -3441,6 +3559,11 @@ function renderPosts() {
                         <svg class="flat-icon"><use href="#icon-atom"></use></svg>
                     </span>
                 ` : ''}
+                ${String(p.idea_trend_context || '').trim() ? `
+                    <span class="post-flow-indicator post-trend-indicator" title="${esc(String(p.idea_trend_context || '').trim())}" aria-label="Trend: ${esc(String(p.idea_trend_context || '').trim())}">
+                        <svg class="flat-icon"><use href="#icon-trend"></use></svg>
+                    </span>
+                ` : ''}
                 <button class="card-mark-btn ${p.is_favorite ? 'active' : ''}" onclick="togglePostFavorite(event, '${p.id}')" aria-label="${p.is_favorite ? 'Remove from favorite posts' : 'Add to favorite posts'}">♥</button>
                 <button class="card-mark-btn card-check-btn ${p.is_published ? 'active' : ''}" onclick="togglePostPublished(event, '${p.id}')" aria-label="${p.is_published ? 'Remove from published posts' : 'Mark post as published'}">✓</button>
             </div>
@@ -3449,7 +3572,7 @@ function renderPosts() {
                 ${p.instagram_content_type ? `<span class="tag tag-format">${esc(p.instagram_content_type)}</span>` : ''}
                 ${p.post_length ? `<span class="tag tag-format">${esc(p.post_length)}</span>` : ''}
                 <span class="tag tag-format">${esc(p.post_format||'')}</span>
-                <span class="tag tag-goal">${esc(p.post_goal||'')}</span>
+                ${p.automation_resource_id ? '' : `<span class="tag tag-goal">${esc(p.post_goal||'')}</span>`}
             </div>
             <div class="post-row-time">${esc(postTimestampText(p))}</div>
             <div class="post-row-hook">${esc(p.hook || (p.final_text||'').slice(0,80))}</div>
@@ -3648,10 +3771,20 @@ function openGenModal(idx) {
     document.getElementById('gen-title').textContent = idea.title;
     document.getElementById('gen-hook').textContent  = idea.hook;
     document.getElementById('gen-style').textContent = formatLabel(ideaFormat(idea));
+    const trendBox = document.getElementById('gen-trend');
+    const trend = String(idea.trend_context || '').trim();
+    if (trendBox) {
+        trendBox.style.display = trend ? 'flex' : 'none';
+        trendBox.innerHTML = trend ? `<svg class="flat-icon"><use href="#icon-trend"></use></svg><span>${esc(trend)}</span>` : '';
+    }
     document.getElementById('gen-result').style.display = 'none';
+    const extraContext = document.getElementById('gen-extra-context');
+    if (extraContext) extraContext.value = '';
+    const revisionPrompt = document.getElementById('gen-revision-prompt');
+    if (revisionPrompt) revisionPrompt.value = '';
 
     // Reset options to defaults
-    S.genOpts = { platform: 'instagram', instagram_content_type: 'carousel', goal: 'comment', post_length: 'medium', automation_resource_id: null };
+    S.genOpts = { platform: 'instagram', instagram_content_type: 'carousel', goal: 'comment', post_length: 'medium', automation_resource_id: null, last_manual_goal: 'comment' };
     document.querySelectorAll('#modal-generate .opt-btn').forEach(b => {
         const isDefault = (
             (b.dataset.group === 'platform' && b.dataset.val === 'instagram') ||
@@ -3678,6 +3811,7 @@ function pickOpt(el) {
     document.querySelectorAll(`#modal-generate .opt-btn[data-group="${group}"]`).forEach(b => b.classList.remove('sel'));
     el.classList.add('sel');
     S.genOpts[group] = val;
+    if (group === 'goal') S.genOpts.last_manual_goal = val;
     if (group === 'platform') updateInstagramTypeVisibility();
 }
 
@@ -3689,12 +3823,18 @@ function pickInstagramType(value) {
 function pickGenerationAutomationResource(value) {
     S.genOpts.automation_resource_id = value || null;
     const flow = S.automationResources.find(item => String(item.id) === String(value));
-    if (flow?.preferred_post_goal) {
-        S.genOpts.goal = flow.preferred_post_goal;
+    if (flow) {
+        S.genOpts.goal = flow.preferred_post_goal || 'dm_keyword';
         document.querySelectorAll('#modal-generate .opt-btn[data-group="goal"]').forEach(button => {
-            button.classList.toggle('sel', button.dataset.val === flow.preferred_post_goal);
+            button.classList.toggle('sel', button.dataset.val === S.genOpts.goal);
+        });
+    } else {
+        S.genOpts.goal = S.genOpts.last_manual_goal || 'comment';
+        document.querySelectorAll('#modal-generate .opt-btn[data-group="goal"]').forEach(button => {
+            button.classList.toggle('sel', button.dataset.val === S.genOpts.goal);
         });
     }
+    updatePostGoalVisibility();
 }
 
 function renderGenerationAutomationResourceSelect() {
@@ -3726,6 +3866,13 @@ function updateInstagramTypeVisibility() {
         const select = document.getElementById('gen-automation-resource');
         if (select) select.value = '';
     }
+    updatePostGoalVisibility();
+}
+
+function updatePostGoalVisibility() {
+    const goalGroup = document.getElementById('post-goal-group');
+    if (!goalGroup) return;
+    goalGroup.style.display = S.genOpts.automation_resource_id ? 'none' : '';
 }
 
 async function generatePost() {
@@ -3749,7 +3896,9 @@ async function generatePost() {
             instagram_content_type: S.genOpts.platform === 'instagram' ? S.genOpts.instagram_content_type : null,
             post_length: S.genOpts.post_length,
             automation_resource_id: S.genOpts.platform === 'instagram' && S.genOpts.instagram_content_type !== 'story' ? S.genOpts.automation_resource_id : null,
+            extra_context: val('gen-extra-context') || null,
         });
+        if (data.error) throw new Error(data.error);
 
         S.genPost   = data.post;
         S.genPostId = data.post_id;
@@ -3779,6 +3928,48 @@ async function generatePost() {
     }
 }
 
+async function reviseGeneratedPost() {
+    if (!S.genPostId) {
+        toast('Draft a post first', 'error');
+        return;
+    }
+    const instruction = val('gen-revision-prompt');
+    if (!instruction) {
+        toast('Tell me what to change first', 'error');
+        return;
+    }
+
+    const btn = document.getElementById('btn-revise-post');
+    btn.disabled = true;
+    btn.textContent = 'Revising…';
+    showLoading('Revising your post…', [
+        { label:'Reading your change request', delay:0 },
+        { label:'Keeping the useful parts', delay:1800 },
+        { label:'Updating hook, body, and CTA', delay:4200 },
+        { label:'Saving revised draft', delay:6500 },
+    ], { logo: true, kind: 'post' });
+
+    try {
+        const data = await api('PUT', `/posts/${S.genPostId}/revise`, { instruction });
+        if (data.error) throw new Error(data.error);
+        S.genPost = { ...(S.genPost || {}), ...(data.post || {}) };
+        document.getElementById('r-hook').textContent  = S.genPost.hook       || '';
+        document.getElementById('r-body').textContent  = S.genPost.body       || '';
+        document.getElementById('r-cta').textContent   = S.genPost.cta        || '';
+        document.getElementById('r-final').textContent = S.genPost.final_text || '';
+        document.getElementById('gen-revision-prompt').value = '';
+        await refreshPosts();
+        hideLoading();
+        toast('Draft revised', 'success');
+    } catch (e) {
+        hideLoading();
+        toast(e.message || 'Could not revise draft', 'error');
+    } finally {
+        btn.disabled = false;
+        btn.textContent = 'Revise Draft';
+    }
+}
+
 function copyGenPost() {
     if (S.genPost) copyTxt(S.genPost.final_text || '');
     if (S.genPostId) markPostPublished(S.genPostId);
@@ -3804,7 +3995,7 @@ async function openDetailModal(postId) {
         ${p.instagram_content_type ? `<span class="tag tag-format">${esc(p.instagram_content_type)}</span>` : ''}
         ${p.post_length ? `<span class="tag tag-format">${esc(p.post_length)}</span>` : ''}
         <span class="tag tag-format">${esc(p.post_format||'')}</span>
-        <span class="tag tag-goal">${esc(p.post_goal||'')}</span>
+        ${p.automation_resource_id ? '' : `<span class="tag tag-goal">${esc(p.post_goal||'')}</span>`}
         ${p.automation_resource_title ? `<span class="tag tag-goal">${esc(p.automation_resource_title)}</span>` : ''}`;
     document.getElementById('detail-time').textContent = postTimestampText(p);
     const detailUrl = document.getElementById('detail-published-url');
@@ -4242,7 +4433,7 @@ function renderFlowPostContext(flow = null) {
         <div class="flow-context-meta">
             <span class="tag tag-platform">${esc(post.platform || 'instagram')}</span>
             ${post.instagram_content_type ? `<span class="tag tag-format">${esc(post.instagram_content_type)}</span>` : ''}
-            ${post.post_goal ? `<span class="tag tag-goal">${esc(post.post_goal)}</span>` : ''}
+            ${post.post_goal && !post.automation_resource_id ? `<span class="tag tag-goal">${esc(post.post_goal)}</span>` : ''}
         </div>
         <div class="flow-context-title">${esc(post.hook || 'Selected Instagram post')}</div>
         <div class="flow-context-text">${esc(displayPostText(post).slice(0, 220))}${displayPostText(post).length > 220 ? '...' : ''}</div>`;

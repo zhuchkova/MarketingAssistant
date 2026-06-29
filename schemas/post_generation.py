@@ -26,6 +26,7 @@ class GeneratePostRequest(BaseModel):
     post_length: str = "medium"
     automation_resource_id: Optional[str] = None
     lead_magnet_id: Optional[str] = None
+    extra_context: Optional[str] = None
 
     @field_validator("content_idea_id")
     @classmethod
@@ -93,6 +94,16 @@ class GeneratePostRequest(BaseModel):
             raise ValueError(f"post_length must be one of: {', '.join(sorted(ALLOWED_POST_LENGTHS))}")
         return value
 
+    @field_validator("extra_context")
+    @classmethod
+    def clean_extra_context(cls, value: Optional[str]) -> Optional[str]:
+        if value is None:
+            return None
+        value = value.strip()
+        if len(value) > 1200:
+            raise ValueError("extra_context must be 1200 characters or less")
+        return value or None
+
     @model_validator(mode="after")
     def map_legacy_resource_id(self):
         if not self.automation_resource_id and self.lead_magnet_id:
@@ -132,3 +143,17 @@ class UpdatePostRequest(BaseModel):
             raise ValueError("final_text is required")
 
         return self
+
+
+class RevisePostRequest(BaseModel):
+    instruction: str
+
+    @field_validator("instruction")
+    @classmethod
+    def clean_instruction(cls, value: str) -> str:
+        value = value.strip()
+        if not value:
+            raise ValueError("instruction is required")
+        if len(value) > 1200:
+            raise ValueError("instruction must be 1200 characters or less")
+        return value

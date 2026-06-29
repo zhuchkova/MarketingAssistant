@@ -275,6 +275,7 @@ content_ideas
   ├── hook
   ├── angle
   ├── topic
+  ├── trend_context
   ├── post_format
   ├── created_at
   └── is_favorite
@@ -339,13 +340,26 @@ DATABASE_URL=postgresql://user:password@localhost:5432/marketing_assistant
 JWT_SECRET_KEY=replace-with-a-long-random-secret
 OPENAI_API_KEY=sk-...
 FRONTEND_ORIGINS=http://127.0.0.1:8000,http://localhost:8000
+AUDIENCE_AGENT_MODEL=openai:gpt-4o-mini
+IDEA_AGENT_MODEL=openai:gpt-4o-mini
+CONTENT_AGENT_MODEL=openai:gpt-4o-mini
+AUTOMATION_AGENT_MODEL=openai:gpt-4o-mini
 ```
 
 `DATABASE_URL` is required by FastAPI endpoints and `scripts/migrate.py`.
 
 `JWT_SECRET_KEY` signs login tokens and is required. The API will reject token operations if this is missing.
 
-`OPENAI_API_KEY` is required by the LangChain/OpenAI agents. The agents currently use `openai:gpt-4o-mini` through `init_chat_model`.
+`OPENAI_API_KEY` is required by the LangChain/OpenAI agents. Agent model defaults are configured in `agents/model_config.py` and can be overridden in `.env`:
+
+| Variable | Default | Used for |
+| --- | --- | --- |
+| `AUDIENCE_AGENT_MODEL` | `openai:gpt-4o-mini` | Audience analysis |
+| `IDEA_AGENT_MODEL` | `openai:gpt-4o-mini` | Content idea generation |
+| `CONTENT_AGENT_MODEL` | `openai:gpt-4o-mini` | Post drafting and revisions |
+| `AUTOMATION_AGENT_MODEL` | `openai:gpt-4o-mini` | Instagram comment-to-DM automation flows |
+
+Use only model IDs your OpenAI project can access. If a model returns `403 model_not_found`, set that agent back to a model available to your API key, such as `openai:gpt-4o-mini`.
 
 `FRONTEND_ORIGINS` is a comma-separated CORS allowlist. For production, set it to your deployed frontend URL.
 
@@ -712,6 +726,7 @@ Use `instagram_content_type` only when `platform` is `instagram`.
 Allowed `post_goal` values are `comment`, `dm_keyword`, `follow`, `download`, `share`, `save`, `book_visit`, and `buy_order`.
 Allowed `post_length` values are `short`, `medium`, and `long`.
 Use `automation_resource_id` only for Instagram posts when the CTA should reuse a saved DM resource.
+Use `extra_context` when the user wants this draft to follow a more specific direction than the selected idea alone.
 
 ```json
 {
@@ -720,7 +735,8 @@ Use `automation_resource_id` only for Instagram posts when the CTA should reuse 
   "instagram_content_type": "carousel",
   "post_goal": "share",
   "post_length": "medium",
-  "automation_resource_id": "55555555-5555-5555-5555-555555555555"
+  "automation_resource_id": "55555555-5555-5555-5555-555555555555",
+  "extra_context": "Mention yesterday's gallery opening and make the CTA softer."
 }
 ```
 
@@ -737,6 +753,16 @@ Use `automation_resource_id` only for Instagram posts when the CTA should reuse 
     "final_text": "Most founders do not need more content ideas.\n\nThey need a repeatable system for turning expertise into useful posts.\n\nComment SYSTEM and I will send you the workflow.",
     "automation_resource_id": "55555555-5555-5555-5555-555555555555"
   }
+}
+```
+
+### Revise Generated Post
+
+`PUT /posts/{post_id}/revise`
+
+```json
+{
+  "instruction": "Make it shorter, warmer, and less salesy."
 }
 ```
 
@@ -914,13 +940,13 @@ Generated Post
 
 ## Future Improvements
 
-* Server-side token revocation or refresh tokens
-* Real-time trend analysis
-* Multi-platform optimization
-* ManyChat API integration
-* Automated publishing
-* Agent orchestration with LangGraph
-* Analytics and post performance tracking
-* A/B testing of hooks and CTAs
-* Content calendar generation
-* Scheduled content creation and publishing
+* Competitor analysis to collect inspiration from relevant social profiles and identify reusable patterns.
+* Better model routing for different agents, so high-impact writing can use stronger models while simpler structured tasks stay cheaper.
+* Reel storyboard generation for turning posts into short-form video plans.
+* Story-to-DM automations and more ManyChat automation types beyond Instagram comment-to-DM.
+* More relevant RAG documents, including stronger hook libraries, examples of super popular posts, CTA patterns, and niche-specific content references.
+* Additional specialist agents, such as a bio generator, profile optimizer, content calendar planner, or offer positioning assistant.
+* Image upload and visual analysis, so the app can suggest content ideas from screenshots, product photos, event photos, or favorite post examples.
+* Chatbot-style assistant for asking questions about the profile, audience notes, ideas, posts, and automations.
+* Real-time trend analysis and trend-aware content suggestions.
+* Multi-platform optimization, automated publishing, scheduled content creation, analytics, and post performance tracking.
