@@ -4,6 +4,7 @@ from dotenv import load_dotenv
 from langchain.chat_models import init_chat_model
 from langchain_core.prompts import ChatPromptTemplate
 
+from agents.model_config import IDEA_AGENT_MODEL
 from rag.idea_retriever import retrieve_idea_knowledge
 
 load_dotenv()
@@ -42,6 +43,7 @@ class ContentIdea(BaseModel):
     post_format: PostFormat = Field(description="One exact post format slug from the allowed list")
     angle: str = Field(description="The strategic point of view or audience-specific framing, not a format label")
     topic: str = Field(description="Main subject of the post")
+    trend_context: str = Field(default="", description="Specific trend or timely context used for this idea, or empty string")
 
 
 class ContentIdeasResult(BaseModel):
@@ -49,7 +51,7 @@ class ContentIdeasResult(BaseModel):
 
 
 model = init_chat_model(
-    model="openai:gpt-4o-mini",
+    model=IDEA_AGENT_MODEL,
     temperature=0.8,
 )
 
@@ -89,6 +91,9 @@ Audience analysis:
 Relevant hook and idea knowledge from RAG:
 {idea_knowledge}
 
+Trend context for new ideas:
+{trend_context}
+
 Generate {number_of_ideas} content ideas.
 
 Rules:
@@ -106,30 +111,48 @@ Rules:
 - Use trigger moments and audience language to make hooks feel timely and specific
 - Use market context for relevant local/global references, price/currency examples, and nearby alternatives
 - Use the creator's personal touch when it makes the idea more human, but do not force it into every idea
+- If trend context is provided, TREND MODE is active:
+  - Use the trend as context for timing, audience behavior, objections, desires, examples, or urgency.
+  - Do not paste the trend phrase into every title, hook, angle, and topic.
+  - Mention the trend explicitly only where it sounds natural; otherwise let it shape the premise.
+  - Make the ideas varied. Hooks must not all start with the same phrase or structure.
+  - Mix hook patterns: question, observation, contrast, story setup, myth, practical problem, or surprising detail.
+  - Keep the idea useful even after the trend moment; avoid shallow "this trend is trending" framing.
+  - Set trend_context to the exact relevant trend text used by the idea.
+- If trend context is empty, keep trend_context empty and generate evergreen ideas.
 """)
 
 
 def run_idea_agent(
     profile: dict,
     audience_analysis: dict,
-    number_of_ideas: int = 20
+    number_of_ideas: int = 20,
+    trend_context: str = ""
 ) -> list:
-    idea_knowledge = retrieve_idea_knowledge(profile, audience_analysis)
+    idea_knowledge = retrieve_idea_knowledge(
+        profile,
+        audience_analysis,
+        trend_context=trend_context or "",
+    )
 
     chain_input = {
         **profile,
         **audience_analysis,
         "idea_knowledge": idea_knowledge,
         "number_of_ideas": number_of_ideas,
+        "trend_context": trend_context or "",
     }
 
     chain = prompt | structured_model
     result = chain.invoke(chain_input)
 
-    return [normalize_idea(idea.model_dump()) for idea in result.ideas]
+    return [
+        normalize_idea(idea.model_dump(), trend_context=trend_context or "")
+        for idea in result.ideas
+    ]
 
 
-def normalize_idea(idea: dict) -> dict:
+def normalize_idea(idea: dict, trend_context: str = "") -> dict:
     post_format = idea.get("post_format") or "how_to"
     angle = (idea.get("angle") or "").strip()
     format_label = FORMAT_LABELS.get(post_format, post_format).lower()
@@ -144,6 +167,7 @@ def normalize_idea(idea: dict) -> dict:
 
     for field in ("title", "hook", "angle", "topic"):
         idea[field] = capitalize_first(idea.get(field) or "")
+    idea["trend_context"] = capitalize_first(trend_context or idea.get("trend_context") or "")
 
     return idea
 

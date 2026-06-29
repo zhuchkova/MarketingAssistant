@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MarketingAssistant Database Schema</title>
+<style>
+    :root {
+        --bg: #fbfaf4;
+        --ink: #1f3327;
+        --muted: #6e7d6e;
+        --line: #9ebb7c;
+        --green: #2f7d35;
+        --green-soft: #eef6df;
+        --pink: #f47fa2;
+        --pink-soft: #fde2ec;
+        --gold: #b0701f;
+        --card: rgba(255, 255, 252, 0.96);
+        --border: #d9ebc8;
+        --shadow: 0 22px 55px rgba(31, 51, 39, 0.12);
+        font-family: Urbanist, Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+        margin: 0;
+        background:
+            radial-gradient(circle at 14% 8%, rgba(244, 127, 162, 0.18), transparent 26%),
+            radial-gradient(circle at 86% 4%, rgba(158, 187, 124, 0.20), transparent 26%),
+            linear-gradient(180deg, #fffdf8 0%, var(--bg) 100%);
+        color: var(--ink);
+    }
+
+    .page {
+        width: 1680px;
+        min-height: 1880px;
+        margin: 0 auto;
+        padding: 56px 56px 72px;
+    }
+
+    header {
+        display: flex;
+        justify-content: space-between;
+        gap: 32px;
+        align-items: flex-start;
+        margin-bottom: 34px;
+    }
+
+    h1 {
+        margin: 0;
+        font-size: 48px;
+        line-height: 1;
+        letter-spacing: 0;
+    }
+
+    .subtitle {
+        max-width: 650px;
+        margin: 14px 0 0;
+        color: var(--muted);
+        font-size: 20px;
+        line-height: 1.55;
+    }
+
+    .legend {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+        gap: 10px;
+        max-width: 430px;
+    }
+
+    .legend span {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 9px 13px;
+        border: 1px solid var(--border);
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.72);
+        color: var(--muted);
+        font-weight: 700;
+        font-size: 13px;
+        text-transform: uppercase;
+        letter-spacing: 0.07em;
+    }
+
+    .dot {
+        width: 11px;
+        height: 11px;
+        border-radius: 50%;
+        background: var(--green);
+    }
+
+    .dot.pink { background: var(--pink); }
+    .dot.gold { background: var(--gold); }
+
+    .diagram {
+        position: relative;
+        width: 1568px;
+        height: 1680px;
+        border: 1px solid rgba(158, 187, 124, 0.35);
+        border-radius: 28px;
+        background:
+            linear-gradient(rgba(158, 187, 124, 0.08) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(158, 187, 124, 0.08) 1px, transparent 1px),
+            rgba(255, 255, 252, 0.52);
+        background-size: 42px 42px;
+        box-shadow: var(--shadow);
+        overflow: hidden;
+    }
+
+    .connections {
+        position: absolute;
+        inset: 0;
+        z-index: 1;
+        pointer-events: none;
+    }
+
+    .connections path {
+        fill: none;
+        stroke: var(--line);
+        stroke-width: 3;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+    }
+
+    .connections path.soft {
+        stroke: rgba(244, 127, 162, 0.74);
+    }
+
+    .connection-label {
+        fill: var(--muted);
+        font-size: 13px;
+        font-weight: 700;
+        letter-spacing: 0.02em;
+    }
+
+    .entity {
+        position: absolute;
+        z-index: 2;
+        width: 286px;
+        border: 1px solid var(--border);
+        border-radius: 18px;
+        background: var(--card);
+        box-shadow: 0 16px 36px rgba(31, 51, 39, 0.10);
+        overflow: hidden;
+    }
+
+    .entity.core { border-color: #c9e5b2; }
+    .entity.content { border-color: #f4bbcf; }
+    .entity.lookup { width: 214px; border-color: #d9ebc8; }
+    .entity.system { width: 250px; border-style: dashed; }
+    .entity.system.migrations { width: 380px; }
+
+    .entity-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+        padding: 13px 16px;
+        background: var(--green-soft);
+        border-bottom: 1px solid var(--border);
+    }
+
+    .entity.content .entity-header { background: var(--pink-soft); border-color: #f4bbcf; }
+    .entity.lookup .entity-header { background: #f6f8ef; }
+    .entity.system .entity-header { background: #f7f1e7; }
+
+    .entity-title {
+        font-weight: 900;
+        font-size: 18px;
+        letter-spacing: 0.01em;
+        min-width: 0;
+    }
+
+    .entity-kind {
+        color: var(--muted);
+        font-size: 10px;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        white-space: nowrap;
+        flex: 0 0 auto;
+    }
+
+    .fields {
+        padding: 10px 0;
+    }
+
+    .field {
+        display: grid;
+        grid-template-columns: 18px minmax(0, 1fr) auto;
+        gap: 8px;
+        align-items: center;
+        padding: 5px 16px;
+        color: var(--muted);
+        font-size: 13px;
+        line-height: 1.25;
+    }
+
+    .field strong {
+        color: var(--ink);
+        font-weight: 800;
+    }
+
+    .field .type {
+        font-size: 11px;
+        color: #98a795;
+        font-weight: 700;
+        text-transform: uppercase;
+    }
+
+    .key, .fk, .plain {
+        display: inline-grid;
+        place-items: center;
+        width: 16px;
+        height: 16px;
+        border-radius: 5px;
+        font-size: 10px;
+        font-weight: 900;
+    }
+
+    .key { color: #fff; background: var(--gold); }
+    .fk { color: var(--green); background: var(--green-soft); border: 1px solid #c9e5b2; }
+    .plain { background: #f4f7ef; border: 1px solid #e3edd8; }
+
+    .note {
+        position: absolute;
+        z-index: 3;
+        width: 264px;
+        padding: 15px 18px;
+        border-radius: 18px;
+        background: rgba(253, 226, 236, 0.88);
+        border: 1px solid #f4bbcf;
+        color: #9c5162;
+        font-size: 14px;
+        line-height: 1.45;
+        box-shadow: 0 12px 28px rgba(244, 127, 162, 0.12);
+    }
+
+    .note strong {
+        display: block;
+        color: #bf4259;
+        margin-bottom: 5px;
+        font-size: 15px;
+    }
+
+    .users { left: 642px; top: 42px; }
+    .profiles { left: 642px; top: 304px; }
+    .audience { left: 98px; top: 680px; }
+    .ideas { left: 642px; top: 700px; }
+    .automations { left: 1136px; top: 662px; width: 356px; }
+    .platforms { left: 260px; top: 1084px; }
+    .formats { left: 596px; top: 1084px; }
+    .goals { left: 932px; top: 1084px; }
+    .posts { left: 604px; top: 1300px; width: 376px; }
+    .migrations { left: 1116px; top: 1384px; }
+    .rag-note { left: 104px; top: 1420px; }
+
+    @media print {
+        body { background: #fff; }
+        .page { padding: 20px; }
+        .diagram { box-shadow: none; }
+    }
+</style>
+</head>
+<body>
+<main class="page">
+    <header>
+        <div>
+            <h1>MarketingAssistant Database Map</h1>
+            <p class="subtitle">A product-friendly ERD showing how user profiles turn into audience analysis, content ideas, posts, and reusable Instagram automation resources.</p>
+        </div>
+        <div class="legend" aria-label="Diagram legend">
+            <span><i class="dot"></i>Core profile data</span>
+            <span><i class="dot pink"></i>Content pipeline</span>
+            <span><i class="dot gold"></i>Primary keys</span>
+            <span>FK = relationship field</span>
+        </div>
+    </header>
+
+    <section class="diagram" aria-label="MarketingAssistant database schema diagram">
+        <svg class="connections" viewBox="0 0 1568 1680" preserveAspectRatio="none">
+            <defs>
+                <marker id="arrow-green" markerWidth="12" markerHeight="12" refX="9" refY="6" orient="auto" markerUnits="strokeWidth">
+                    <path d="M 0 0 L 10 6 L 0 12 z" fill="#9ebb7c"></path>
+                </marker>
+                <marker id="arrow-pink" markerWidth="12" markerHeight="12" refX="9" refY="6" orient="auto" markerUnits="strokeWidth">
+                    <path d="M 0 0 L 10 6 L 0 12 z" fill="#f47fa2"></path>
+                </marker>
+            </defs>
+
+            <path d="M785 218 L785 304" marker-end="url(#arrow-green)"></path>
+            <text class="connection-label" x="802" y="266">users.id</text>
+
+            <path d="M642 520 C458 520 242 574 242 680" marker-end="url(#arrow-green)"></path>
+            <text class="connection-label" x="330" y="586">profile owns audience</text>
+
+            <path d="M785 526 L785 700" marker-end="url(#arrow-pink)"></path>
+            <text class="connection-label" x="802" y="618">profile creates ideas</text>
+
+            <path d="M928 520 C1120 520 1314 566 1314 662" marker-end="url(#arrow-green)"></path>
+            <text class="connection-label" x="1070" y="586">profile stores automations</text>
+
+            <path d="M384 858 C496 858 526 820 642 820" marker-end="url(#arrow-green)"></path>
+            <text class="connection-label" x="410" y="820">audience_analysis_id</text>
+
+            <path class="soft" d="M785 948 L785 1300" marker-end="url(#arrow-pink)"></path>
+            <text class="connection-label" x="620" y="1136">content_idea_id</text>
+
+            <path d="M1314 1008 C1512 1120 1512 1288 980 1410" marker-end="url(#arrow-green)"></path>
+            <text class="connection-label" x="1222" y="1282">automation_resource_id</text>
+
+            <path d="M367 1176 C367 1252 672 1238 672 1300" marker-end="url(#arrow-green)"></path>
+            <text class="connection-label" x="382" y="1238">platform_id</text>
+
+            <path d="M703 1176 C703 1238 748 1248 748 1300" marker-end="url(#arrow-green)"></path>
+            <text class="connection-label" x="718" y="1240">post_format_id</text>
+
+            <path d="M1039 1176 C1039 1250 858 1246 858 1300" marker-end="url(#arrow-green)"></path>
+            <text class="connection-label" x="930" y="1246">post_goal_id</text>
+        </svg>
+
+        <article class="entity core users">
+            <div class="entity-header"><span class="entity-title">users</span><span class="entity-kind">account</span></div>
+            <div class="fields">
+                <div class="field"><span class="key">PK</span><strong>id</strong><span class="type">uuid</span></div>
+                <div class="field"><span class="plain"></span><span>email</span><span class="type">text</span></div>
+                <div class="field"><span class="plain"></span><span>name</span><span class="type">text</span></div>
+                <div class="field"><span class="plain"></span><span>hashed_password</span><span class="type">text</span></div>
+                <div class="field"><span class="plain"></span><span>created_at</span><span class="type">timestamptz</span></div>
+            </div>
+        </article>
+
+        <article class="entity core profiles">
+            <div class="entity-header"><span class="entity-title">user_profiles</span><span class="entity-kind">creator</span></div>
+            <div class="fields">
+                <div class="field"><span class="key">PK</span><strong>id</strong><span class="type">uuid</span></div>
+                <div class="field"><span class="fk">FK</span><strong>user_id</strong><span class="type">uuid</span></div>
+                <div class="field"><span class="plain"></span><span>profile_name</span><span class="type">text</span></div>
+                <div class="field"><span class="plain"></span><span>niche, offer, target_audience</span><span class="type">text</span></div>
+                <div class="field"><span class="plain"></span><span>expertise, personal_touch</span><span class="type">text</span></div>
+                <div class="field"><span class="plain"></span><span>market_scope, primary_market</span><span class="type">text</span></div>
+                <div class="field"><span class="plain"></span><span>currency, locale_notes</span><span class="type">text</span></div>
+                <div class="field"><span class="plain"></span><span>tone, goal</span><span class="type">text</span></div>
+            </div>
+        </article>
+
+        <article class="entity core audience">
+            <div class="entity-header"><span class="entity-title">audience_analyses</span><span class="entity-kind">1:1 profile</span></div>
+            <div class="fields">
+                <div class="field"><span class="key">PK</span><strong>id</strong><span class="type">uuid</span></div>
+                <div class="field"><span class="fk">FK</span><strong>user_profile_id</strong><span class="type">uuid</span></div>
+                <div class="field"><span class="plain"></span><span>audience_profile</span><span class="type">text</span></div>
+                <div class="field"><span class="plain"></span><span>pains, desires, objections</span><span class="type">jsonb</span></div>
+                <div class="field"><span class="plain"></span><span>trigger_moments</span><span class="type">jsonb</span></div>
+                <div class="field"><span class="plain"></span><span>proof_points</span><span class="type">jsonb</span></div>
+                <div class="field"><span class="plain"></span><span>audience_language</span><span class="type">jsonb</span></div>
+                <div class="field"><span class="plain"></span><span>market_context</span><span class="type">jsonb</span></div>
+                <div class="field"><span class="plain"></span><span>content_angles, positioning</span><span class="type">text</span></div>
+                <div class="field"><span class="plain"></span><span>tone, known_for</span><span class="type">text</span></div>
+            </div>
+        </article>
+
+        <article class="entity content ideas">
+            <div class="entity-header"><span class="entity-title">content_ideas</span><span class="entity-kind">strategy</span></div>
+            <div class="fields">
+                <div class="field"><span class="key">PK</span><strong>id</strong><span class="type">uuid</span></div>
+                <div class="field"><span class="fk">FK</span><strong>user_profile_id</strong><span class="type">uuid</span></div>
+                <div class="field"><span class="fk">FK</span><strong>audience_analysis_id</strong><span class="type">uuid</span></div>
+                <div class="field"><span class="plain"></span><span>title, hook</span><span class="type">text</span></div>
+                <div class="field"><span class="plain"></span><span>angle, topic</span><span class="type">text</span></div>
+                <div class="field"><span class="plain"></span><span>post_format</span><span class="type">text</span></div>
+                <div class="field"><span class="plain"></span><span>trend_context</span><span class="type">text</span></div>
+                <div class="field"><span class="plain"></span><span>created_at</span><span class="type">timestamp</span></div>
+                <div class="field"><span class="plain"></span><span>is_favorite</span><span class="type">boolean</span></div>
+            </div>
+        </article>
+
+        <article class="entity core automations">
+            <div class="entity-header"><span class="entity-title">automation_resources</span><span class="entity-kind">manychat</span></div>
+            <div class="fields">
+                <div class="field"><span class="key">PK</span><strong>id</strong><span class="type">uuid</span></div>
+                <div class="field"><span class="fk">FK</span><strong>user_profile_id</strong><span class="type">uuid</span></div>
+                <div class="field"><span class="plain"></span><span>title, url, description</span><span class="type">text</span></div>
+                <div class="field"><span class="plain"></span><span>suggested_keyword</span><span class="type">text</span></div>
+                <div class="field"><span class="plain"></span><span>public_comment_reply</span><span class="type">text</span></div>
+                <div class="field"><span class="plain"></span><span>delivery_message</span><span class="type">text</span></div>
+                <div class="field"><span class="plain"></span><span>second_dm_message</span><span class="type">text</span></div>
+                <div class="field"><span class="plain"></span><span>button labels, question, follow_up</span><span class="type">text</span></div>
+                <div class="field"><span class="plain"></span><span>manychat_setup</span><span class="type">jsonb</span></div>
+                <div class="field"><span class="plain"></span><span>is_primary, created_at</span><span class="type">mixed</span></div>
+            </div>
+        </article>
+
+        <article class="entity lookup platforms">
+            <div class="entity-header"><span class="entity-title">platforms</span><span class="entity-kind">lookup</span></div>
+            <div class="fields">
+                <div class="field"><span class="key">PK</span><strong>id</strong><span class="type">serial</span></div>
+                <div class="field"><span class="plain"></span><span>name</span><span class="type">text</span></div>
+            </div>
+        </article>
+
+        <article class="entity lookup formats">
+            <div class="entity-header"><span class="entity-title">post_formats</span><span class="entity-kind">lookup</span></div>
+            <div class="fields">
+                <div class="field"><span class="key">PK</span><strong>id</strong><span class="type">serial</span></div>
+                <div class="field"><span class="plain"></span><span>name</span><span class="type">text</span></div>
+            </div>
+        </article>
+
+        <article class="entity lookup goals">
+            <div class="entity-header"><span class="entity-title">post_goals</span><span class="entity-kind">lookup</span></div>
+            <div class="fields">
+                <div class="field"><span class="key">PK</span><strong>id</strong><span class="type">serial</span></div>
+                <div class="field"><span class="plain"></span><span>name</span><span class="type">text</span></div>
+            </div>
+        </article>
+
+        <article class="entity content posts">
+            <div class="entity-header"><span class="entity-title">posts</span><span class="entity-kind">drafts</span></div>
+            <div class="fields">
+                <div class="field"><span class="key">PK</span><strong>id</strong><span class="type">uuid</span></div>
+                <div class="field"><span class="fk">FK</span><strong>user_profile_id</strong><span class="type">uuid</span></div>
+                <div class="field"><span class="fk">FK</span><strong>content_idea_id</strong><span class="type">uuid</span></div>
+                <div class="field"><span class="fk">FK</span><strong>platform_id</strong><span class="type">int</span></div>
+                <div class="field"><span class="fk">FK</span><strong>post_format_id</strong><span class="type">int</span></div>
+                <div class="field"><span class="fk">FK</span><strong>post_goal_id</strong><span class="type">int</span></div>
+                <div class="field"><span class="fk">FK</span><strong>automation_resource_id</strong><span class="type">uuid</span></div>
+                <div class="field"><span class="plain"></span><span>hook, body, cta, final_text</span><span class="type">text</span></div>
+                <div class="field"><span class="plain"></span><span>instagram_content_type, post_length</span><span class="type">text</span></div>
+                <div class="field"><span class="plain"></span><span>favorite, published, published_url</span><span class="type">mixed</span></div>
+                <div class="field"><span class="plain"></span><span>created_at, published_at</span><span class="type">timestamp</span></div>
+            </div>
+        </article>
+
+        <article class="entity system migrations">
+            <div class="entity-header"><span class="entity-title">schema_migrations</span><span class="entity-kind">system</span></div>
+            <div class="fields">
+                <div class="field"><span class="key">PK</span><strong>version</strong><span class="type">text</span></div>
+                <div class="field"><span class="plain"></span><span>applied_at</span><span class="type">timestamp</span></div>
+            </div>
+        </article>
+
+        <aside class="note rag-note">
+            <strong>RAG data lives outside Postgres</strong>
+            Chroma collections are seeded from `rag_seed_data` and used by the agents for positioning, hooks, frameworks, CTAs, and automation examples.
+        </aside>
+    </section>
+</main>
+</body>
+</html>

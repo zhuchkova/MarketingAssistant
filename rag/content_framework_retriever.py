@@ -34,6 +34,7 @@ def retrieve_content_frameworks(
     Topic: {content_idea.get("topic")}
     Idea framing: {content_idea.get("angle")}
     Hook: {content_idea.get("hook")}
+    Trend context: {content_idea.get("trend_context")}
     Post format: {content_idea.get("post_format") or content_idea.get("idea_post_format")}
     Platform: {content_idea.get("platform")}
     Instagram content type: {content_idea.get("instagram_content_type")}

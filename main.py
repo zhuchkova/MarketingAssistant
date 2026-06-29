@@ -8,9 +8,10 @@ from fastapi import FastAPI, HTTPException, Depends
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
 from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel
 import psycopg
 from schemas.user_profile import CreateUserProfileRequest, UpdateUserProfileRequest
-from schemas.post_generation import GeneratePostRequest, UpdatePostRequest
+from schemas.post_generation import GeneratePostRequest, RevisePostRequest, UpdatePostRequest
 from schemas.content_idea import ContentIdeaRequest, GenerateIdeasRequest
 from schemas.automation_resource import AutomationResourceRequest
 from schemas.auth import RegisterRequest, LoginRequest
@@ -21,9 +22,9 @@ from db.audience_repository import save_audience_analysis
 from agents.idea_agent import run_idea_agent
 from db.idea_repository import (get_profile_with_audience_analysis,
                                 save_content_ideas)
-from agents.content_agent import run_content_agent
+from agents.content_agent import run_content_agent, run_content_revision_agent
 from db.content_repository import (get_content_generation_context,
-    get_lookup_id, save_post, update_post_content)
+    get_lookup_id, normalized_final_text, save_post, update_post_content)
 from agents.automation_agent import run_automation_agent
 from db.automation_context_repository import (get_automation_context,
     attach_automation_resource_context)
@@ -44,6 +45,24 @@ def get_allowed_origins() -> List[str]:
         "http://127.0.0.1:8000,http://localhost:8000,http://127.0.0.1:3000,http://localhost:3000",
     )
     return [origin.strip() for origin in origins.split(",") if origin.strip()]
+
+
+def enforce_automation_cta(generated_post: dict, automation_resource: Optional[dict]) -> dict:
+    if not automation_resource:
+        return generated_post
+
+    keyword = str(automation_resource.get("suggested_keyword") or "").strip()
+    if not keyword:
+        return generated_post
+
+    cta = str(generated_post.get("cta") or "").strip()
+    keyword_upper = keyword.upper()
+    if keyword_upper in cta.upper():
+        return generated_post
+
+    title = str(automation_resource.get("title") or "the resource").strip()
+    generated_post["cta"] = f"Comment {keyword_upper} and I'll send you {title}."
+    return generated_post
 
 
 def handle_new_profile(conn, profile):
@@ -119,6 +138,10 @@ def get_profile_and_audience_for_generation(conn, profile_id: str, user_id: str)
 
 
 app = FastAPI()
+
+
+class PublishedPostRequest(BaseModel):
+    published_url: Optional[str] = None
 
 app.add_middleware(
     CORSMiddleware,
@@ -537,10 +560,12 @@ def get_content_ideas(
                     angle,
                     topic,
                     COALESCE(post_format, content_style) AS post_format,
-                    COALESCE(is_favorite, FALSE) AS is_favorite
+                    trend_context,
+                    COALESCE(is_favorite, FALSE) AS is_favorite,
+                    created_at
                 FROM content_ideas
                 WHERE user_profile_id = %s
-                ORDER BY is_favorite DESC, title
+                ORDER BY created_at DESC NULLS LAST, title
             """, (profile_id,))
             rows = cur.fetchall()
     finally:
@@ -554,7 +579,9 @@ def get_content_ideas(
             "angle": row[3],
             "topic": row[4],
             "post_format": row[5],
-            "is_favorite": row[6],
+            "trend_context": row[6],
+            "is_favorite": row[7],
+            "created_at": row[8],
         }
         for row in rows
     ]
@@ -573,7 +600,15 @@ def generate_more_content_ideas(
         profile, audience_analysis = get_profile_and_audience_for_generation(
             conn, profile_id, current_user["user_id"]
         )
-        ideas = run_idea_agent(profile, audience_analysis, number_of_ideas=request["count"])
+        ideas = run_idea_agent(
+            profile,
+            audience_analysis,
+            number_of_ideas=request["count"],
+            trend_context=request.get("trend_context") or "",
+        )
+        if request.get("trend_context"):
+            for idea in ideas:
+                idea["trend_context"] = request["trend_context"]
         idea_ids = save_content_ideas(
             conn,
             user_profile_id=profile_id,
@@ -609,7 +644,15 @@ def regenerate_content_ideas(
                   AND COALESCE(is_favorite, FALSE) = FALSE
             """, (profile_id,))
 
-        ideas = run_idea_agent(profile, audience_analysis, number_of_ideas=request["count"])
+        ideas = run_idea_agent(
+            profile,
+            audience_analysis,
+            number_of_ideas=request["count"],
+            trend_context=request.get("trend_context") or "",
+        )
+        if request.get("trend_context"):
+            for idea in ideas:
+                idea["trend_context"] = request["trend_context"]
         idea_ids = save_content_ideas(
             conn,
             user_profile_id=profile_id,
@@ -643,9 +686,9 @@ def create_custom_content_idea(
             cur.execute("""
                 INSERT INTO content_ideas (
                     id, user_profile_id, audience_analysis_id,
-                    title, hook, angle, topic, post_format
+                    title, hook, angle, topic, trend_context, post_format
                 )
-                VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
             """, (
                 idea_id,
                 profile_id,
@@ -654,6 +697,7 @@ def create_custom_content_idea(
                 request["hook"],
                 request["angle"],
                 request["topic"],
+                request.get("trend_context"),
                 request["post_format"],
             ))
         conn.commit()
@@ -679,13 +723,14 @@ def update_content_idea(
         with conn.cursor() as cur:
             cur.execute("""
                 UPDATE content_ideas
-                SET title=%s, hook=%s, angle=%s, topic=%s, post_format=%s
+                SET title=%s, hook=%s, angle=%s, topic=%s, trend_context=%s, post_format=%s
                 WHERE id=%s
             """, (
                 request["title"],
                 request["hook"],
                 request["angle"],
                 request["topic"],
+                request.get("trend_context"),
                 request["post_format"],
                 idea_id,
             ))
@@ -751,7 +796,7 @@ def get_posts_for_profile(
         with conn.cursor() as cur:
             cur.execute("""
                 SELECT
-                    p.id, p.hook, p.cta, p.final_text,
+                    p.id, p.hook, p.body, p.cta, p.final_text,
                     p.instagram_content_type,
                     p.post_length,
                     COALESCE(p.is_favorite, FALSE) AS is_favorite,
@@ -760,13 +805,19 @@ def get_posts_for_profile(
                     pf.name AS post_format,
                     pg.name AS post_goal,
                     p.automation_resource_id,
-                    ar.title AS automation_resource_title
+                    ar.title AS automation_resource_title,
+                    p.created_at,
+                    p.published_at,
+                    p.published_url,
+                    ci.trend_context AS idea_trend_context
                 FROM posts p
                 JOIN platforms pl ON p.platform_id = pl.id
                 LEFT JOIN post_formats pf ON p.post_format_id = pf.id
                 LEFT JOIN post_goals pg ON p.post_goal_id = pg.id
                 LEFT JOIN automation_resources ar ON p.automation_resource_id = ar.id
+                LEFT JOIN content_ideas ci ON p.content_idea_id = ci.id
                 WHERE p.user_profile_id = %s
+                ORDER BY COALESCE(p.created_at, p.published_at) DESC NULLS LAST, p.id DESC
             """, (profile_id,))
             rows = cur.fetchall()
     finally:
@@ -774,11 +825,13 @@ def get_posts_for_profile(
 
     return [
         {
-            "id": row[0], "hook": row[1], "cta": row[2], "final_text": row[3],
-            "instagram_content_type": row[4], "post_length": row[5],
-            "is_favorite": row[6], "is_published": row[7],
-            "platform": row[8], "post_format": row[9], "post_goal": row[10],
-            "automation_resource_id": row[11], "automation_resource_title": row[12],
+            "id": row[0], "hook": row[1], "body": row[2], "cta": row[3], "final_text": row[4],
+            "instagram_content_type": row[5], "post_length": row[6],
+            "is_favorite": row[7], "is_published": row[8],
+            "platform": row[9], "post_format": row[10], "post_goal": row[11],
+            "automation_resource_id": row[12], "automation_resource_title": row[13],
+            "created_at": row[14], "published_at": row[15], "published_url": row[16],
+            "idea_trend_context": row[17],
         }
         for row in rows
     ]
@@ -850,7 +903,6 @@ def generate_post(
         platform_id = get_lookup_id(conn, "platforms", request["platform"])
         post_format = context.get("idea_post_format") or "how_to"
         post_format_id = get_lookup_id(conn, "post_formats", post_format)
-        post_goal_id = get_lookup_id(conn, "post_goals", request["post_goal"])
         automation_resource = None
         if request.get("automation_resource_id"):
             if request["platform"] != "instagram":
@@ -872,13 +924,21 @@ def generate_post(
             except ValueError:
                 raise HTTPException(status_code=404, detail="DM resource not found")
 
+        effective_post_goal = (
+            automation_resource.get("preferred_post_goal") or "dm_keyword"
+            if automation_resource
+            else request["post_goal"]
+        )
+        post_goal_id = get_lookup_id(conn, "post_goals", effective_post_goal)
+
         agent_input = {
             **context,
             "platform": request["platform"],
             "instagram_content_type": request.get("instagram_content_type") if request["platform"] == "instagram" else None,
             "post_length": request.get("post_length", "medium"),
+            "extra_context": request.get("extra_context"),
             "post_format": post_format,
-            "post_goal": request["post_goal"],
+            "post_goal": effective_post_goal,
             "automation_resource_id": automation_resource["id"] if automation_resource else None,
             "automation_resource_title": automation_resource["title"] if automation_resource else None,
             "automation_resource_url": automation_resource["url"] if automation_resource else None,
@@ -895,6 +955,8 @@ def generate_post(
         }
 
         generated_post = run_content_agent(agent_input)
+        generated_post = enforce_automation_cta(generated_post, automation_resource)
+        generated_post["final_text"] = normalized_final_text(generated_post)
 
         post_data = {
             **context,
@@ -919,7 +981,7 @@ def generate_post(
                 "automation_resource_title": automation_resource["title"] if automation_resource else None,
                 "platform": request["platform"],
                 "instagram_content_type": agent_input["instagram_content_type"],
-                "post_goal": request["post_goal"],
+                "post_goal": effective_post_goal,
                 "post_length": agent_input["post_length"],
             },
         }
@@ -948,7 +1010,10 @@ def get_post(
                     pf.name AS post_format,
                     pg.name AS post_goal,
                     p.automation_resource_id,
-                    ar.title AS automation_resource_title
+                    ar.title AS automation_resource_title,
+                    p.created_at,
+                    p.published_at,
+                    p.published_url
                 FROM posts p
                 JOIN platforms pl ON p.platform_id = pl.id
                 LEFT JOIN post_formats pf ON p.post_format_id = pf.id
@@ -969,6 +1034,7 @@ def get_post(
         "is_favorite": row[7], "is_published": row[8],
         "platform": row[9], "post_format": row[10], "post_goal": row[11],
         "automation_resource_id": row[12], "automation_resource_title": row[13],
+        "created_at": row[14], "published_at": row[15], "published_url": row[16],
     }
 
 
@@ -985,6 +1051,41 @@ def update_post(
         update_post_content(conn, post_id, data)
         conn.commit()
         return {"status": "post updated", "post_id": post_id}
+    except Exception:
+        conn.rollback()
+        raise
+    finally:
+        conn.close()
+
+
+@app.put("/posts/{post_id}/revise")
+def revise_post(
+    post_id: str,
+    request: RevisePostRequest,
+    current_user: dict = Depends(get_current_user),
+):
+    data = request.model_dump()
+    conn = psycopg.connect(os.getenv("DATABASE_URL"))
+    try:
+        check_post_owner(conn, post_id, current_user["user_id"])
+        context = get_automation_context(conn, post_id)
+        automation_resource = None
+        if context.get("post_automation_resource_id"):
+            automation_resource = get_automation_resource(
+                conn,
+                context["post_automation_resource_id"],
+                context["user_profile_id"],
+            )
+        context = attach_automation_resource_context(context, automation_resource)
+        revised_post = run_content_revision_agent({
+            **context,
+            "revision_instruction": data["instruction"],
+        })
+        revised_post = enforce_automation_cta(revised_post, automation_resource)
+        revised_post["final_text"] = normalized_final_text(revised_post)
+        update_post_content(conn, post_id, revised_post)
+        conn.commit()
+        return {"status": "post revised", "post_id": post_id, "post": revised_post}
     except Exception:
         conn.rollback()
         raise
@@ -1020,11 +1121,13 @@ def toggle_post_favorite(
 @app.put("/posts/{post_id}/published")
 def toggle_post_published(
     post_id: str,
+    request: Optional[PublishedPostRequest] = None,
     current_user: dict = Depends(get_current_user),
 ):
     conn = psycopg.connect(os.getenv("DATABASE_URL"))
     try:
         check_post_owner(conn, post_id, current_user["user_id"])
+        published_url = (request.published_url or "").strip() if request else ""
         with conn.cursor() as cur:
             cur.execute("""
                 UPDATE posts
@@ -1032,13 +1135,57 @@ def toggle_post_published(
                     published_at = CASE
                         WHEN COALESCE(is_published, FALSE) = FALSE THEN NOW()
                         ELSE NULL
+                    END,
+                    published_url = CASE
+                        WHEN COALESCE(is_published, FALSE) = FALSE THEN NULLIF(%s, '')
+                        ELSE NULL
                     END
                 WHERE id = %s
-                RETURNING is_published
-            """, (post_id,))
+                RETURNING is_published, published_at, published_url
+            """, (published_url, post_id))
             row = cur.fetchone()
         conn.commit()
-        return {"status": "post published updated", "post_id": post_id, "is_published": row[0]}
+        return {
+            "status": "post published updated",
+            "post_id": post_id,
+            "is_published": row[0],
+            "published_at": row[1],
+            "published_url": row[2],
+        }
+    except Exception:
+        conn.rollback()
+        raise
+    finally:
+        conn.close()
+
+
+@app.put("/posts/{post_id}/published-url")
+def update_post_published_url(
+    post_id: str,
+    request: PublishedPostRequest,
+    current_user: dict = Depends(get_current_user),
+):
+    published_url = (request.published_url or "").strip()
+    conn = psycopg.connect(os.getenv("DATABASE_URL"))
+    try:
+        check_post_owner(conn, post_id, current_user["user_id"])
+        with conn.cursor() as cur:
+            cur.execute("""
+                UPDATE posts
+                SET published_url = NULLIF(%s, '')
+                WHERE id = %s
+                  AND COALESCE(is_published, FALSE) = TRUE
+                RETURNING published_url
+            """, (published_url, post_id))
+            row = cur.fetchone()
+        if not row:
+            raise HTTPException(status_code=400, detail="Post is not published")
+        conn.commit()
+        return {
+            "status": "published url updated",
+            "post_id": post_id,
+            "published_url": row[0],
+        }
     except Exception:
         conn.rollback()
         raise

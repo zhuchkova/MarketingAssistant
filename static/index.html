@@ -651,6 +651,22 @@
             gap: 14px;
             margin-bottom: 20px;
         }
+        .toolbar-stack {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        .toolbar-stack .ideas-toolbar { margin-bottom: 0; }
+        .prominent-search-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .prominent-search-row label {
+            min-width: 68px;
+        }
         .ideas-toolbar-left { min-width: 0; }
         .ideas-toolbar-right { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
         .ideas-toolbar h3 { font-size: 20px; font-weight: 700; }
@@ -703,11 +719,59 @@
             color: var(--primary); background: var(--surface-3);
             padding: 2px 7px; border-radius: 4px; margin-bottom: 9px;
         }
+        .idea-card-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            min-height: 25px;
+            padding-right: 78px;
+            margin-bottom: 9px;
+        }
+        .idea-card-header .idea-topic-badge {
+            margin-bottom: 0;
+            flex: 0 0 auto;
+        }
         .idea-title { font-size: 17px; font-weight: 700; line-height: 1.35; margin-bottom: 7px; }
+        .idea-time {
+            font-size: 12px;
+            color: var(--text-4);
+            margin: -2px 0 7px;
+        }
         .idea-hook {
             font-size: 15px; color: var(--text-3); line-height: 1.65;
             margin-bottom: 12px;
             flex: 1;
+        }
+        .idea-trend-preview {
+            display: flex;
+            gap: 7px;
+            align-items: flex-start;
+            font-size: 13px;
+            line-height: 1.45;
+            color: #9c5162;
+            background: var(--pink-soft);
+            border: 1px solid #f7c8d9;
+            border-radius: var(--r-xs);
+            padding: 8px 10px;
+            margin: 0 0 12px;
+        }
+        .idea-card-header .idea-trend-preview {
+            flex: 1;
+            min-width: 0;
+            align-items: center;
+            padding: 4px 8px;
+            margin: 0;
+        }
+        .idea-card-header .idea-trend-preview span {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .idea-trend-preview .flat-icon {
+            width: 15px;
+            height: 15px;
+            flex-shrink: 0;
+            margin-top: 2px;
         }
         .idea-foot {
             display: flex; align-items: center; justify-content: space-between;
@@ -779,6 +843,9 @@
             width: 18px;
             height: 18px;
         }
+        .post-trend-indicator {
+            color: var(--danger);
+        }
         .card-check-btn:hover,
         .card-check-btn.active {
             border-color: var(--border);
@@ -804,6 +871,13 @@
             margin-bottom: 16px;
         }
         .post-filter-row .idea-filter-control select { min-width: 150px; }
+        .post-search-input {
+            width: 280px !important;
+            max-width: 100%;
+            min-width: 0;
+            padding: 8px 11px;
+            font-size: 14px;
+        }
         .length-mark {
             display: inline-grid;
             place-items: center;
@@ -829,6 +903,11 @@
         }
         .post-row:hover { border-color: var(--surface-3); }
         .post-row-meta { display: flex; align-items: center; gap: 6px; margin-bottom: 10px; flex-wrap: wrap; }
+        .post-row-time {
+            font-size: 12px;
+            color: var(--text-4);
+            margin-bottom: 8px;
+        }
         .post-row-hook { font-size: 16px; font-weight: 700; margin-bottom: 6px; line-height: 1.4; color: var(--text); }
         .post-row-preview {
             font-size: 15px; color: var(--text-3); line-height: 1.6;
@@ -836,7 +915,30 @@
             overflow: hidden;
             display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
         }
+        .post-published-url {
+            font-size: 13px;
+            color: var(--text-3);
+            margin: -3px 0 12px;
+            overflow-wrap: anywhere;
+        }
+        .post-published-url a {
+            color: var(--primary);
+            font-weight: 700;
+            text-decoration: none;
+        }
         .post-row-actions { display: flex; gap: 7px; flex-wrap: wrap; }
+        .posts-pagination {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 16px;
+        }
+        .posts-page-label {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--text-3);
+        }
 
         /* ═══════════════════════════════════
              MODALS
@@ -924,6 +1026,17 @@
             background: var(--pink-soft);
             border-color: #f7c8d9;
             color: #5b2e3a;
+        }
+        .revision-box {
+            background: #fff8fb;
+            border: 1px solid #f7c8d9;
+            border-radius: var(--r-sm);
+            padding: 14px;
+            margin-top: 18px;
+        }
+        .revision-box textarea {
+            min-height: 84px;
+            margin-top: 8px;
         }
         .copy-row {
             display: flex; align-items: center; justify-content: space-between;
@@ -1125,8 +1238,8 @@
         }
         .lead-keyword-badge {
             position: absolute;
-            top: 18px;
-            right: 18px;
+            top: 16px;
+            right: 16px;
             background: var(--pink-soft);
             border: 1px solid #f7c8d9;
             color: var(--warning);
@@ -1136,6 +1249,17 @@
             font-weight: 900;
             letter-spacing: .04em;
             text-transform: uppercase;
+            z-index: 2;
+        }
+        .lead-resource-title-badge {
+            display: block;
+            width: 100%;
+            min-height: 32px;
+            box-sizing: border-box;
+            padding-right: 104px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
         }
         .lead-card-hover-preview {
             display: none;
@@ -1401,6 +1525,9 @@
     </symbol>
     <symbol id="icon-download" viewBox="0 0 24 24">
         <path d="M12 3v12"></path><path d="m7 10 5 5 5-5"></path><path d="M5 21h14"></path>
+    </symbol>
+    <symbol id="icon-trend" viewBox="0 0 24 24">
+        <path d="M3 17l6-6 4 4 7-8"></path><path d="M14 7h6v6"></path>
     </symbol>
 </svg>
 
@@ -1796,40 +1923,75 @@
 
         <!-- CONTENT IDEAS -->
         <div class="tab-pane" id="pane-ideas">
-            <div class="ideas-toolbar">
-                <div class="ideas-toolbar-left">
-                    <h3>Content Ideas</h3>
-                    <p>Pick an idea to draft a post. Format is the structure; idea framing is the point of view.</p>
-                </div>
-                <div class="ideas-toolbar-right">
-                    <span class="count-pill" id="ideas-count">0 ideas</span>
-                    <div class="idea-filter-control">
-                        <label for="idea-format-filter">Filter</label>
-                        <select id="idea-format-filter" onchange="setIdeaFilter(this.value)"></select>
+            <div class="toolbar-stack">
+                <div class="ideas-toolbar">
+                    <div class="ideas-toolbar-left">
+                        <h3>Content Ideas</h3>
+                        <p>Pick an idea to draft a post. Format is the structure; idea framing is the point of view.</p>
                     </div>
+                    <div class="ideas-toolbar-right">
+                        <span class="count-pill" id="ideas-count">0 ideas</span>
+                        <button class="btn btn-secondary btn-sm" onclick="openIdeaModal()">Custom Idea</button>
+                        <button class="btn btn-primary btn-sm" onclick="generateMoreIdeas()">Generate More</button>
+                        <button class="btn btn-ghost btn-sm" onclick="regenerateIdeas()">Regenerate All</button>
+                    </div>
+                </div>
+                <div class="prominent-search-row">
+                    <label for="idea-search">Search</label>
+                    <input class="post-search-input" type="text" id="idea-search" placeholder="Find ideas..." oninput="setIdeaSearch(this.value)" />
                     <div class="idea-filter-control">
-                        <label for="idea-favorite-filter">Favorites</label>
-                        <select id="idea-favorite-filter" onchange="setIdeaFavoriteFilter(this.value)">
-                            <option value="all">All</option>
-                            <option value="favorite">Favorites</option>
+                        <label for="idea-sort">Sort</label>
+                        <select id="idea-sort" onchange="setIdeaSort(this.value)">
+                            <option value="newest">Newest first</option>
+                            <option value="oldest">Oldest first</option>
+                            <option value="title">Title A-Z</option>
                         </select>
                     </div>
-                    <button class="btn btn-secondary btn-sm" onclick="openIdeaModal()">Custom Idea</button>
-                    <button class="btn btn-primary btn-sm" onclick="generateMoreIdeas()">Generate More</button>
-                    <button class="btn btn-ghost btn-sm" onclick="regenerateIdeas()">Regenerate All</button>
+                </div>
+                <div class="ideas-toolbar">
+                    <div class="ideas-toolbar-left"></div>
+                    <div class="ideas-toolbar-right">
+                        <div class="idea-filter-control">
+                            <label for="idea-format-filter">Formats</label>
+                            <select id="idea-format-filter" onchange="setIdeaFilter(this.value)"></select>
+                        </div>
+                        <div class="idea-filter-control">
+                            <label for="idea-favorite-filter">Favorites</label>
+                            <select id="idea-favorite-filter" onchange="setIdeaFavoriteFilter(this.value)">
+                                <option value="all">All</option>
+                                <option value="favorite">Favorites</option>
+                            </select>
+                        </div>
+                        <div class="idea-filter-control">
+                            <label for="idea-trend-filter">Trends</label>
+                            <select id="idea-trend-filter" onchange="setIdeaTrendFilter(this.value)"></select>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="ideas-grid" id="ideas-grid"></div>
+            <div id="ideas-pagination"></div>
         </div>
 
         <!-- POSTS -->
         <div class="tab-pane" id="pane-posts">
-            <div class="ideas-toolbar">
-                <div>
-                    <h3>My Posts</h3>
-                    <p>Drafts saved for this profile</p>
+            <div class="toolbar-stack">
+                <div class="ideas-toolbar">
+                    <div>
+                        <h3>My Posts</h3>
+                        <p>Drafts saved for this profile</p>
+                    </div>
+                    <div class="ideas-toolbar-right">
+                        <span class="count-pill" id="posts-count">0 posts</span>
+                    </div>
                 </div>
-                <div class="ideas-toolbar-right">
+                <div class="prominent-search-row">
+                    <label for="post-search">Search</label>
+                    <input class="post-search-input" type="text" id="post-search" placeholder="Find posts..." oninput="setPostSearch(this.value)" />
+                </div>
+                <div class="ideas-toolbar">
+                    <div class="ideas-toolbar-left"></div>
+                    <div class="ideas-toolbar-right">
                     <div class="idea-filter-control">
                         <label for="post-platform-filter">Platform</label>
                         <select id="post-platform-filter" onchange="setPostPlatformFilter(this.value)">
@@ -1860,6 +2022,7 @@
                         <select id="post-automation-filter" onchange="setPostAutomationFilter(this.value)">
                             <option value="all">All</option>
                         </select>
+                    </div>
                     </div>
                 </div>
             </div>
@@ -1903,6 +2066,7 @@
                 <div class="idea-chip-title" id="gen-title"></div>
                 <div class="idea-chip-hook" id="gen-hook"></div>
                 <div class="idea-angle" id="gen-style" style="margin-top:8px;"></div>
+                <div class="idea-trend-preview" id="gen-trend" style="display:none; margin-top:10px; margin-bottom:0;"></div>
             </div>
 
             <div class="form-group">
@@ -1926,7 +2090,7 @@
                 </select>
             </div>
 
-            <div class="form-group">
+            <div class="form-group" id="post-goal-group">
                 <label>Post Goal</label>
                 <div class="option-grid">
                     <button class="opt-btn sel" data-group="goal" data-val="comment" onclick="pickOpt(this)">
@@ -1962,6 +2126,12 @@
                     <option value="">No automation</option>
                 </select>
                 <span class="form-hint">Optional: choose a saved DM resource so the CTA uses its keyword and promise.</span>
+            </div>
+
+            <div class="form-group">
+                <label>Extra Context</label>
+                <textarea id="gen-extra-context" placeholder="Optional: add a note for this draft, e.g. make it about yesterday's event, avoid selling, or mention a client question."></textarea>
+                <span class="form-hint">Use this when the idea inspired you, but you want the draft to go in a more specific direction.</span>
             </div>
 
             <div class="form-group">
@@ -2009,6 +2179,11 @@
                     <div class="result-label">Full Post</div>
                     <div class="result-content full-text" id="r-final"></div>
                 </div>
+                <div class="revision-box">
+                    <div class="result-label">Change This Draft</div>
+                    <textarea id="gen-revision-prompt" placeholder="E.g. make it warmer, add more personal story, shorten it, or make the CTA softer."></textarea>
+                    <button class="btn btn-primary btn-sm" id="btn-revise-post" onclick="reviseGeneratedPost()">Revise Draft</button>
+                </div>
             </div>
         </div>
         <div class="modal-foot">
@@ -2031,6 +2206,8 @@
         </div>
         <div class="modal-body">
             <div class="post-row-meta" id="detail-meta" style="margin-bottom:16px"></div>
+            <div class="post-row-time" id="detail-time"></div>
+            <div class="post-published-url" id="detail-published-url" style="display:none"></div>
             <div class="copy-row">
                 <span class="copy-row-text">✓ Post ready to use</span>
                 <button class="btn btn-secondary btn-sm" onclick="copyDetailPost()">
@@ -2167,6 +2344,11 @@
                 <input type="text" id="idea-topic" placeholder="E.g. Content positioning" />
                 <span class="form-hint">The subject the post is about.</span>
             </div>
+            <div class="form-group">
+                <label>Trend Context</label>
+                <textarea id="idea-trend-context" placeholder="Optional: E.g. people are tired of generic AI posts, a local event is trending, or a seasonal behavior is changing."></textarea>
+                <span class="form-hint">Add only if this idea should react to a timely trend, news item, meme, season, or audience conversation.</span>
+            </div>
         </div>
         <div class="modal-foot">
             <button class="btn btn-ghost" onclick="closeModal('modal-idea')">Cancel</button>
@@ -2279,11 +2461,19 @@ const S = {
     genPostPlatform: null,
     ideaFilter: 'all',
     ideaFavoriteFilter: 'all',
+    ideaTrendFilter: 'all',
+    ideaSearch: '',
+    ideaSort: 'newest',
+    ideaPage: 1,
+    ideasPerPage: 12,
     ideaEditId: null,
     postPlatformFilter: 'all',
     postTypeFilter: 'all',
     postStatusFilter: 'all',
     postAutomationFilter: 'all',
+    postSearch: '',
+    postPage: 1,
+    postsPerPage: 10,
     postEditId: null,
     postEditSyncing: false,
     automationResourceEditId: null,
@@ -2838,8 +3028,7 @@ function renderLeadFlows() {
                 ${S.automationResources.map(item => `
                     <div class="idea-card lead-resource-card ${Number(item.is_primary) ? 'idea-green' : 'idea-pink'}">
                         ${item.suggested_keyword ? `<div class="lead-keyword-badge">${esc(item.suggested_keyword)}</div>` : ''}
-                        <div class="idea-topic-badge">${esc(item.suggested_keyword || 'RESOURCE')}</div>
-                        <div class="idea-title">${esc(item.title || 'Untitled resource')}</div>
+                        <div class="idea-topic-badge lead-resource-title-badge">${esc(item.title || 'Untitled resource')}</div>
                         <div class="idea-hook">${esc(item.description || item.delivery_message || 'Use this as an optional Instagram DM resource.')}</div>
                         ${item.preferred_post_goal ? `<div class="idea-angle">${esc(item.preferred_post_goal.replace(/_/g, ' '))}</div>` : ''}
                         ${item.url ? `<div class="lead-resource-url">${esc(item.url)}</div>` : ''}
@@ -3019,33 +3208,40 @@ async function deleteAutomationResource(id) {
 
 function renderIdeas() {
     const grid = document.getElementById('ideas-grid');
+    const pager = document.getElementById('ideas-pagination');
     document.getElementById('ideas-count').textContent = `${S.ideas.length} ideas`;
     renderIdeaFormatFilter();
+    if (pager) pager.innerHTML = '';
 
     if (!S.ideas.length) {
         grid.innerHTML = `<div class="empty" style="grid-column:1/-1"><div class="empty-icon"></div><div class="empty-title">No ideas yet</div><div class="empty-desc">Generate ideas or add a custom one</div></div>`;
         return;
     }
 
-    const visibleIdeas = S.ideas.filter(idea => {
-        const formatOk = S.ideaFilter === 'all' || ideaFormat(idea) === S.ideaFilter;
-        const favoriteOk = S.ideaFavoriteFilter === 'all' || idea.is_favorite;
-        return formatOk && favoriteOk;
-    });
+    const visibleIdeas = filteredIdeas();
+    const totalPages = Math.max(1, Math.ceil(visibleIdeas.length / S.ideasPerPage));
+    if (S.ideaPage > totalPages) S.ideaPage = totalPages;
+    const start = (S.ideaPage - 1) * S.ideasPerPage;
+    const pageIdeas = visibleIdeas.slice(start, start + S.ideasPerPage);
 
     if (!visibleIdeas.length) {
-        grid.innerHTML = `<div class="empty" style="grid-column:1/-1"><div class="empty-icon"></div><div class="empty-title">No ideas match these filters</div><div class="empty-desc">Choose another filter or generate more ideas</div></div>`;
+        grid.innerHTML = `<div class="empty" style="grid-column:1/-1"><div class="empty-icon"></div><div class="empty-title">No ideas match these filters</div><div class="empty-desc">Try another search, filter, or generate more ideas</div></div>`;
         return;
     }
 
-    grid.innerHTML = visibleIdeas.map((idea) => {
+    grid.innerHTML = pageIdeas.map((idea) => {
         const i = S.ideas.findIndex(item => item.id === idea.id);
         const format = ideaFormat(idea);
+        const trend = String(idea.trend_context || '').trim();
         return `
         <div class="idea-card ${i % 2 === 0 ? 'idea-green' : 'idea-pink'}" onclick="openGenModal(${i})">
             <button class="card-mark-btn ${idea.is_favorite ? 'active' : ''}" onclick="toggleIdeaFavorite(event, '${idea.id}')" aria-label="${idea.is_favorite ? 'Remove from favorite ideas' : 'Add to favorite ideas'}">♥</button>
-            <div class="idea-topic-badge">${esc(formatLabel(format))}</div>
+            <div class="idea-card-header">
+                <div class="idea-topic-badge">${esc(formatLabel(format))}</div>
+                ${trend ? `<div class="idea-trend-preview"><svg class="flat-icon"><use href="#icon-trend"></use></svg><span>${esc(trend)}</span></div>` : ''}
+            </div>
             <div class="idea-title">${esc(idea.title)}</div>
+            <div class="idea-time">${esc(ideaTimestampText(idea))}</div>
             <div class="idea-hook">${esc(idea.hook)}</div>
             <div class="idea-foot">
                 <span class="idea-angle">${esc(idea.topic || '')}</span>
@@ -3057,6 +3253,52 @@ function renderIdeas() {
             </div>
         </div>`;
     }).join('');
+
+    if (pager && totalPages > 1) {
+        pager.innerHTML = `
+            <div class="posts-pagination">
+                <button class="btn btn-ghost btn-sm" onclick="setIdeaPage(${S.ideaPage - 1})" ${S.ideaPage <= 1 ? 'disabled' : ''}>Previous</button>
+                <span class="posts-page-label">Page ${S.ideaPage} of ${totalPages}</span>
+                <button class="btn btn-ghost btn-sm" onclick="setIdeaPage(${S.ideaPage + 1})" ${S.ideaPage >= totalPages ? 'disabled' : ''}>Next</button>
+            </div>
+        `;
+    }
+}
+
+function filteredIdeas() {
+    const query = S.ideaSearch.trim().toLowerCase();
+    return [...S.ideas].filter(idea => {
+        const formatOk = S.ideaFilter === 'all' || ideaFormat(idea) === S.ideaFilter;
+        const favoriteOk = S.ideaFavoriteFilter === 'all' || idea.is_favorite;
+        const trend = String(idea.trend_context || '').trim();
+        const trendOk = S.ideaTrendFilter === 'all'
+            || (S.ideaTrendFilter === 'evergreen' && !trend)
+            || (S.ideaTrendFilter.startsWith('trend:') && trend === S.ideaTrendFilter.slice(6));
+        const haystack = [
+            idea.title,
+            idea.hook,
+            idea.angle,
+            idea.topic,
+            idea.trend_context,
+            ideaFormat(idea),
+            formatLabel(ideaFormat(idea)),
+        ].filter(Boolean).join(' ').toLowerCase();
+        return formatOk && favoriteOk && trendOk && (!query || haystack.includes(query));
+    }).sort(compareIdeas);
+}
+
+function compareIdeas(a, b) {
+    if (S.ideaSort === 'title') {
+        return String(a.title || '').localeCompare(String(b.title || ''));
+    }
+    const aTime = Date.parse(a.created_at || '') || 0;
+    const bTime = Date.parse(b.created_at || '') || 0;
+    return S.ideaSort === 'oldest' ? aTime - bTime : bTime - aTime;
+}
+
+function ideaTimestampText(idea) {
+    const created = formatDateTime(idea.created_at);
+    return created ? `Created ${created}` : 'Created recently';
 }
 
 function renderIdeaFormatFilter() {
@@ -3070,15 +3312,58 @@ function renderIdeaFormatFilter() {
     select.value = S.ideaFilter;
     const favoriteSelect = document.getElementById('idea-favorite-filter');
     if (favoriteSelect) favoriteSelect.value = S.ideaFavoriteFilter;
+    const trendSelect = document.getElementById('idea-trend-filter');
+    if (trendSelect) {
+        const trends = [...new Set(S.ideas.map(idea => String(idea.trend_context || '').trim()).filter(Boolean))]
+            .sort((a, b) => a.localeCompare(b));
+        const options = [
+            '<option value="all">All</option>',
+            '<option value="evergreen">Evergreen</option>',
+            ...trends.map(trend => `<option value="trend:${esc(trend)}">${esc(trend)}</option>`),
+        ];
+        trendSelect.innerHTML = options.join('');
+        const values = new Set(['all', 'evergreen', ...trends.map(trend => `trend:${trend}`)]);
+        if (!values.has(S.ideaTrendFilter)) S.ideaTrendFilter = 'all';
+        trendSelect.value = S.ideaTrendFilter;
+    }
+    const search = document.getElementById('idea-search');
+    if (search && search.value !== S.ideaSearch) search.value = S.ideaSearch;
+    const sort = document.getElementById('idea-sort');
+    if (sort) sort.value = S.ideaSort;
 }
 
 function setIdeaFilter(format) {
     S.ideaFilter = format;
+    S.ideaPage = 1;
     renderIdeas();
 }
 
 function setIdeaFavoriteFilter(value) {
     S.ideaFavoriteFilter = value;
+    S.ideaPage = 1;
+    renderIdeas();
+}
+
+function setIdeaTrendFilter(value) {
+    S.ideaTrendFilter = value;
+    S.ideaPage = 1;
+    renderIdeas();
+}
+
+function setIdeaSearch(value) {
+    S.ideaSearch = value;
+    S.ideaPage = 1;
+    renderIdeas();
+}
+
+function setIdeaSort(value) {
+    S.ideaSort = value;
+    S.ideaPage = 1;
+    renderIdeas();
+}
+
+function setIdeaPage(page) {
+    S.ideaPage = Math.max(1, page);
     renderIdeas();
 }
 
@@ -3131,6 +3416,7 @@ function openIdeaModal(ideaId = null) {
     document.getElementById('idea-hook').value = capitalizeFirst(idea?.hook);
     document.getElementById('idea-angle').value = capitalizeFirst(idea?.angle);
     document.getElementById('idea-topic').value = capitalizeFirst(idea?.topic);
+    document.getElementById('idea-trend-context').value = capitalizeFirst(idea?.trend_context);
     openModal('modal-idea');
 }
 
@@ -3141,9 +3427,10 @@ async function saveIdea() {
         hook: capitalizeFirst(val('idea-hook')),
         angle: capitalizeFirst(val('idea-angle')),
         topic: capitalizeFirst(val('idea-topic')),
+        trend_context: capitalizeFirst(val('idea-trend-context')),
     };
 
-    if (Object.values(body).some(v => !v)) {
+    if ([body.post_format, body.title, body.hook, body.angle, body.topic].some(v => !v)) {
         toast('Please fill in all idea fields', 'error');
         return;
     }
@@ -3197,6 +3484,8 @@ async function toggleIdeaFavorite(event, ideaId) {
 }
 
 async function generateMoreIdeas() {
+    const trendContext = prompt('Optional trend or timely context for the next ideas. Leave empty for evergreen ideas.', '');
+    if (trendContext === null) return;
     showLoading('Creating more ideas…', [
         { label:'Reading audience notes', delay:0 },
         { label:'Keeping favorite ideas', delay:2500 },
@@ -3205,7 +3494,10 @@ async function generateMoreIdeas() {
     ], { logo: true, kind: 'ideas' });
 
     try {
-        const res = await api('POST', `/user-profiles/${S.profileId}/content-ideas/generate-more`, { count: 10 });
+        const res = await api('POST', `/user-profiles/${S.profileId}/content-ideas/generate-more`, {
+            count: 10,
+            trend_context: trendContext.trim() || null,
+        });
         if (res.error) throw new Error(res.error);
         await refreshIdeas();
         hideLoading();
@@ -3240,6 +3532,8 @@ async function regenerateIdeas() {
 function renderPosts() {
     const cont = document.getElementById('posts-container');
     syncPostFilters();
+    const countPill = document.getElementById('posts-count');
+    if (countPill) countPill.textContent = `${S.posts.length} ${S.posts.length === 1 ? 'post' : 'posts'}`;
 
     if (!S.posts.length) {
         cont.innerHTML = `<div class="empty"><div class="empty-icon"></div><div class="empty-title">No posts yet</div><div class="empty-desc">Open Content Ideas and choose one to draft your first post</div></div>`;
@@ -3247,17 +3541,27 @@ function renderPosts() {
     }
 
     const visiblePosts = filteredPosts();
+    const totalPages = Math.max(1, Math.ceil(visiblePosts.length / S.postsPerPage));
+    if (S.postPage > totalPages) S.postPage = totalPages;
+    const start = (S.postPage - 1) * S.postsPerPage;
+    const pagePosts = visiblePosts.slice(start, start + S.postsPerPage);
+
     if (!visiblePosts.length) {
-        cont.innerHTML = `<div class="empty"><div class="empty-icon"></div><div class="empty-title">No posts match these filters</div><div class="empty-desc">Try another platform or Instagram type</div></div>`;
+        cont.innerHTML = `<div class="empty"><div class="empty-icon"></div><div class="empty-title">No posts match these filters</div><div class="empty-desc">Try another search, platform, or Instagram type</div></div>`;
         return;
     }
 
-    cont.innerHTML = `<div class="posts-list">${visiblePosts.map(p => `
+    cont.innerHTML = `<div class="posts-list">${pagePosts.map(p => `
         <div class="post-row" id="pr-${p.id}">
             <div class="post-status-actions">
                 ${p.automation_resource_title ? `
                     <span class="post-flow-indicator" title="${esc(p.automation_resource_title)}" aria-label="Automation: ${esc(p.automation_resource_title)}">
                         <svg class="flat-icon"><use href="#icon-atom"></use></svg>
+                    </span>
+                ` : ''}
+                ${String(p.idea_trend_context || '').trim() ? `
+                    <span class="post-flow-indicator post-trend-indicator" title="${esc(String(p.idea_trend_context || '').trim())}" aria-label="Trend: ${esc(String(p.idea_trend_context || '').trim())}">
+                        <svg class="flat-icon"><use href="#icon-trend"></use></svg>
                     </span>
                 ` : ''}
                 <button class="card-mark-btn ${p.is_favorite ? 'active' : ''}" onclick="togglePostFavorite(event, '${p.id}')" aria-label="${p.is_favorite ? 'Remove from favorite posts' : 'Add to favorite posts'}">♥</button>
@@ -3268,10 +3572,18 @@ function renderPosts() {
                 ${p.instagram_content_type ? `<span class="tag tag-format">${esc(p.instagram_content_type)}</span>` : ''}
                 ${p.post_length ? `<span class="tag tag-format">${esc(p.post_length)}</span>` : ''}
                 <span class="tag tag-format">${esc(p.post_format||'')}</span>
-                <span class="tag tag-goal">${esc(p.post_goal||'')}</span>
+                ${p.automation_resource_id ? '' : `<span class="tag tag-goal">${esc(p.post_goal||'')}</span>`}
             </div>
+            <div class="post-row-time">${esc(postTimestampText(p))}</div>
             <div class="post-row-hook">${esc(p.hook || (p.final_text||'').slice(0,80))}</div>
-            <div class="post-row-preview">${esc(p.final_text||'')}</div>
+            <div class="post-row-preview">${esc(displayPostText(p))}</div>
+            ${p.is_published ? `
+                <div class="post-published-url">
+                    ${p.published_url
+                        ? `Published: <a href="${esc(p.published_url)}" target="_blank" rel="noopener noreferrer">${esc(p.published_url)}</a>`
+                        : 'Published URL not added yet'}
+                </div>
+            ` : ''}
             <div class="post-row-actions">
                 <button class="btn btn-secondary btn-sm" onclick="openDetailModal('${p.id}')">View Post</button>
                 <button class="btn btn-secondary btn-sm" onclick="openPostEditModal('${p.id}')">Edit</button>
@@ -3279,13 +3591,25 @@ function renderPosts() {
                     <svg class="flat-icon"><use href="#icon-copy"></use></svg>
                     Copy
                 </button>
+                ${p.is_published ? `<button class="btn btn-secondary btn-sm" onclick="editPublishedUrl('${p.id}')">${p.published_url ? 'Edit URL' : 'Add URL'}</button>` : ''}
                 <button class="btn btn-danger btn-sm" onclick="deletePost('${p.id}')">Delete</button>
             </div>
         </div>`).join('')}</div>`;
+
+    if (totalPages > 1) {
+        cont.innerHTML += `
+            <div class="posts-pagination">
+                <button class="btn btn-ghost btn-sm" onclick="setPostPage(${S.postPage - 1})" ${S.postPage <= 1 ? 'disabled' : ''}>Previous</button>
+                <span class="posts-page-label">Page ${S.postPage} of ${totalPages}</span>
+                <button class="btn btn-ghost btn-sm" onclick="setPostPage(${S.postPage + 1})" ${S.postPage >= totalPages ? 'disabled' : ''}>Next</button>
+            </div>
+        `;
+    }
 }
 
 function filteredPosts() {
-    return S.posts.filter(post => {
+    const query = S.postSearch.trim().toLowerCase();
+    return [...S.posts].sort(comparePostsNewestFirst).filter(post => {
         const platformOk = S.postPlatformFilter === 'all' || post.platform === S.postPlatformFilter;
         const typeOk = S.postTypeFilter === 'all' || post.instagram_content_type === S.postTypeFilter;
         const statusOk = S.postStatusFilter === 'all'
@@ -3293,7 +3617,20 @@ function filteredPosts() {
             || (S.postStatusFilter === 'published' && post.is_published);
         const automationOk = S.postAutomationFilter === 'all'
             || (S.postAutomationFilter.startsWith('flow:') && String(post.automation_resource_id || '') === S.postAutomationFilter.slice(5));
-        return platformOk && typeOk && statusOk && automationOk;
+        const haystack = [
+            post.hook,
+            post.body,
+            post.cta,
+            displayPostText(post),
+            post.platform,
+            post.post_format,
+            post.post_goal,
+            post.instagram_content_type,
+            post.automation_resource_title,
+            post.published_url,
+        ].filter(Boolean).join(' ').toLowerCase();
+        const searchOk = !query || haystack.includes(query);
+        return platformOk && typeOk && statusOk && automationOk && searchOk;
     });
 }
 
@@ -3302,11 +3639,13 @@ function syncPostFilters() {
     const type = document.getElementById('post-type-filter');
     const status = document.getElementById('post-status-filter');
     const automation = document.getElementById('post-automation-filter');
+    const search = document.getElementById('post-search');
     const typeWrap = document.getElementById('post-type-filter-wrap');
 
     if (platform) platform.value = S.postPlatformFilter;
     if (type) type.value = S.postTypeFilter;
     if (status) status.value = S.postStatusFilter;
+    if (search && search.value !== S.postSearch) search.value = S.postSearch;
     if (automation) {
         const options = postAutomationFilterOptions();
         automation.innerHTML = options.map(option => `
@@ -3319,6 +3658,48 @@ function syncPostFilters() {
 
     const showType = S.postPlatformFilter !== 'linkedin';
     if (typeWrap) typeWrap.style.display = showType ? '' : 'none';
+}
+
+function comparePostsNewestFirst(a, b) {
+    const aTime = Date.parse(a.created_at || a.published_at || '') || 0;
+    const bTime = Date.parse(b.created_at || b.published_at || '') || 0;
+    return bTime - aTime;
+}
+
+function postTimestampText(post) {
+    const created = formatDateTime(post.created_at);
+    const published = formatDateTime(post.published_at);
+    if (post.is_published && published) {
+        return created ? `Created ${created} · Published ${published}` : `Published ${published}`;
+    }
+    return created ? `Created ${created}` : 'Created recently';
+}
+
+function displayPostText(post) {
+    const finalText = String(post?.final_text || '').trim();
+    const hook = String(post?.hook || '').trim();
+    const body = String(post?.body || '').trim();
+    const cta = String(post?.cta || '').trim();
+    const composed = [hook, body, cta].filter(Boolean).join('\n\n');
+
+    if (composed && (!finalText || (hook && !finalText.includes(hook)) || (cta && !finalText.includes(cta)))) {
+        return composed;
+    }
+
+    return finalText || composed;
+}
+
+function formatDateTime(value) {
+    if (!value) return '';
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return '';
+    return date.toLocaleString([], {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+    });
 }
 
 function postAutomationFilterOptions() {
@@ -3343,6 +3724,7 @@ function postAutomationFilterOptions() {
 function setPostPlatformFilter(value) {
     S.postPlatformFilter = value;
     if (value === 'linkedin') S.postTypeFilter = 'all';
+    S.postPage = 1;
     renderPosts();
 }
 
@@ -3351,16 +3733,30 @@ function setPostTypeFilter(value) {
     if (value !== 'all' && S.postPlatformFilter === 'linkedin') {
         S.postPlatformFilter = 'instagram';
     }
+    S.postPage = 1;
     renderPosts();
 }
 
 function setPostStatusFilter(value) {
     S.postStatusFilter = value;
+    S.postPage = 1;
     renderPosts();
 }
 
 function setPostAutomationFilter(value) {
     S.postAutomationFilter = value;
+    S.postPage = 1;
+    renderPosts();
+}
+
+function setPostSearch(value) {
+    S.postSearch = value;
+    S.postPage = 1;
+    renderPosts();
+}
+
+function setPostPage(page) {
+    S.postPage = Math.max(1, page);
     renderPosts();
 }
 
@@ -3375,10 +3771,20 @@ function openGenModal(idx) {
     document.getElementById('gen-title').textContent = idea.title;
     document.getElementById('gen-hook').textContent  = idea.hook;
     document.getElementById('gen-style').textContent = formatLabel(ideaFormat(idea));
+    const trendBox = document.getElementById('gen-trend');
+    const trend = String(idea.trend_context || '').trim();
+    if (trendBox) {
+        trendBox.style.display = trend ? 'flex' : 'none';
+        trendBox.innerHTML = trend ? `<svg class="flat-icon"><use href="#icon-trend"></use></svg><span>${esc(trend)}</span>` : '';
+    }
     document.getElementById('gen-result').style.display = 'none';
+    const extraContext = document.getElementById('gen-extra-context');
+    if (extraContext) extraContext.value = '';
+    const revisionPrompt = document.getElementById('gen-revision-prompt');
+    if (revisionPrompt) revisionPrompt.value = '';
 
     // Reset options to defaults
-    S.genOpts = { platform: 'instagram', instagram_content_type: 'carousel', goal: 'comment', post_length: 'medium', automation_resource_id: null };
+    S.genOpts = { platform: 'instagram', instagram_content_type: 'carousel', goal: 'comment', post_length: 'medium', automation_resource_id: null, last_manual_goal: 'comment' };
     document.querySelectorAll('#modal-generate .opt-btn').forEach(b => {
         const isDefault = (
             (b.dataset.group === 'platform' && b.dataset.val === 'instagram') ||
@@ -3405,6 +3811,7 @@ function pickOpt(el) {
     document.querySelectorAll(`#modal-generate .opt-btn[data-group="${group}"]`).forEach(b => b.classList.remove('sel'));
     el.classList.add('sel');
     S.genOpts[group] = val;
+    if (group === 'goal') S.genOpts.last_manual_goal = val;
     if (group === 'platform') updateInstagramTypeVisibility();
 }
 
@@ -3416,12 +3823,18 @@ function pickInstagramType(value) {
 function pickGenerationAutomationResource(value) {
     S.genOpts.automation_resource_id = value || null;
     const flow = S.automationResources.find(item => String(item.id) === String(value));
-    if (flow?.preferred_post_goal) {
-        S.genOpts.goal = flow.preferred_post_goal;
+    if (flow) {
+        S.genOpts.goal = flow.preferred_post_goal || 'dm_keyword';
         document.querySelectorAll('#modal-generate .opt-btn[data-group="goal"]').forEach(button => {
-            button.classList.toggle('sel', button.dataset.val === flow.preferred_post_goal);
+            button.classList.toggle('sel', button.dataset.val === S.genOpts.goal);
+        });
+    } else {
+        S.genOpts.goal = S.genOpts.last_manual_goal || 'comment';
+        document.querySelectorAll('#modal-generate .opt-btn[data-group="goal"]').forEach(button => {
+            button.classList.toggle('sel', button.dataset.val === S.genOpts.goal);
         });
     }
+    updatePostGoalVisibility();
 }
 
 function renderGenerationAutomationResourceSelect() {
@@ -3453,6 +3866,13 @@ function updateInstagramTypeVisibility() {
         const select = document.getElementById('gen-automation-resource');
         if (select) select.value = '';
     }
+    updatePostGoalVisibility();
+}
+
+function updatePostGoalVisibility() {
+    const goalGroup = document.getElementById('post-goal-group');
+    if (!goalGroup) return;
+    goalGroup.style.display = S.genOpts.automation_resource_id ? 'none' : '';
 }
 
 async function generatePost() {
@@ -3476,7 +3896,9 @@ async function generatePost() {
             instagram_content_type: S.genOpts.platform === 'instagram' ? S.genOpts.instagram_content_type : null,
             post_length: S.genOpts.post_length,
             automation_resource_id: S.genOpts.platform === 'instagram' && S.genOpts.instagram_content_type !== 'story' ? S.genOpts.automation_resource_id : null,
+            extra_context: val('gen-extra-context') || null,
         });
+        if (data.error) throw new Error(data.error);
 
         S.genPost   = data.post;
         S.genPostId = data.post_id;
@@ -3506,6 +3928,48 @@ async function generatePost() {
     }
 }
 
+async function reviseGeneratedPost() {
+    if (!S.genPostId) {
+        toast('Draft a post first', 'error');
+        return;
+    }
+    const instruction = val('gen-revision-prompt');
+    if (!instruction) {
+        toast('Tell me what to change first', 'error');
+        return;
+    }
+
+    const btn = document.getElementById('btn-revise-post');
+    btn.disabled = true;
+    btn.textContent = 'Revising…';
+    showLoading('Revising your post…', [
+        { label:'Reading your change request', delay:0 },
+        { label:'Keeping the useful parts', delay:1800 },
+        { label:'Updating hook, body, and CTA', delay:4200 },
+        { label:'Saving revised draft', delay:6500 },
+    ], { logo: true, kind: 'post' });
+
+    try {
+        const data = await api('PUT', `/posts/${S.genPostId}/revise`, { instruction });
+        if (data.error) throw new Error(data.error);
+        S.genPost = { ...(S.genPost || {}), ...(data.post || {}) };
+        document.getElementById('r-hook').textContent  = S.genPost.hook       || '';
+        document.getElementById('r-body').textContent  = S.genPost.body       || '';
+        document.getElementById('r-cta').textContent   = S.genPost.cta        || '';
+        document.getElementById('r-final').textContent = S.genPost.final_text || '';
+        document.getElementById('gen-revision-prompt').value = '';
+        await refreshPosts();
+        hideLoading();
+        toast('Draft revised', 'success');
+    } catch (e) {
+        hideLoading();
+        toast(e.message || 'Could not revise draft', 'error');
+    } finally {
+        btn.disabled = false;
+        btn.textContent = 'Revise Draft';
+    }
+}
+
 function copyGenPost() {
     if (S.genPost) copyTxt(S.genPost.final_text || '');
     if (S.genPostId) markPostPublished(S.genPostId);
@@ -3531,13 +3995,23 @@ async function openDetailModal(postId) {
         ${p.instagram_content_type ? `<span class="tag tag-format">${esc(p.instagram_content_type)}</span>` : ''}
         ${p.post_length ? `<span class="tag tag-format">${esc(p.post_length)}</span>` : ''}
         <span class="tag tag-format">${esc(p.post_format||'')}</span>
-        <span class="tag tag-goal">${esc(p.post_goal||'')}</span>
+        ${p.automation_resource_id ? '' : `<span class="tag tag-goal">${esc(p.post_goal||'')}</span>`}
         ${p.automation_resource_title ? `<span class="tag tag-goal">${esc(p.automation_resource_title)}</span>` : ''}`;
+    document.getElementById('detail-time').textContent = postTimestampText(p);
+    const detailUrl = document.getElementById('detail-published-url');
+    if (detailUrl) {
+        detailUrl.style.display = p.is_published ? '' : 'none';
+        detailUrl.innerHTML = p.is_published
+            ? (p.published_url
+                ? `Published: <a href="${esc(p.published_url)}" target="_blank" rel="noopener noreferrer">${esc(p.published_url)}</a>`
+                : 'Published URL not added yet')
+            : '';
+    }
 
     document.getElementById('d-hook').textContent  = p.hook       || '';
     document.getElementById('d-body').textContent  = p.body       || '';
     document.getElementById('d-cta').textContent   = p.cta        || '';
-    document.getElementById('d-final').textContent = p.final_text || '';
+    document.getElementById('d-final').textContent = displayPostText(p);
 
     const flowButton = document.getElementById('btn-detail-flow');
     if (flowButton) flowButton.style.display = p.platform === 'instagram' && p.instagram_content_type !== 'story' && p.automation_resource_id ? '' : 'none';
@@ -3552,7 +4026,7 @@ function copyDetailPost() {
 
 function copyPost(postId) {
     const post = S.posts.find(p => String(p.id) === String(postId));
-    copyTxt(post?.final_text || '');
+    copyTxt(displayPostText(post));
     markPostPublished(postId);
 }
 
@@ -3574,11 +4048,27 @@ async function togglePostFavorite(event, postId) {
 
 async function togglePostPublished(event, postId) {
     event.stopPropagation();
+    const post = S.posts.find(item => String(item.id) === String(postId));
+    let body = null;
+
+    if (!post?.is_published) {
+        const publishedUrl = prompt('Where was this post published? Paste the URL, or leave empty for now.', post?.published_url || '');
+        if (publishedUrl === null) return;
+        body = { published_url: publishedUrl.trim() };
+    } else if (!confirm('Remove this post from published?')) {
+        return;
+    }
+
     try {
-        const res = await api('PUT', `/posts/${postId}/published`);
+        const res = await api('PUT', `/posts/${postId}/published`, body);
         if (res.error) throw new Error(res.error);
         S.posts = S.posts.map(post => post.id === postId
-            ? { ...post, is_published: res.is_published }
+            ? {
+                ...post,
+                is_published: res.is_published,
+                published_at: res.published_at,
+                published_url: res.published_url,
+            }
             : post
         );
         renderPosts();
@@ -3596,12 +4086,41 @@ async function markPostPublished(postId) {
         const res = await api('PUT', `/posts/${postId}/published`);
         if (res.error) throw new Error(res.error);
         S.posts = S.posts.map(item => String(item.id) === String(postId)
-            ? { ...item, is_published: res.is_published }
+            ? {
+                ...item,
+                is_published: res.is_published,
+                published_at: res.published_at,
+                published_url: res.published_url,
+            }
             : item
         );
         renderPosts();
     } catch {
         // Copy should still succeed even if status update fails.
+    }
+}
+
+async function editPublishedUrl(postId) {
+    const post = S.posts.find(item => String(item.id) === String(postId));
+    if (!post?.is_published) {
+        toast('Mark the post as published first', 'error');
+        return;
+    }
+
+    const publishedUrl = prompt('Published post URL', post.published_url || '');
+    if (publishedUrl === null) return;
+
+    try {
+        const res = await api('PUT', `/posts/${postId}/published-url`, { published_url: publishedUrl.trim() });
+        if (res.error) throw new Error(res.error);
+        S.posts = S.posts.map(item => String(item.id) === String(postId)
+            ? { ...item, published_url: res.published_url }
+            : item
+        );
+        renderPosts();
+        toast(res.published_url ? 'Published URL saved' : 'Published URL removed', 'success');
+    } catch (e) {
+        toast(e.message || 'Could not update published URL', 'error');
     }
 }
 
@@ -3914,10 +4433,10 @@ function renderFlowPostContext(flow = null) {
         <div class="flow-context-meta">
             <span class="tag tag-platform">${esc(post.platform || 'instagram')}</span>
             ${post.instagram_content_type ? `<span class="tag tag-format">${esc(post.instagram_content_type)}</span>` : ''}
-            ${post.post_goal ? `<span class="tag tag-goal">${esc(post.post_goal)}</span>` : ''}
+            ${post.post_goal && !post.automation_resource_id ? `<span class="tag tag-goal">${esc(post.post_goal)}</span>` : ''}
         </div>
         <div class="flow-context-title">${esc(post.hook || 'Selected Instagram post')}</div>
-        <div class="flow-context-text">${esc((post.final_text || post.body || '').slice(0, 220))}${(post.final_text || post.body || '').length > 220 ? '...' : ''}</div>`;
+        <div class="flow-context-text">${esc(displayPostText(post).slice(0, 220))}${displayPostText(post).length > 220 ? '...' : ''}</div>`;
 }
 
 function copyFlow() {

@@ -98,9 +98,10 @@ def save_content_ideas(
                     hook,
                     angle,
                     topic,
+                    trend_context,
                     post_format
                 )
-                VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
             """, (
                 idea_id,
                 user_profile_id,
@@ -109,6 +110,7 @@ def save_content_ideas(
                 idea["hook"],
                 idea["angle"],
                 idea["topic"],
+                idea.get("trend_context"),
                 idea.get("post_format") or idea.get("content_style") or "how_to",
             ))
 

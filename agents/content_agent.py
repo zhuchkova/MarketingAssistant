@@ -2,6 +2,7 @@ from pydantic import BaseModel, Field
 from dotenv import load_dotenv
 from langchain.chat_models import init_chat_model
 from langchain_core.prompts import ChatPromptTemplate
+from agents.model_config import CONTENT_AGENT_MODEL
 from rag.content_framework_retriever import retrieve_content_frameworks
 
 load_dotenv()
@@ -14,7 +15,7 @@ class GeneratedPost(BaseModel):
 
 
 model = init_chat_model(
-    model="openai:gpt-4o-mini",
+    model=CONTENT_AGENT_MODEL,
     temperature=0.8,
 )
 
@@ -57,6 +58,7 @@ Selected content idea:
 - Post format: {idea_post_format}
 - Idea framing: {idea_angle}
 - Topic: {idea_topic}
+- Trend context: {idea_trend_context}
 
 Relevant content frameworks from RAG:
 {content_frameworks}
@@ -67,8 +69,10 @@ Post requirements:
 - Post format: {post_format}
 - Goal / CTA type: {post_goal}
 - Length: {post_length}
+- Extra drafting context: {extra_context}
 
 Selected reusable Instagram DM resource:
+- Automation selected: {automation_resource_selected}
 - DM resource title: {automation_resource_title}
 - DM resource URL: {automation_resource_url}
 - DM resource description: {automation_resource_description}
@@ -94,12 +98,77 @@ Rules:
 - Use audience language and proof points to make the post concrete and credible
 - Use market context for currency, local examples, nearby alternatives, and whether the CTA should feel local or online
 - Weave in the creator's personal touch only when it strengthens trust, relatability, or story
+- If the selected idea has trend context, TREND MODE is active:
+  - Use it as context for the opening tension, timing, example, comparison, audience behavior, or reason to care.
+  - Mention the trend explicitly only when it sounds natural.
+  - Do not paste the trend phrase mechanically into the hook, body, and CTA.
+  - Make the post feel timely without turning it into a generic trend explainer.
+- Use the extra drafting context as a specific direction for this draft when it is provided.
 - Follow the selected idea's post format. Do not change a personal story into a list or a mistakes post into a generic how-to.
 - End with a CTA matching the post goal
-- If platform is Instagram and a DM resource title or trigger keyword exists, the post CTA must clearly use that DM resource.
-- If a trigger keyword exists, use it exactly in the CTA, for example: "Comment GUIDE and I'll send you the checklist."
-- If a DM resource URL exists, do not put the URL directly in the public post unless the format naturally needs it; tell the reader to comment or DM the keyword so the resource can be sent privately.
-- If no DM resource is selected, use a normal CTA matching the post goal and do not pretend that a download or automation exists.
+- If automation selected is true, the post CTA must clearly use that DM resource.
+- If automation selected is true and a trigger keyword exists, use it exactly in the CTA, for example: "Comment GUIDE and I'll send you the checklist."
+- If automation selected is true and a trigger keyword exists, the CTA is invalid unless it includes that exact keyword.
+- If automation selected is true and a DM resource URL exists, do not put the URL directly in the public post unless the format naturally needs it; tell the reader to comment or DM the keyword so the resource can be sent privately.
+- If automation selected is false, use a normal CTA matching the post goal and do not pretend that a download, DM automation, keyword, or private resource exists.
+- If automation selected is false, never invent an uppercase comment keyword such as GUIDE, LINK, ARTBUDDY, or similar. A comment CTA may ask a natural question, for example: "What would you add?" or "Tell me your favorite gallery ritual."
+""")
+
+revision_prompt = ChatPromptTemplate.from_template("""
+You are a social media content editor.
+
+Revise the existing post according to the user's instruction.
+
+Creator profile:
+- Niche: {niche}
+- Offer: {offer}
+- Target audience: {target_audience}
+- Expertise: {expertise}
+- Personal touch: {personal_touch}
+- Market scope: {market_scope}
+- Primary market: {primary_market}
+- Currency: {currency}
+- Locale notes: {locale_notes}
+- Tone: {tone}
+- Goal: {goal}
+
+Audience analysis:
+- Audience profile: {audience_profile}
+- Pains: {pains}
+- Desires: {desires}
+- Objections: {objections}
+- Trigger moments: {trigger_moments}
+- Proof points: {proof_points}
+- Audience language: {audience_language}
+- Market context: {market_context}
+- Positioning: {positioning}
+- Known for: {known_for}
+
+Current post:
+- Platform: {platform}
+- Instagram content type: {instagram_content_type}
+- Post goal: {post_goal}
+- Hook: {hook}
+- Body: {body}
+- CTA: {cta}
+- Full text: {final_text}
+
+Selected reusable Instagram DM resource:
+- Automation selected: {automation_resource_selected}
+- DM resource title: {automation_resource_title}
+- Trigger keyword: {automation_resource_keyword}
+- Public reply: {automation_resource_public_comment_reply}
+- First DM / delivery message: {automation_resource_delivery_message}
+- Follow-up CTA: {automation_resource_follow_up_cta}
+
+User revision instruction:
+{revision_instruction}
+
+Rules:
+- Keep the same platform and post goal unless the instruction clearly asks otherwise.
+- Preserve the automation keyword and automation CTA if automation is selected.
+- If automation is not selected, do not invent a private resource, download, or uppercase comment keyword.
+- Return a complete revised hook, body, CTA, and final_text.
 """)
 
 
@@ -113,6 +182,7 @@ def run_content_agent(data: dict) -> dict:
             "angle": data.get("idea_angle"),
             "hook": data.get("idea_hook"),
             "post_format": data.get("idea_post_format"),
+            "trend_context": data.get("idea_trend_context"),
             "platform": data.get("platform"),
             "instagram_content_type": data.get("instagram_content_type"),
             "post_length": data.get("post_length"),
@@ -125,8 +195,21 @@ def run_content_agent(data: dict) -> dict:
 
     chain_input = {
         **data,
+        "idea_trend_context": data.get("idea_trend_context") or "",
+        "extra_context": data.get("extra_context") or "",
+        "automation_resource_selected": bool(data.get("automation_resource_id")),
         "content_frameworks": frameworks
     }
     chain = prompt | structured_model
+    result = chain.invoke(chain_input)
+    return result.model_dump()
+
+
+def run_content_revision_agent(data: dict) -> dict:
+    chain_input = {
+        **data,
+        "automation_resource_selected": bool(data.get("automation_resource_id")),
+    }
+    chain = revision_prompt | structured_model
     result = chain.invoke(chain_input)
     return result.model_dump()
