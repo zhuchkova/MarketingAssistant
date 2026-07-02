@@ -135,4 +135,4 @@ class GenerateIdeasRequest(BaseModel):
         if value is None:
             return None
         value = value.strip()
-        return value or None
+        return capitalize_first(value) if value else None

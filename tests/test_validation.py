@@ -3,7 +3,7 @@ import unittest
 from pydantic import ValidationError
 
 from schemas.auth import LoginRequest, RegisterRequest
-from schemas.content_idea import ContentIdeaRequest
+from schemas.content_idea import ContentIdeaRequest, GenerateIdeasRequest
 from schemas.automation_resource import AutomationResourceRequest
 from schemas.post_generation import GeneratePostRequest, UpdatePostRequest
 from schemas.user_profile import CreateUserProfileRequest
@@ -95,6 +95,11 @@ class ValidationTests(unittest.TestCase):
                 platform="threads",
                 post_goal="comment",
             )
+
+    def test_generate_ideas_normalizes_trend_context(self):
+        request = GenerateIdeasRequest(count=10, trend_context=" chocolate week ")
+
+        self.assertEqual(request.trend_context, "Chocolate week")
 
     def test_generate_post_accepts_share_goal(self):
         request = GeneratePostRequest(
