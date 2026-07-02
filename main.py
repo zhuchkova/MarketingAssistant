@@ -25,6 +25,7 @@ from db.idea_repository import (get_profile_with_audience_analysis,
 from agents.content_agent import run_content_agent, run_content_revision_agent
 from db.content_repository import (get_content_generation_context,
     get_lookup_id, normalized_final_text, save_post, update_post_content)
+from post_processing import enforce_automation_cta, enforce_reel_caption_only
 from agents.automation_agent import run_automation_agent
 from db.automation_context_repository import (get_automation_context,
     attach_automation_resource_context)
@@ -45,24 +46,6 @@ def get_allowed_origins() -> List[str]:
         "http://127.0.0.1:8000,http://localhost:8000,http://127.0.0.1:3000,http://localhost:3000",
     )
     return [origin.strip() for origin in origins.split(",") if origin.strip()]
-
-
-def enforce_automation_cta(generated_post: dict, automation_resource: Optional[dict]) -> dict:
-    if not automation_resource:
-        return generated_post
-
-    keyword = str(automation_resource.get("suggested_keyword") or "").strip()
-    if not keyword:
-        return generated_post
-
-    cta = str(generated_post.get("cta") or "").strip()
-    keyword_upper = keyword.upper()
-    if keyword_upper in cta.upper():
-        return generated_post
-
-    title = str(automation_resource.get("title") or "the resource").strip()
-    generated_post["cta"] = f"Comment {keyword_upper} and I'll send you {title}."
-    return generated_post
 
 
 def handle_new_profile(conn, profile):
@@ -956,6 +939,10 @@ def generate_post(
 
         generated_post = run_content_agent(agent_input)
         generated_post = enforce_automation_cta(generated_post, automation_resource)
+        generated_post = enforce_reel_caption_only(
+            generated_post,
+            agent_input["instagram_content_type"],
+        )
         generated_post["final_text"] = normalized_final_text(generated_post)
 
         post_data = {
@@ -1082,6 +1069,10 @@ def revise_post(
             "revision_instruction": data["instruction"],
         })
         revised_post = enforce_automation_cta(revised_post, automation_resource)
+        revised_post = enforce_reel_caption_only(
+            revised_post,
+            context.get("instagram_content_type"),
+        )
         revised_post["final_text"] = normalized_final_text(revised_post)
         update_post_content(conn, post_id, revised_post)
         conn.commit()

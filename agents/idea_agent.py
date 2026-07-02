@@ -38,8 +38,8 @@ FORMAT_LABELS = {
 
 
 class ContentIdea(BaseModel):
-    title: str = Field(description="Short internal title for the content idea")
-    hook: str = Field(description="Strong opening line for the post")
+    title: str = Field(description="Core message or strongest promise for the content idea")
+    hook: str = Field(description="Possible first sentence or opening line for the post")
     post_format: PostFormat = Field(description="One exact post format slug from the allowed list")
     angle: str = Field(description="The strategic point of view or audience-specific framing, not a format label")
     topic: str = Field(description="Main subject of the post")
@@ -99,11 +99,13 @@ Generate {number_of_ideas} content ideas.
 Rules:
 - Make ideas specific to this audience
 - Avoid generic marketing advice
-- Each idea needs a strong hook
-- Prefer psychology hook patterns from RAG when choosing hooks, especially expectation breaks, real-talk observations, immediate value, myth breaking, pragmatic framing, insider insight, and number-based proof
-- Do not reuse the same hook structure across the set; psychology patterns should make hooks sharper, not repetitive
+- Each idea needs a strong core message and a possible opening line
+- Prefer psychology hook patterns from RAG when choosing opening lines, especially expectation breaks, real-talk observations, immediate value, myth breaking, pragmatic framing, insider insight, and number-based proof
+- Do not reuse the same opening-line structure across the set; psychology patterns should make openings sharper, not repetitive
 - Each idea should connect to one clear audience pain, desire, or objection
 - Use these fields clearly:
+  - title = the core message, strongest promise, or sharpest belief the post should express
+  - hook = one possible first sentence that can open the post; keep it usable, but do not make it carry the whole idea
   - post_format = the structure of the post. Use exactly one of: personal_story, mistakes, day_in_life, contrarian, how_to, checklist, myth_busting, client_example, behind_scenes, objection_handling
   - angle = the specific idea framing or point of view, e.g. "why cheap bouquets disappoint," "the hidden cost of skipping prep," "what changed after I learned this myself"
   - topic = the subject, e.g. "wedding flowers," "weekly meal planning," "beginner strength training"
@@ -118,7 +120,7 @@ Rules:
   - Do not paste the trend phrase into every title, hook, angle, and topic.
   - Mention the trend explicitly only where it sounds natural; otherwise let it shape the premise.
   - Make the ideas varied. Hooks must not all start with the same phrase or structure.
-  - Mix hook patterns: question, observation, contrast, story setup, myth, practical problem, or surprising detail.
+  - Mix opening-line patterns: question, observation, contrast, story setup, myth, practical problem, or surprising detail.
   - Keep the idea useful even after the trend moment; avoid shallow "this trend is trending" framing.
   - Set trend_context to the exact relevant trend text used by the idea.
 - If trend context is empty, keep trend_context empty and generate evergreen ideas.

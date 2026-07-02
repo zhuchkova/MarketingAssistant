@@ -53,8 +53,8 @@ Audience analysis:
 - Known for: {known_for}
 
 Selected content idea:
-- Title: {idea_title}
-- Hook idea: {idea_hook}
+- Core message: {idea_title}
+- Opening line suggestion: {idea_hook}
 - Post format: {idea_post_format}
 - Idea framing: {idea_angle}
 - Topic: {idea_topic}
@@ -85,7 +85,9 @@ Selected reusable Instagram DM resource:
 Rules:
 - Make it specific, not generic
 - Use the creator's tone
-- Start with a strong hook
+- Use the core message as the primary creative premise for the post.
+- Start with a strong hook that sharpens the core message. You may rewrite the opening line suggestion; do not copy it blindly if the core message is stronger.
+- The opening line suggestion is supporting context, not the main instruction.
 - Respect the requested length:
   - short = one compact idea, no extra sections
   - medium = default useful depth, 2-3 main points
@@ -93,7 +95,7 @@ Rules:
 - If platform is Instagram, follow the requested content type:
   - carousel = write as slide-by-slide copy
   - story = write as a sequence of story frames
-  - reel = write a short spoken/overlay script plus caption CTA
+  - reel = write only the Instagram Reel caption for the body. Do not include a reel script, voiceover, on-screen text, overlay text, shot list, or scene directions.
 - Connect the post to the audience pain/desire
 - Use audience language and proof points to make the post concrete and credible
 - Use market context for currency, local examples, nearby alternatives, and whether the CTA should feel local or online
@@ -106,6 +108,8 @@ Rules:
 - Use the extra drafting context as a specific direction for this draft when it is provided.
 - Follow the selected idea's post format. Do not change a personal story into a list or a mistakes post into a generic how-to.
 - End with a CTA matching the post goal
+- Keep the CTA only in the cta field. Do not repeat "comment [keyword]", "DM [keyword]", or the final action instruction inside the body.
+- If Instagram content type is reel, keep the body as caption copy only. Do not add script, voiceover, overlay, shot list, or scene sections.
 - If automation selected is true, the post CTA must clearly use that DM resource.
 - If automation selected is true and a trigger keyword exists, use it exactly in the CTA, for example: "Comment GUIDE and I'll send you the checklist."
 - If automation selected is true and a trigger keyword exists, the CTA is invalid unless it includes that exact keyword.
@@ -167,6 +171,8 @@ User revision instruction:
 Rules:
 - Keep the same platform and post goal unless the instruction clearly asks otherwise.
 - Preserve the automation keyword and automation CTA if automation is selected.
+- Keep the CTA only in the cta field. Do not repeat "comment [keyword]", "DM [keyword]", or the final action instruction inside the body.
+- If Instagram content type is reel, keep the body as caption copy only. Remove script, voiceover, overlay, shot list, or scene sections.
 - If automation is not selected, do not invent a private resource, download, or uppercase comment keyword.
 - Return a complete revised hook, body, CTA, and final_text.
 """)

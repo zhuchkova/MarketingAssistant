@@ -1944,7 +1944,7 @@
                         <select id="idea-sort" onchange="setIdeaSort(this.value)">
                             <option value="newest">Newest first</option>
                             <option value="oldest">Oldest first</option>
-                            <option value="title">Title A-Z</option>
+                            <option value="title">Core message A-Z</option>
                         </select>
                     </div>
                 </div>
@@ -2327,12 +2327,14 @@
                 <span class="form-hint">The structure of the post, such as a personal story, mistakes post, or how-to.</span>
             </div>
             <div class="form-group">
-                <label>Title</label>
+                <label>Core Message</label>
                 <input type="text" id="idea-title" placeholder="E.g. The mistake that made my content sound generic" />
+                <span class="form-hint">The strongest promise, belief, or point this post should make.</span>
             </div>
             <div class="form-group">
-                <label>Hook</label>
+                <label>Opening Line</label>
                 <textarea id="idea-hook" placeholder="E.g. I used to write posts that sounded smart but got ignored."></textarea>
+                <span class="form-hint">A possible first sentence. The post draft may rewrite it if the core message is stronger.</span>
             </div>
             <div class="form-group">
                 <label>Idea Framing</label>
@@ -3273,7 +3275,7 @@ function filteredIdeas() {
         const trend = String(idea.trend_context || '').trim();
         const trendOk = S.ideaTrendFilter === 'all'
             || (S.ideaTrendFilter === 'evergreen' && !trend)
-            || (S.ideaTrendFilter.startsWith('trend:') && trend === S.ideaTrendFilter.slice(6));
+            || (S.ideaTrendFilter.startsWith('trend:') && normalizeTrendKey(trend) === S.ideaTrendFilter.slice(6));
         const haystack = [
             idea.title,
             idea.hook,
@@ -3314,15 +3316,26 @@ function renderIdeaFormatFilter() {
     if (favoriteSelect) favoriteSelect.value = S.ideaFavoriteFilter;
     const trendSelect = document.getElementById('idea-trend-filter');
     if (trendSelect) {
-        const trends = [...new Set(S.ideas.map(idea => String(idea.trend_context || '').trim()).filter(Boolean))]
-            .sort((a, b) => a.localeCompare(b));
+        const trendMap = new Map();
+        S.ideas.forEach(idea => {
+            const trend = String(idea.trend_context || '').trim();
+            const key = normalizeTrendKey(trend);
+            if (!key) return;
+            const label = trendDisplayLabel(trend);
+            const existing = trendMap.get(key);
+            if (!existing || existing.charAt(0) === existing.charAt(0).toLowerCase()) {
+                trendMap.set(key, label);
+            }
+        });
+        const trends = [...trendMap.entries()]
+            .sort((a, b) => a[1].localeCompare(b[1]));
         const options = [
             '<option value="all">All</option>',
             '<option value="evergreen">Evergreen</option>',
-            ...trends.map(trend => `<option value="trend:${esc(trend)}">${esc(trend)}</option>`),
+            ...trends.map(([key, label]) => `<option value="trend:${esc(key)}">${esc(label)}</option>`),
         ];
         trendSelect.innerHTML = options.join('');
-        const values = new Set(['all', 'evergreen', ...trends.map(trend => `trend:${trend}`)]);
+        const values = new Set(['all', 'evergreen', ...trends.map(([key]) => `trend:${key}`)]);
         if (!values.has(S.ideaTrendFilter)) S.ideaTrendFilter = 'all';
         trendSelect.value = S.ideaTrendFilter;
     }
@@ -3390,6 +3403,17 @@ function formatLabel(format) {
 function capitalizeFirst(value) {
     const text = String(value || '').trim();
     return text ? text.charAt(0).toUpperCase() + text.slice(1) : '';
+}
+
+function normalizeTrendKey(value) {
+    return String(value || '').trim().replace(/\s+/g, ' ').toLowerCase();
+}
+
+function trendDisplayLabel(value) {
+    const text = String(value || '').trim().replace(/\s+/g, ' ');
+    return text && text.charAt(0) === text.charAt(0).toLowerCase()
+        ? capitalizeFirst(text)
+        : text;
 }
 
 function isDuplicateFraming(format, framing) {
