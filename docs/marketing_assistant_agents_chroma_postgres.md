@@ -79,8 +79,9 @@ The main lifecycle is:
 | Audience Agent | `POST /user-profiles`, `PUT /user-profiles/{profile_id}` | New or updated `user_profiles` row | `profile_name`, `niche`, `offer`, `target_audience`, `expertise`, `personal_touch`, `market_scope`, `primary_market`, `currency`, `locale_notes`, `tone`, `goal` | `positioning_knowledge` | `audience_analyses`: audience profile, pains, desires, objections, trigger moments, proof points, audience language, market context, content angles, tone, positioning, known_for |
 | Idea Agent | After profile creation/update, `/content-ideas/generate-more`, `/content-ideas/regenerate` | `user_profiles` + latest `audience_analyses` | `count`; optional `trend_context` | `idea_knowledge` | `content_ideas`: title, hook, post_format, angle, topic, trend_context |
 | Content Agent | `POST /posts` | `user_profiles` + `audience_analyses` + selected `content_ideas`; optional `automation_resources` | `content_idea_id`, `platform`, `instagram_content_type`, `post_goal`, `post_length`, optional `automation_resource_id`, optional `extra_context` | `content_frameworks` | `posts`: hook, body, CTA, final_text, platform, post format, post goal, Instagram type, length, optional automation resource link |
-| Content Revision Agent | `POST /posts/{post_id}/revise` | Existing `posts` row joined to profile, audience, platform, goal, optional automation resource | Revision instruction | None in current implementation | Updated post hook, body, CTA, final_text |
 | Automation Agent | `/automation-resources/{id}/generate-automation`, `/automation-resources/regenerate-automations` | `user_profiles` + `audience_analyses` + selected `automation_resources` | None beyond selected resource/profile | `cta_patterns`, `comment_automation_templates` | `automation_resources`: suggested_keyword, trigger_type, public_comment_reply, delivery_message, second_dm_message, button labels, qualification question, follow_up_cta, manychat_setup JSON |
+
+Content revisions are not a separate agent in the same architectural sense. They are a revision mode of the Content Agent: `agents/content_agent.py` defines `run_content_revision_agent`, which uses the same content model and `GeneratedPost` output schema with a different prompt. It is triggered by `PUT /posts/{post_id}/revise`, reads the existing post plus profile/audience/automation context from Postgres, takes a revision instruction, and saves updated post text. It does not currently retrieve Chroma knowledge.
 
 ## Chroma Collections
 
@@ -114,6 +115,7 @@ erDiagram
 - Profile creation is not just a database write. It immediately runs Audience Agent, saves the audience analysis, runs Idea Agent, and saves 20 ideas.
 - Updating a profile regenerates the audience analysis and ideas. Non-favorite ideas are deleted first; favorite ideas are preserved.
 - Generating a post starts from `content_idea_id`. The backend reconstructs the full context by joining content idea, profile, and audience analysis.
+- Revising a post is additional Content Agent functionality, not a separate standalone agent. It uses the existing post as context and rewrites hook/body/CTA/final text.
 - Automation resources are reusable. They can exist before a post, can be generated into a ManyChat-style setup, and can be attached later to Instagram reel/carousel post generation.
 - If an automation resource is attached to a post, the backend forces the generated CTA to include the saved keyword when needed.
 - Chroma data must be seeded separately with `python scripts/seed_chroma_all.py` or the agents will have little/no retrieved knowledge.
