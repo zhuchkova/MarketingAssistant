@@ -9,6 +9,9 @@ __pycache__/
 # Chroma db
 chroma_db/
 
+#DS Store
+.DS_Store
+
 # Distribution / packaging
 .Python
 build/
