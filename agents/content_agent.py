@@ -53,8 +53,8 @@ Audience analysis:
 - Known for: {known_for}
 
 Selected content idea:
-- Title: {idea_title}
-- Hook idea: {idea_hook}
+- Core message: {idea_title}
+- Opening line suggestion: {idea_hook}
 - Post format: {idea_post_format}
 - Idea framing: {idea_angle}
 - Topic: {idea_topic}
@@ -85,7 +85,9 @@ Selected reusable Instagram DM resource:
 Rules:
 - Make it specific, not generic
 - Use the creator's tone
-- Start with a strong hook
+- Use the core message as the primary creative premise for the post.
+- Start with a strong hook that sharpens the core message. You may rewrite the opening line suggestion; do not copy it blindly if the core message is stronger.
+- The opening line suggestion is supporting context, not the main instruction.
 - Respect the requested length:
   - short = one compact idea, no extra sections
   - medium = default useful depth, 2-3 main points
